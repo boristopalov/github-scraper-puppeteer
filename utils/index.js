@@ -1,6 +1,6 @@
 module.exports = {
 
-    // didn't use this 
+    // i didn't use this 
     searchTextForKeywords: function (text, keywords) { 
         return keywords.some(keyword => text.includes(keyword))
     },

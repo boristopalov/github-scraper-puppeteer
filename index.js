@@ -60,7 +60,7 @@ const scrape = async (url, callback) => {
 
             data.push(userData);
         };
-        // if we are on the last page
+        // check if we are on the the last page
         if (!nextButton[0]) { 
             break;
         }
