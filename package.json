@@ -1,0 +1,17 @@
+{
+  "name": "github-scraper-puppeteer",
+  "version": "1.0.0",
+  "description": "recruiting scraper",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Boris Topalov",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^11.0.0"
+  },
+  "devDependencies": {
+    "export-to-csv": "^0.2.1"
+  }
+}
