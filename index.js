@@ -1,6 +1,9 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const utils = require('./utils');
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
 const scrape = async (url, callback) => {
 
@@ -9,13 +12,13 @@ const scrape = async (url, callback) => {
     const page = await browser.newPage();
 
     await page.goto(url);
-    const nextButtonXpath = "//a[contains(text(),'Next')]";
-    let nextButton = await page.$x(nextButtonXpath);
+    const paginationContainer = await page.$('.pagination');
+    const nextButtonXpath = "a[contains(text(),'Next')]";
+    let nextButton = await paginationContainer.$x(nextButtonXpath);
 
     let pageCount = 1;
     while (true) {
         
-        await page.waitForSelector('.d-table-cell.col-9.v-align-top.pr-3');
         const users = await page.$$('.d-table-cell.col-9.v-align-top.pr-3');
 
         for await (const user of users) { 
@@ -60,15 +63,17 @@ const scrape = async (url, callback) => {
 
             data.push(userData);
         };
+        console.log("Page scraped: ", pageCount++);
         // check if we are on the the last page
         if (!nextButton[0]) { 
+            console.log("No more pages to scrape! Exiting...")
             break;
         }
 
         await nextButton[0].click();
-        console.log("page scraped: ", pageCount++);
-        await page.waitForNavigation()
-        nextButton = await page.$x(nextButtonXpath);
+        await page.waitForNavigation();
+        const paginationContainer = await page.$('.pagination');
+        nextButton = await paginationContainer.$x(nextButtonXpath);
     };
 
     callback(data);
@@ -77,13 +82,14 @@ const scrape = async (url, callback) => {
 
 
 (async () => { 
-    const DATAFILE = 'data.csv';
-    const JSONFILE = 'data.json';
+    const DATAFILE = './data/data.csv';
+    const JSONFILE = './data/data.json';
+    const url = 'https://github.com/boristopalov?tab=following';
 
-    // scraper stops working after 40 pages (2000 data points). have yet to find a solution 
+    // scraper stops working after 40 pages (2000 data points) due to github bot detection. have yet to find a solution 
     // if you want to scrape >40 pages you have to manually change the page url and re-run
     // i.e. scrape('https://github.com/mikedemarais?tab=following') runs for 40 pages -> re-run with scrape('https://github.com/mikedemarais?page=41&tab=following')
-    await scrape('https://github.com/mikedemarais?tab=following', (data) => {
+    await scrape(url, (data) => {
 
         // save data to JSON file  
         let jsonStream = fs.createWriteStream(JSONFILE, {flags: 'a'});
