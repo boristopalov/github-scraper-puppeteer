@@ -34,7 +34,6 @@ module.exports = {
             e.bio.replaceAll('\n', '').replaceAll(',', ';')
             ])
         ].map((item) => item.join(',')).join('\n');
-        console.log("CSV STRING", csvString);
         return csvString;
     },
 };
