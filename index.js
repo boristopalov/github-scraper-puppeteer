@@ -1,9 +1,6 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const utils = require('./utils');
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 
 const scrape = async (url, callback) => {
 
