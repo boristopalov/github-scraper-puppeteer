@@ -42,24 +42,16 @@ module.exports = {
                         if (c.hasOwnProperty('author')) { 
                             let author = c.author;
                             if (!author.email.includes('noreply') && (author.name.split(' ').some(e => nameToParse.toLowerCase().includes(e.toLowerCase()) || usernameToParse.toLowerCase().includes(e.toLowerCase())))) { 
-                                console.log(author.email);
+                                // console.log(author.email);
                                 return author.email;
                             }
                         }
                     }
-
-                    // if (commits && commits[0].hasOwnProperty('author') ) { 
-                    //     let author = commits[0].author;
-                    //     if (!author.email.includes('protonmail') && !author.email.includes('noreply') && (author.name.split(' ').some(e => nameToParse.includes(e) || usernameToParse.includes(e)))) { 
-                    //         console.log(author.email);
-                    //         return author.email;
-                    //     }
-                    // }
                 }
             }
         } 
         // we reach the end of the loop and there are no valid emails
-        console.log('n/a'); 
+        // console.log('n/a'); 
         return 'n/a';  
     },
 
