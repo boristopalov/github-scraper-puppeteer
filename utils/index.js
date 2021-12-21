@@ -29,7 +29,10 @@ module.exports = {
                     'Authorization': `token ${auth}`,
                     "Content-Type": "application/json"
                 }
-            }).catch(e => console.error(e.response.data))
+            }).catch(error => { 
+                console.error(error);
+                return;
+            });
 
         const data = await res.data;
         // yikes 
@@ -41,8 +44,9 @@ module.exports = {
                     for (const c of commits) { 
                         if (c.hasOwnProperty('author')) { 
                             let author = c.author;
-                            if (!author.email.includes('noreply') && (author.name.split(' ').some(e => nameToParse.toLowerCase().includes(e.toLowerCase()) || usernameToParse.toLowerCase().includes(e.toLowerCase())))) { 
-                                // console.log(author.email);
+                            if (!author.email.includes('noreply') && (
+                                author.name.split(' ').some(e => nameToParse.toLowerCase().includes(e.toLowerCase()) || usernameToParse.toLowerCase().includes(e.toLowerCase())))) { 
+                                console.log(author.email);
                                 return author.email;
                             }
                         }
@@ -51,7 +55,7 @@ module.exports = {
             }
         } 
         // we reach the end of the loop and there are no valid emails
-        // console.log('n/a'); 
+        console.log('n/a'); 
         return 'n/a';  
     },
 
