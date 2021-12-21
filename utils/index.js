@@ -1,3 +1,5 @@
+const axios = require('axios').default;
+
 module.exports = {
 
     // i didn't use this 
@@ -16,11 +18,42 @@ module.exports = {
         return dataCopy;
     },
 
+    // since we are communicating with github's REST api here we will use an auth token 
+    // without a token: limit 60 requests per hour
+    // with a token: limit 5,000 requests per hour 
+    searchCommitsForEmail: async function(url, auth) { 
+        const res = await axios.get(
+            url, { 
+                'headers': {
+                    'Authorization': `token ${auth}`,
+                    "Content-Type": "application/json"
+                }
+            }).catch(e => console.error(e.response.data))
+
+        const data = await res.data;
+        for await (const e of data) { 
+            if (e.hasOwnProperty('payload')) { 
+                let payload = e.payload;
+                if (payload.hasOwnProperty('commits')) { 
+                    let commits = payload.commits;
+                    if (commits && commits[0].hasOwnProperty('author')) { 
+
+                        // 80-90% of these are personal emails
+                        let author = commits[0].author;
+                        // console.log(author.email);
+                        return author.email;
+                    }
+                }
+            }
+        }   
+    },
+
     // convert an array of objects to a csv-formatted string
     arrayOfObjectsToCSV: function(arr) {
         const csvString = [
             [
             'Name',
+            'Email',
             'Username',
             'Company',
             'Location',
@@ -28,6 +61,7 @@ module.exports = {
             ],
             ...arr.map(e => [
             e.name.replaceAll(',', ''),
+            e.email,
             e.username,
             e.company.replaceAll(',', ';'),
             e.location.replaceAll(',', ''),
