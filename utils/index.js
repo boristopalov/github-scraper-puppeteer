@@ -18,6 +18,7 @@ module.exports = {
         return dataCopy;
     },
 
+    // retrieves data on public events from github API and parses through it to look for an email
     // since we are communicating with github's REST api here we will use an auth token 
     // without a token: limit 60 requests per hour
     // with a token: limit 5,000 requests per hour 
