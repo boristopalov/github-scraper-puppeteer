@@ -3,21 +3,14 @@ const fs = require('fs');
 const utils = require('./utils');
 
 const scrape = async (url, callback) => {
-
     let data = [];
+    let pageCount = 1;
+
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-
     await page.goto(url);
-    const paginationContainer = await page.$('.pagination');
-    const nextButtonXpath = "a[contains(text(),'Next')]";
-    let nextButton = await paginationContainer.$x(nextButtonXpath);
-
-    let pageCount = 1;
     while (true) {
-        
         const users = await page.$$('.d-table-cell.col-9.v-align-top.pr-3');
-
         for await (const user of users) { 
             let userData =  {
 
@@ -31,6 +24,9 @@ const scrape = async (url, callback) => {
             const username = (await user.$('.Link--secondary'));
             const usernameText = await (await username.getProperty('textContent')).jsonValue();
             userData['username'] = await usernameText;
+            const email = await utils.searchCommitsForEmail(`https://api.github.com/users/${usernameText}/events/public`);
+            userData['email'] = email;
+
 
             // not always displayed -- the below element doesn't exist if there is no work info for a user
             // therefore we have to check if it exists
@@ -61,16 +57,18 @@ const scrape = async (url, callback) => {
             data.push(userData);
         };
         console.log("Page scraped: ", pageCount++);
+        const paginationContainer = await page.$('.pagination');
+
         // check if we are on the the last page
-        if (!nextButton[0]) { 
+        if (!paginationContainer || !nextButton[0]) { 
             console.log("No more pages to scrape! Exiting...")
             break;
         }
 
+        const nextButtonXpath = "a[contains(text(),'Next')]";
+        let nextButton = await paginationContainer.$x(nextButtonXpath);
         await nextButton[0].click();
         await page.waitForNavigation();
-        const paginationContainer = await page.$('.pagination');
-        nextButton = await paginationContainer.$x(nextButtonXpath);
     };
 
     callback(data);
@@ -81,7 +79,7 @@ const scrape = async (url, callback) => {
 (async () => { 
     const DATAFILE = './data/data.csv';
     const JSONFILE = './data/data.json';
-    const url = 'https://github.com/boristopalov?tab=following';
+    const url = 'https://github.com/johnrjj?tab=following';
 
     // scraper stops working after 40 pages (2000 data points) due to github bot detection. have yet to find a solution 
     // if you want to scrape >40 pages you have to manually change the page url and re-run
