@@ -1,7 +1,9 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const utils = require('./utils');
+const dotenv = require('dotenv').config();
 
+const AUTH_TOKEN = process.env.AUTH_TOKEN;
 const scrape = async (url, callback) => {
     let data = [];
     let pageCount = 1;
@@ -24,7 +26,7 @@ const scrape = async (url, callback) => {
             const username = (await user.$('.Link--secondary'));
             const usernameText = await (await username.getProperty('textContent')).jsonValue();
             userData['username'] = await usernameText;
-            const email = await utils.searchCommitsForEmail(`https://api.github.com/users/${usernameText}/events/public`);
+            const email = await utils.searchCommitsForEmail(`https://api.github.com/users/${usernameText}/events/public`, AUTH_TOKEN);
             userData['email'] = email;
 
 
@@ -60,13 +62,17 @@ const scrape = async (url, callback) => {
         const paginationContainer = await page.$('.pagination');
 
         // check if we are on the the last page
-        if (!paginationContainer || !nextButton[0]) { 
+        if (!paginationContainer) { 
+            console.log("No more pages to scrape! Exiting...")
+            break;
+        }
+        const nextButtonXpath = "a[contains(text(),'Next')]";
+        let nextButton = await paginationContainer.$x(nextButtonXpath);
+        if (!nextButton[0]) { 
             console.log("No more pages to scrape! Exiting...")
             break;
         }
 
-        const nextButtonXpath = "a[contains(text(),'Next')]";
-        let nextButton = await paginationContainer.$x(nextButtonXpath);
         await nextButton[0].click();
         await page.waitForNavigation();
     };
