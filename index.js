@@ -26,7 +26,7 @@ const scrape = async (url, callback) => {
             const username = (await user.$('.Link--secondary'));
             const usernameText = await (await username.getProperty('textContent')).jsonValue();
             userData['username'] = await usernameText;
-            const email = await utils.searchCommitsForEmail(`https://api.github.com/users/${usernameText}/events/public`, AUTH_TOKEN);
+            const email = await utils.searchCommitsForEmail(usernameText, nameText, AUTH_TOKEN);
             userData['email'] = email;
 
 
@@ -83,8 +83,8 @@ const scrape = async (url, callback) => {
 
 
 (async () => { 
-    const DATAFILE = './data/data.csv';
-    const JSONFILE = './data/data.json';
+    const DATAFILE = './data/data2.csv';
+    const JSONFILE = './data/data2.json';
     const url = 'https://github.com/johnrjj?tab=following';
 
     // scraper stops working after 40 pages (2000 data points) due to github bot detection. have yet to find a solution 

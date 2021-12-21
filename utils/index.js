@@ -21,7 +21,8 @@ module.exports = {
     // since we are communicating with github's REST api here we will use an auth token 
     // without a token: limit 60 requests per hour
     // with a token: limit 5,000 requests per hour 
-    searchCommitsForEmail: async function(url, auth) { 
+    searchCommitsForEmail: async function(usernameToParse, nameToParse, auth) { 
+        const url = `https://api.github.com/users/${usernameToParse}/events/public`;
         const res = await axios.get(
             url, { 
                 'headers': {
@@ -31,21 +32,35 @@ module.exports = {
             }).catch(e => console.error(e.response.data))
 
         const data = await res.data;
+        // yikes 
         for await (const e of data) { 
             if (e.hasOwnProperty('payload')) { 
                 let payload = e.payload;
                 if (payload.hasOwnProperty('commits')) { 
                     let commits = payload.commits;
-                    if (commits && commits[0].hasOwnProperty('author')) { 
-
-                        // 80-90% of these are personal emails
-                        let author = commits[0].author;
-                        // console.log(author.email);
-                        return author.email;
+                    for (const c of commits) { 
+                        if (c.hasOwnProperty('author')) { 
+                            let author = c.author;
+                            if (!author.email.includes('noreply') && (author.name.split(' ').some(e => nameToParse.toLowerCase().includes(e.toLowerCase()) || usernameToParse.toLowerCase().includes(e.toLowerCase())))) { 
+                                console.log(author.email);
+                                return author.email;
+                            }
+                        }
                     }
+
+                    // if (commits && commits[0].hasOwnProperty('author') ) { 
+                    //     let author = commits[0].author;
+                    //     if (!author.email.includes('protonmail') && !author.email.includes('noreply') && (author.name.split(' ').some(e => nameToParse.includes(e) || usernameToParse.includes(e)))) { 
+                    //         console.log(author.email);
+                    //         return author.email;
+                    //     }
+                    // }
                 }
             }
-        }   
+        } 
+        // we reach the end of the loop and there are no valid emails
+        console.log('n/a'); 
+        return 'n/a';  
     },
 
     // convert an array of objects to a csv-formatted string
