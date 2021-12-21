@@ -31,7 +31,7 @@ module.exports = {
                 }
             }).catch(error => { 
                 console.error(error);
-                return;
+                return null;
             });
 
         const data = await res.data;

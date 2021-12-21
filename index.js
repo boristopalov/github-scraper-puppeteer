@@ -11,6 +11,7 @@ const scrape = async (url, callback) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(url);
+    scrape:
     while (true) {
         const users = await page.$$('.d-table-cell.col-9.v-align-top.pr-3');
         for await (const user of users) { 
@@ -27,6 +28,10 @@ const scrape = async (url, callback) => {
             const usernameText = await (await username.getProperty('textContent')).jsonValue();
             userData['username'] = await usernameText;
             const email = await utils.searchCommitsForEmail(usernameText, nameText, AUTH_TOKEN);
+            if (!email) { 
+                break scrape;
+            };
+
             userData['email'] = email;
 
 
@@ -83,11 +88,10 @@ const scrape = async (url, callback) => {
 
 
 (async () => { 
-    const DATAFILE = './data/data2.csv';
-    const JSONFILE = './data/data2.json';
-    const url = 'https://github.com/johnrjj?tab=following';
+    const DATAFILE = './data/data.csv';
+    const JSONFILE = './data/data.json';
+    const url = 'https://github.com/mikedemarais?tab=following';
 
-    // scraper stops working after 40 pages (2000 data points) due to github bot detection. have yet to find a solution 
     // if you want to scrape >40 pages you have to manually change the page url and re-run
     // i.e. scrape('https://github.com/mikedemarais?tab=following') runs for 40 pages -> re-run with scrape('https://github.com/mikedemarais?page=41&tab=following')
     await scrape(url, (data) => {
