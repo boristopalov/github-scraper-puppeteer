@@ -27,11 +27,12 @@ const scrape = async (url, callback) => {
             const username = (await user.$('.Link--secondary'));
             const usernameText = await (await username.getProperty('textContent')).jsonValue();
             userData['username'] = await usernameText;
+
+            // scraping user's public emails with the github REST API, **not** Puppeteer.
             const email = await utils.searchCommitsForEmail(usernameText, nameText, AUTH_TOKEN);
             if (!email) { 
                 break scrape;
             };
-
             userData['email'] = email;
 
 

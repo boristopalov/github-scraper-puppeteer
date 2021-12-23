@@ -48,7 +48,7 @@ module.exports = {
                             if (!author.email.includes('noreply') && (
                                 author.name.split(' ').some(e => nameToParse.toLowerCase().includes(e.toLowerCase()) || usernameToParse.toLowerCase().includes(e.toLowerCase())))) { 
                                 console.log(author.email);
-                                return author.email;
+                                return author.email || 'n/a';
                             }
                         }
                     }
