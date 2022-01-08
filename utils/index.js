@@ -39,6 +39,24 @@ module.exports = {
         return csvString;
     },
 
+    getHrefFromAnchor: async function(context, selector) { 
+      try { 
+        const queryResponse = await context.$(selector);
+        const hrefObject = await queryResponse.getProperty("href");
+        const url = await hrefObject.jsonValue();
+        return new Promise((resolve, reject) => { 
+            if (!url) { 
+                reject(new Error("can't get an href!"))
+            }
+            resolve(url)
+        })
+
+      } catch(e) { 
+          console.log(e.message)
+      }
+    
+    },
+
     calculateWeightedCandidateScore: function(candidate) { 
 
     }

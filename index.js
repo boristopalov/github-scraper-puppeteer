@@ -114,7 +114,7 @@ const scrapeUser = async (url) => {
     const contributionCount = await page.$eval('.js-yearly-contributions > div > h2', e => e.innerText.split(' ')[0]);
     const orgs = await page.$$('.border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a'); 
     
-        
+    // if user is a member of any organizations, scrape data from each organization
     if (orgs) {
         const orgUrls = orgs.map(org => org.getProperty('href').jsonValue());
         console.log(orgUrls);

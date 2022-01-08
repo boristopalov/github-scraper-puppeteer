@@ -2,4 +2,3 @@ node_modules/
 data/
 .DS_STORE
 .env
-test.js
