@@ -40,8 +40,10 @@ module.exports = {
     },
 
     getHrefFromAnchor: async function(context, selector) { 
-      try { 
         const queryResponse = await context.$(selector);
+        if (!queryResponse) { 
+            return null;
+        }
         const hrefObject = await queryResponse.getProperty("href");
         const url = await hrefObject.jsonValue();
         return new Promise((resolve, reject) => { 
@@ -50,10 +52,6 @@ module.exports = {
             }
             resolve(url)
         })
-
-      } catch(e) { 
-          console.log(e.message)
-      }
     
     },
 
