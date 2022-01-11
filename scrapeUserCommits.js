@@ -1,6 +1,6 @@
 import { searchEventsForPullRequests } from "./utils";
 
-export const scrapeUserCommits = async (urls, browser) => {
+const scrapeUserCommits = async (urls, browser) => {
   let totalStars = 0;
   for (const url of urls) {
     const page = await browser.newPage();

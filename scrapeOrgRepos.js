@@ -1,4 +1,4 @@
-export const scrapeOrgRepo = async (repoPage) => {
+const scrapeOrgRepo = async (repoPage) => {
   // scrape the README for keywords
   const readmeDiv = await repoPage.$(
     "[data-target='readme-toc.content'] > article"
