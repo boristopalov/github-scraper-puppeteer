@@ -86,14 +86,14 @@ export const scrapeOrganization = async (browser, url) => {
     }
   }
 
-  console.log(`Results for ${orgName}`, results);
-  console.log(`Data for ${orgName}`, data);
+  // console.log(`Results for ${orgName}`, results);
+  // console.log(`Data for ${orgName}`, data);
   // await page.close();
   return new Promise((resolve) => {
     resolve(data);
   });
 };
 
-import puppeteer from "puppeteer";
-const browser = await puppeteer.launch({ headless: false });
-scrapeOrganization(browser, "https://github.com/KitchenTableCoders");
+// import puppeteer from "puppeteer";
+// const browser = await puppeteer.launch({ headless: false });
+// scrapeOrganization(browser, "https://github.com/fossasia");

@@ -7,6 +7,7 @@ export const scrapeRepo = async (repoPage) => {
     isRepoReadmeKeywordMatch: false,
   };
 
+  repoPage.waitForSelector(".Counter.js-social-count");
   let repoStarCount = await repoPage.$eval(
     ".Counter.js-social-count",
     (e) => e.title
@@ -15,6 +16,7 @@ export const scrapeRepo = async (repoPage) => {
   data.repoStarCount = parseInt(repoStarCount);
 
   // scrape the README for keywords
+  repoPage.waitForSelector("[data-target='readme-toc.content'] > article");
   const readmeDiv = await repoPage.$(
     "[data-target='readme-toc.content'] > article"
   );
@@ -27,10 +29,8 @@ export const scrapeRepo = async (repoPage) => {
     );
     data.isRepoReadmeKeywordMatch = isReadmeKeywordMatch;
   }
-  // await repoPage.close();
+  await repoPage.close();
   return new Promise((resolve) => {
     resolve(data);
   });
-
-  // console.log(repoStarCount);
 };
