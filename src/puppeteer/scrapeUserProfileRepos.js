@@ -1,11 +1,33 @@
-export const scrapeUserProfileRepos = async (browser, url) => {
-  const page = await browser.newPage();
-  await page.goto(url);
+import sleep from "../utils/sleep.js";
+export const scrapeUserProfileRepos = async (page) => {
+  // const sources = await page.$("#type_source");
+  // console.log(sources);
+  // await sources.click();
+  // const sortStargazers = await page.$("#sort_stargazers");
+  // await sortStargazers.click();
+
+  await page.waitForSelector("[data-tab-item='repositories']");
+  const reposTabAnchor = await page.$("[data-tab-item='repositories']");
+  await reposTabAnchor.click();
+
+  await page.waitForSelector(
+    ".width-full > .d-flex > .d-flex > #type-options > .btn"
+  );
+  await page.click(".width-full > .d-flex > .d-flex > #type-options > .btn");
+
+  await page.waitForSelector(
+    "#type-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(2)"
+  );
+  await page.click(
+    "#type-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(2)"
+  );
+
+  await sleep(1000);
   await page.waitForSelector(".col-10.col-lg-9.d-inline-block");
   const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
 
   let tenStarRepoCount = 0;
-  for (const repo of repos) {
+  for await (const repo of repos) {
     const starElement = await repo.$(".f6.color-fg-muted.mt-2 > a");
     // console.log(starElement)
     if (starElement) {
@@ -13,9 +35,12 @@ export const scrapeUserProfileRepos = async (browser, url) => {
         (e) => parseInt(e.innerText),
         starElement
       );
-      if (starCount > 10) tenStarRepoCount++;
+      if (starCount > 10) {
+        tenStarRepoCount++;
+      }
     }
   }
+
   await page.close();
   return new Promise((resolve) => resolve(tenStarRepoCount));
 };

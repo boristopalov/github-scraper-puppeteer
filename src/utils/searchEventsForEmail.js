@@ -19,7 +19,6 @@ export default function searchEventsForEmail(events, username, name) {
                     username.toLowerCase().includes(e.toLowerCase())
                 )
             ) {
-              console.log(author.email);
               return author.email || "n/a";
             }
           }

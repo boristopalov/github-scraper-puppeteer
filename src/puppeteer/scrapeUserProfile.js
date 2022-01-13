@@ -25,11 +25,11 @@ export const scrapeUserProfile = async (url) => {
   const page = await browser.newPage();
   await page.goto(url);
 
-  const tenStarRepoCount = await scrapeUserProfileRepos(
-    browser,
-    url + "?tab=repositories&q=&type=source&language=&sort=stargazers"
-  );
-  data.tenStarRepoCount = tenStarRepoCount;
+  const reposPage = await browser.newPage();
+  await reposPage.goto(url);
+  const tenStarRepoCount = await scrapeUserProfileRepos(reposPage);
+
+  console.log(tenStarRepoCount);
 
   // if user has a readme, search for keywords in readme
   const readmeElement = await page.$(
@@ -107,3 +107,5 @@ export const scrapeUserProfile = async (url) => {
   await browser.close();
   return new Promise((resolve) => resolve(data));
 };
+
+scrapeUserProfile("https://github.com/boristopalov");
