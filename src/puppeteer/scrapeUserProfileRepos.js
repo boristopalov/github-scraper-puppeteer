@@ -22,7 +22,22 @@ export const scrapeUserProfileRepos = async (page) => {
     "#type-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(2)"
   );
 
-  await sleep(1000);
+  await sleep(500);
+
+  await page.waitForSelector(
+    ".width-full > .d-flex > .d-flex > #sort-options > .btn"
+  );
+  await page.click(".width-full > .d-flex > .d-flex > #sort-options > .btn");
+
+  await page.waitForSelector(
+    "#sort-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
+  );
+  await page.click(
+    "#sort-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
+  );
+
+  await sleep(500);
+
   await page.waitForSelector(".col-10.col-lg-9.d-inline-block");
   const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
 

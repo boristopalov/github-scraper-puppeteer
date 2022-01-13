@@ -108,4 +108,4 @@ export const scrapeUserProfile = async (url) => {
   return new Promise((resolve) => resolve(data));
 };
 
-scrapeUserProfile("https://github.com/boristopalov");
+// scrapeUserProfile("https://github.com/boristopalov");

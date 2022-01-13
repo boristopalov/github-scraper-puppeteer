@@ -27,7 +27,7 @@ export const scrapeRepo = async (repoPage) => {
     );
     data.isRepoReadmeKeywordMatch = isReadmeKeywordMatch;
   }
-  await repoPage.close();
+  // await repoPage.close();
   return new Promise((resolve) => {
     resolve(data);
   });

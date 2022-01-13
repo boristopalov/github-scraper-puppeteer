@@ -2,6 +2,7 @@ import searchTextForKeywords from "../utils/searchTextForKeywords.js";
 import { readmeKeywords, generalKeywords } from "../keywords.js";
 import getHrefFromAnchor from "../utils/getHrefFromAnchor.js";
 import { scrapeRepo } from "./scrapeRepo.js";
+import sleep from "../utils/sleep.js";
 
 export const scrapeOrganization = async (browser, url) => {
   const data = {
@@ -11,7 +12,7 @@ export const scrapeOrganization = async (browser, url) => {
   };
   const page = await browser.newPage();
   // go to organization page and sort repos by number of stars
-  await page.goto(url + "?q=&type=all&language=&sort=stargazers");
+  await page.goto(url);
 
   const header = await page.$(
     ".d-flex.flex-wrap.flex-items-start.flex-md-items-center.my-3"
@@ -26,8 +27,33 @@ export const scrapeOrganization = async (browser, url) => {
     data["bioKeywordMatch"] = bioContainsKeywords;
   }
 
-  // console.log("org bio contains keywords", bioContainsKeywords);
+  await page.waitForSelector(
+    ".col-12 > .d-flex > .d-flex > #type-options > .btn"
+  );
+  await page.click(".col-12 > .d-flex > .d-flex > #type-options > .btn");
 
+  await page.waitForSelector(
+    "#type-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
+  );
+  await page.click(
+    "#type-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
+  );
+  await sleep(500);
+
+  await page.waitForSelector(
+    ".col-12 > .d-flex > .d-flex > #sort-options > .btn"
+  );
+  await page.click(".col-12 > .d-flex > .d-flex > #sort-options > .btn");
+
+  await page.waitForSelector(
+    "#sort-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
+  );
+  await page.click(
+    "#sort-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
+  );
+  await sleep(500);
+
+  await page.waitForSelector(".org-repos.repo-list > div > ul > li");
   let repos = await page.$$(".org-repos.repo-list > div > ul > li");
   if (repos.length === 0) {
     console.log(`No repos for ${orgName}`);
@@ -41,7 +67,7 @@ export const scrapeOrganization = async (browser, url) => {
   }
 
   const promises = [];
-  for (const repo of repos) {
+  for await (const repo of repos) {
     const repoUrl = await getHrefFromAnchor(
       repo,
       ".d-flex.flex-justify-between > div > a"
@@ -60,11 +86,14 @@ export const scrapeOrganization = async (browser, url) => {
     }
   }
 
-  await page.close();
+  console.log(`Results for ${orgName}`, results);
+  console.log(`Data for ${orgName}`, data);
+  // await page.close();
   return new Promise((resolve) => {
     resolve(data);
   });
-
-  // console.log(`Results for ${orgName}`, results);
-  // console.log(`Data for ${orgName}`, data);
 };
+
+import puppeteer from "puppeteer";
+const browser = await puppeteer.launch({ headless: false });
+scrapeOrganization(browser, "https://github.com/KitchenTableCoders");
