@@ -2,7 +2,8 @@
   "name": "github-scraper-puppeteer",
   "version": "1.0.0",
   "description": "recruiting scraper",
-  "main": "index.js",
+  "main": "./index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,9 +12,7 @@
   "dependencies": {
     "axios": "^0.24.0",
     "dotenv": "^10.0.0",
-    "puppeteer": "^11.0.0"
-  },
-  "devDependencies": {
+    "puppeteer": "^11.0.0",
     "export-to-csv": "^0.2.1"
   }
 }

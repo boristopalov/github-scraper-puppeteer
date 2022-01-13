@@ -1,11 +1,11 @@
-const fs = require("fs");
-const {
+import { createWriteStream } from "fs";
+import {
   arrayOfObjectsToCSV,
   calculateWeightedCandidateScore,
   getFilteredBio,
   getFilteredLocation,
-} = require("./utils");
-const { scrape } = require("./puppeteer/scrape");
+} from "./utils";
+import { scrape } from "./puppeteer/scrape";
 
 const main = async () => {
   const DATAFILE = "./data/data.csv";
@@ -17,12 +17,12 @@ const main = async () => {
   const data = await scrape(url);
 
   // save data to JSON file
-  let jsonStream = fs.createWriteStream(JSONFILE, { flags: "a" });
+  let jsonStream = createWriteStream(JSONFILE, { flags: "a" });
   jsonStream.write(JSON.stringify(data));
   jsonStream.end();
 
   // convert data to csv-formatted string and save it to a .csv file
-  let dataStream = fs.createWriteStream(DATAFILE, { flags: "a" });
+  let dataStream = createWriteStream(DATAFILE, { flags: "a" });
   const csvString = arrayOfObjectsToCSV(data);
   dataStream.write(csvString);
   dataStream.end();
