@@ -1,7 +1,7 @@
-import { launch } from "puppeteer";
-import { searchEventsForPullRequests } from "../searchEventsForPullRequests";
-import { searchEventsForEmail } from "../searchEventsForEmail";
-import { searchTextForKeywords } from "../searchTextForKeywords";
+import puppeteer from "puppeteer";
+import { getPullRequestRepoUrlsFromEvents } from "../utils/getPullRequestRepoUrlsFromEvents";
+import { searchEventsForEmail } from "../utils/searchEventsForEmail";
+import { searchTextForKeywords } from "../utils/searchTextForKeywords";
 import { getEvents } from "../api/getEvents";
 import { generalKeywords } from "../keywords";
 
@@ -9,7 +9,7 @@ const scrape = async (url) => {
   let data = [];
   let pageCount = 1;
 
-  const browser = await launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto(url);
   scrape: while (true) {
@@ -44,7 +44,7 @@ const scrape = async (url) => {
       }
       userData["email"] = email;
 
-      const pullRequests = searchEventsForPullRequests(usernameText);
+      const pullRequests = getPullRequestRepoUrlsFromEvents(events);
 
       // not always displayed -- the below element doesn't exist if there is no work info for a user
       // therefore we have to check if it exists

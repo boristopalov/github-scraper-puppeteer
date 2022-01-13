@@ -1,6 +1,6 @@
-import { searchEventsForPullRequests } from "./utils";
+import { searchEventsForPullRequests } from "./src/utils";
 
-const scrapeUserCommits = async (urls, browser) => {
+export const scrapeUserCommits = async (urls, browser) => {
   let totalStars = 0;
   for (const url of urls) {
     const page = await browser.newPage();
@@ -28,11 +28,11 @@ const scrapeUserCommits = async (urls, browser) => {
         keywords.readmeKeywords
       );
       // console.log(searchTextForKeywords(readMeHTMLText, keywords.readmeKeywords));
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         resolve({ stars: repoStarCount, isKeywordMatch: isKeywordMatch });
       });
     } else {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         resolve({ stars: repoStarCount, isKeywordMatch: null });
       });
     }
