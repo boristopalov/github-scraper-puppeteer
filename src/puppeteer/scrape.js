@@ -1,22 +1,36 @@
 import puppeteer from "puppeteer";
-import { getPullRequestRepoUrlsFromEvents } from "../utils/getPullRequestRepoUrlsFromEvents";
-import { searchEventsForEmail } from "../utils/searchEventsForEmail";
-import { searchTextForKeywords } from "../utils/searchTextForKeywords";
-import { getEvents } from "../api/getEvents";
-import { generalKeywords } from "../keywords";
+import searchEventsForPullRequests from "../utils/searchEventsForPullRequests.js";
+import searchEventsForEmail from "../utils/searchEventsForEmail.js";
+import searchTextForKeywords from "../utils/searchTextForKeywords.js";
+import { getEvents } from "../api/getEvents.js";
+import { generalKeywords } from "../keywords.js";
+import { scrapeUserProfile } from "./scrapeUserProfile.js";
+import { scrapeRepo } from "./scrapeRepo.js";
 
-const scrape = async (url) => {
+export const scrape = async (url) => {
   let data = [];
   let pageCount = 1;
 
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto(url);
-  scrape: while (true) {
+  scrape: while (pageCount < 3) {
     // array of divs with information on a user
     const users = await page.$$(".d-table-cell.col-9.v-align-top.pr-3");
     for await (const user of users) {
-      let userData = {};
+      let userData = {
+        name: "n/a",
+        email: "n/a",
+        username: "n/a",
+        company: "n/a",
+        location: "n/a",
+        isInNewYork: false,
+        bio: "n/a",
+        githubUrl: "n/a",
+        bioMatchesKeywords: false,
+        numPullRequestReposWithHundredStars: 0,
+        numPullRequestReposWithReadmeKeywordMatch: 0,
+      };
 
       // name is always displayed; if there is no name a blank element is displayed
       const name = await user.$(".f4.Link--primary");
@@ -24,38 +38,55 @@ const scrape = async (url) => {
       const nameText = await (
         await name.getProperty("textContent")
       ).jsonValue();
-      userData["name"] = nameText !== "" ? nameText : "n/a";
+      userData.name = nameText !== "" ? nameText : "n/a";
 
       const username = await user.$(".Link--secondary");
       const usernameText = await (
         await username.getProperty("textContent")
       ).jsonValue();
       // username is always displayed so we don't have to check if it exists
-      userData["username"] = usernameText;
+      userData.username = usernameText;
+
+      const githubUrl = "https://github.com/" + usernameText;
+      userData.githubUrl = githubUrl;
 
       // getEvents() uses the github REST API, **not** Puppeteer.
+      console.log(usernameText);
       const events = await getEvents(usernameText);
+      const email = await searchEventsForEmail(events, usernameText, nameText);
 
       // searchEventsForEmail() returns null if the API request doesn't go through
+      // we don't want to keep scraping if we run out of API requests
       // maybe we don't want to break if the request doesn't work though?
-      const email = await searchEventsForEmail(events, usernameText, nameText);
       if (!email) {
         break scrape;
       }
-      userData["email"] = email;
+      userData.email = email;
 
-      const pullRequests = getPullRequestRepoUrlsFromEvents(events);
+      const pullRequestRepoUrls = searchEventsForPullRequests(events);
+
+      for (const url of pullRequestRepoUrls) {
+        const page = await browser.newPage();
+        await page.goto(url);
+        const repoData = await scrapeRepo(page);
+        if (repoData.repoStarCount >= 100) {
+          userData.numPullRequestReposWithHundredStars++;
+        }
+        if (repoData.isRepoReadmeKeywordMatch) {
+          userData.numPullRequestReposWithReadmeKeywordMatch++;
+        }
+      }
 
       // not always displayed -- the below element doesn't exist if there is no work info for a user
       // therefore we have to check if it exists
       const company = await user.$("p.color-fg-muted.text-small.mb-0 > span");
-      let companyText = work
-        ? await (await work.getProperty("textContent")).jsonValue()
+      let companyText = company
+        ? await (await company.getProperty("textContent")).jsonValue()
         : "n/a";
       companyText = companyText.trim();
       let workArr = companyText.split(/\s+/);
       companyText = workArr.join(" ");
-      userData["company"] = await companyText;
+      userData.company = companyText;
 
       // location not always displayed
       const location = await user.$("p.color-fg-muted.text-small.mb-0");
@@ -70,36 +101,34 @@ const scrape = async (url) => {
       locationText = locationArr.length ? locationArr.join(" ") : "n/a";
       locationText = locationText.toLowerCase();
 
+      userData.location = locationText;
       // Looks for users with "new york" or "nyc" and filters out germany since it contains the string "ny"
       // there are other strings containing "ny" but they rarely pop up for a user's location
       const isInNewYork =
         searchTextForKeywords(locationText, ["new york", "ny"]) &&
-        !searchTextForKeywords(locationText, ["germany"]);
+        !searchTextForKeywords(locationText, ["germany", "sunnyvale"]);
       if (isInNewYork) {
+        userData.isInNewYork = true;
         // scrape the user's profile
-        const url = await (
-          await (
-            await user.$("a.d-inline-block.no-underline.mb-1")
-          ).getProperty("href")
-        ).jsonValue();
-        await scrapeUser(userData, url);
+        const deepUserData = await scrapeUserProfile(githubUrl);
+        Object.assign(userData, deepUserData);
       }
-
-      userData["location"] = locationText;
 
       // bio not always displayed
       const bio = await user.$(".color-fg-muted.text-small.mb-2");
       let bioText = bio
         ? await (await bio.getProperty("textContent")).jsonValue()
         : "n/a";
-      bioText = await bioText.trim().toLowerCase();
-      userData["bio"] = await bioText;
+      bioText = bioText.trim().toLowerCase();
+      userData.bio = bioText;
 
       // search for keywords in bio
       const bioMatchesKeywords = searchTextForKeywords(
         bioText,
         generalKeywords
       );
+
+      userData.bioMatchesKeywords = bioMatchesKeywords;
 
       data.push(userData);
     }
@@ -122,46 +151,8 @@ const scrape = async (url) => {
     await page.waitForNavigation();
   }
 
+  console.log(data);
+
   await browser.close();
-  return new Promise((resolve) => resolve(userData));
+  return new Promise((resolve) => resolve(data));
 };
-const _scrape = scrape;
-export { _scrape as scrape };
-
-// launches a new instance of puppeteer to run in parallel with the rest of the scraping process
-// const scrapeUser = async (url) => {
-//   const browser = await launch({ headless: false });
-//   const page = await browser.newPage();
-//   await page.goto(url);
-
-//   const contributionCount = await page.$eval(
-//     ".js-yearly-contributions > div > h2",
-//     (e) => e.innerText.split(" ")[0]
-//   );
-//   const orgs = await page.$$(
-//     ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a"
-//   );
-
-//   // if user is a member of any organizations, scrape data from each organization
-//   if (orgs) {
-//     const orgUrls = orgs.map((org) => org.getProperty("href").jsonValue());
-//     console.log(orgUrls);
-//     orgUrls.forEach((url) => scrapeUserOrganization(url));
-//   }
-
-//   console.log(contributionCount);
-//   await browser.close();
-// };
-// const scrapeUserOrganization = async (url) => {
-//   const page = await browser.newPage();
-//   // go to organization page and sort repos by number of stars
-//   await page.goto(url + "?q=&type=all&language=&sort=stargazers");
-
-//   const repos = await page.$$(".org-repos.repo-list > div > ul > li");
-//   const repoStarCountXPath = "a[contains(@href,'stargazers')]";
-//   for await (const repo of repos) {
-//     const infoDiv = await repo.$("color-fg-muted.f6");
-//     const repoStarCount = await repo.$x(repoStarCountXPath);
-//     console.log(repoStarCount);
-//   }
-// };

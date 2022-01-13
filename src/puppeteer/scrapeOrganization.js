@@ -3,7 +3,7 @@ import { readmeKeywords, generalKeywords } from "../keywords.js";
 import getHrefFromAnchor from "../utils/getHrefFromAnchor.js";
 import { scrapeRepo } from "./scrapeRepo.js";
 
-export const scrapeUserOrganization = async (browser, url) => {
+export const scrapeOrganization = async (browser, url) => {
   const data = {
     bioKeywordMatch: false,
     numReposWithHundredStars: 0,
@@ -46,7 +46,6 @@ export const scrapeUserOrganization = async (browser, url) => {
       repo,
       ".d-flex.flex-justify-between > div > a"
     );
-    // console.log(repoUrl);
     const repoPage = await browser.newPage();
     await repoPage.goto(repoUrl);
     promises.push(await scrapeRepo(repoPage));
@@ -68,6 +67,4 @@ export const scrapeUserOrganization = async (browser, url) => {
 
   // console.log(`Results for ${orgName}`, results);
   // console.log(`Data for ${orgName}`, data);
-
-  // await browser.close();
 };

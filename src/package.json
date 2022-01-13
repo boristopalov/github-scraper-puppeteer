@@ -11,8 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.24.0",
-    "dotenv": "^10.0.0",
-    "puppeteer": "^11.0.0",
+    "dotenv": "^11.0.0",
+    "puppeteer": "^13.0.0",
     "export-to-csv": "^0.2.1"
   }
 }

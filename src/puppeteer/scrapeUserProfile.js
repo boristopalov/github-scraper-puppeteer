@@ -3,15 +3,17 @@ import getHrefFromAnchor from "../utils/getHrefFromAnchor.js";
 import searchTextForKeywords from "../utils/searchTextForKeywords.js";
 import { generalKeywords } from "../keywords.js";
 import { scrapeTwitterFollowers } from "./scrapeTwitterFollowers.js";
-import { scrapeUserOrganization } from "./scrapeUserOrganization.js";
+import { scrapeOrganization } from "./scrapeOrganization.js";
 import convertNumStringToDigits from "../utils/convertNumStringToDigits.js";
+import { scrapeUserProfileRepos } from "./scrapeUserProfileRepos.js";
 
 // scrapes README keyword matches, contribution count, follower count, twitter followers, and orgs
-const scrapeUser = async (url) => {
+export const scrapeUserProfile = async (url) => {
   const data = {
+    contributionCount: 0,
+    tenStarRepoCount: 0,
     isUserReadmeKeywordMatch: false,
     userCompanyIsOrg: false,
-    contributionCount: 0,
     githubFollowers: 0,
     twitterFollowers: -1,
     numOrgBioKeywordMatch: 0,
@@ -23,11 +25,16 @@ const scrapeUser = async (url) => {
   const page = await browser.newPage();
   await page.goto(url);
 
+  const tenStarRepoCount = await scrapeUserProfileRepos(
+    browser,
+    url + "?tab=repositories&q=&type=source&language=&sort=stargazers"
+  );
+  data.tenStarRepoCount = tenStarRepoCount;
+
   // if user has a readme, search for keywords in readme
   const readmeElement = await page.$(
     "article.markdown-body.entry-content.container-lg.f5"
   );
-  // console.log(readmeElement)
   if (readmeElement) {
     // $eval() crashes puppeteer if it doesn't find the element so we need to check if the element exists first
     const readmeText = await page.evaluate((e) => e.innerText, readmeElement);
@@ -45,7 +52,6 @@ const scrapeUser = async (url) => {
     (e) => e.innerText.split(" ")[0].replace(",", "")
   );
 
-  console.log(contributionCount);
   data.contributionCount = parseInt(contributionCount);
 
   // get the number of followers a user has
@@ -86,10 +92,9 @@ const scrapeUser = async (url) => {
     );
 
     const orgBrowser = await puppeteer.launch({ headless: false });
-    const promises = orgUrls.map((url) =>
-      scrapeUserOrganization(orgBrowser, url)
-    );
+    const promises = orgUrls.map((url) => scrapeOrganization(orgBrowser, url));
     const results = await Promise.all(promises);
+    await orgBrowser.close();
     for (const result of results) {
       if (result.bioKeywordMatch) {
         data.numOrgBioKeywordMatch++;
@@ -97,10 +102,8 @@ const scrapeUser = async (url) => {
       data.numOrgReposReadmeKeywordMatch += result.numRepoReadmeKeywordMatch;
       data.numOrgReposWithHundredStars += result.numReposWithHundredStars;
     }
-    console.log(data);
   }
 
   await browser.close();
+  return new Promise((resolve) => resolve(data));
 };
-
-scrapeUser("https://github.com/m1guelpf");
