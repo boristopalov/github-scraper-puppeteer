@@ -6,6 +6,7 @@ import { scrapeTwitterFollowers } from "./scrapeTwitterFollowers.js";
 import { scrapeOrganization } from "./scrapeOrganization.js";
 import convertNumStringToDigits from "../utils/convertNumStringToDigits.js";
 import { scrapeUserProfileRepos } from "./scrapeUserProfileRepos.js";
+import sleep from "../utils/sleep.js";
 
 // scrapes README keyword matches, contribution count, follower count, twitter followers, and orgs
 export const scrapeUserProfile = async (url) => {
@@ -24,12 +25,11 @@ export const scrapeUserProfile = async (url) => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto(url);
-
+  await sleep(1000);
   const reposPage = await browser.newPage();
   await reposPage.goto(url);
   const tenStarRepoCount = await scrapeUserProfileRepos(reposPage);
-
-  console.log(tenStarRepoCount);
+  data.tenStarRepoCount = tenStarRepoCount;
 
   // if user has a readme, search for keywords in readme
   const readmeElement = await page.$(

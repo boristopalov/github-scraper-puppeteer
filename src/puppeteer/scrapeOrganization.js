@@ -13,7 +13,10 @@ export const scrapeOrganization = async (browser, url) => {
   const page = await browser.newPage();
   // go to organization page and sort repos by number of stars
   await page.goto(url);
-
+  await sleep(1000);
+  await page.waitForSelector(
+    ".d-flex.flex-wrap.flex-items-start.flex-md-items-center.my-3"
+  );
   const header = await page.$(
     ".d-flex.flex-wrap.flex-items-start.flex-md-items-center.my-3"
   );
@@ -38,7 +41,7 @@ export const scrapeOrganization = async (browser, url) => {
   await page.click(
     "#type-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
   );
-  await sleep(500);
+  await sleep(1000);
 
   await page.waitForSelector(
     ".col-12 > .d-flex > .d-flex > #sort-options > .btn"
@@ -51,7 +54,7 @@ export const scrapeOrganization = async (browser, url) => {
   await page.click(
     "#sort-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
   );
-  await sleep(500);
+  await sleep(1000);
 
   await page.waitForSelector(".org-repos.repo-list > div > ul > li");
   let repos = await page.$$(".org-repos.repo-list > div > ul > li");
@@ -88,7 +91,7 @@ export const scrapeOrganization = async (browser, url) => {
 
   // console.log(`Results for ${orgName}`, results);
   // console.log(`Data for ${orgName}`, data);
-  // await page.close();
+  await page.close();
   return new Promise((resolve) => {
     resolve(data);
   });

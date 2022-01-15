@@ -1,5 +1,6 @@
 import searchTextForKeywords from "../utils/searchTextForKeywords.js";
 import { readmeKeywords } from "../keywords.js";
+import sleep from "../utils/sleep.js";
 
 export const scrapeRepo = async (repoPage) => {
   const data = {
@@ -7,7 +8,8 @@ export const scrapeRepo = async (repoPage) => {
     isRepoReadmeKeywordMatch: false,
   };
 
-  repoPage.waitForSelector(".Counter.js-social-count");
+  await sleep(1000);
+  await repoPage.waitForSelector(".Counter.js-social-count");
   let repoStarCount = await repoPage.$eval(
     ".Counter.js-social-count",
     (e) => e.title
@@ -16,7 +18,6 @@ export const scrapeRepo = async (repoPage) => {
   data.repoStarCount = parseInt(repoStarCount);
 
   // scrape the README for keywords
-  repoPage.waitForSelector("[data-target='readme-toc.content'] > article");
   const readmeDiv = await repoPage.$(
     "[data-target='readme-toc.content'] > article"
   );

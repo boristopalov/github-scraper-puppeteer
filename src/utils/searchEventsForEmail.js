@@ -27,6 +27,6 @@ export default function searchEventsForEmail(events, username, name) {
     }
   }
   // we reach the end of the loop and there are no valid emails
-  console.log("n/a");
+  console.log("no email found");
   return "n/a";
 }

@@ -6,6 +6,7 @@ import { getEvents } from "../api/getEvents.js";
 import { generalKeywords } from "../keywords.js";
 import { scrapeUserProfile } from "./scrapeUserProfile.js";
 import { scrapeRepo } from "./scrapeRepo.js";
+import sleep from "../utils/sleep.js";
 
 export const scrape = async (url) => {
   let data = [];
@@ -51,7 +52,7 @@ export const scrape = async (url) => {
       userData.githubUrl = githubUrl;
 
       // getEvents() uses the github REST API, **not** Puppeteer.
-      console.log(usernameText);
+      console.log("user: ", usernameText);
       const events = await getEvents(usernameText);
       const email = await searchEventsForEmail(events, usernameText, nameText);
 
@@ -62,20 +63,6 @@ export const scrape = async (url) => {
         break scrape;
       }
       userData.email = email;
-
-      const pullRequestRepoUrls = searchEventsForPullRequests(events);
-
-      for (const url of pullRequestRepoUrls) {
-        const page = await browser.newPage();
-        await page.goto(url);
-        const repoData = await scrapeRepo(page);
-        if (repoData.repoStarCount >= 100) {
-          userData.numPullRequestReposWithHundredStars++;
-        }
-        if (repoData.isRepoReadmeKeywordMatch) {
-          userData.numPullRequestReposWithReadmeKeywordMatch++;
-        }
-      }
 
       // not always displayed -- the below element doesn't exist if there is no work info for a user
       // therefore we have to check if it exists
@@ -109,6 +96,21 @@ export const scrape = async (url) => {
         !searchTextForKeywords(locationText, ["germany", "sunnyvale"]);
       if (isInNewYork) {
         userData.isInNewYork = true;
+
+        // search pull request repos
+        const pullRequestRepoUrls = searchEventsForPullRequests(events);
+
+        for (const url of pullRequestRepoUrls) {
+          const page = await browser.newPage();
+          await page.goto(url);
+          const repoData = await scrapeRepo(page);
+          if (repoData.repoStarCount >= 100) {
+            userData.numPullRequestReposWithHundredStars++;
+          }
+          if (repoData.isRepoReadmeKeywordMatch) {
+            userData.numPullRequestReposWithReadmeKeywordMatch++;
+          }
+        }
         // scrape the user's profile
         const deepUserData = await scrapeUserProfile(githubUrl);
         Object.assign(userData, deepUserData);
