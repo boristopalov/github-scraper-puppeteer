@@ -7,6 +7,7 @@ import { generalKeywords } from "../keywords.js";
 import { scrapeUserProfile } from "./scrapeUserProfile.js";
 import { scrapeRepo } from "./scrapeRepo.js";
 import sleep from "../utils/sleep.js";
+import checkForBotDetection from "../utils/checkForBotDetection.js";
 
 export const scrape = async (url) => {
   let data = [];
@@ -15,7 +16,8 @@ export const scrape = async (url) => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto(url);
-  scrape: while (pageCount < 3) {
+  await checkForBotDetection(page);
+  scrape: while (true) {
     // array of divs with information on a user
     const users = await page.$$(".d-table-cell.col-9.v-align-top.pr-3");
     for await (const user of users) {
@@ -112,9 +114,9 @@ export const scrape = async (url) => {
           }
         }
         // scrape the user's profile
-        const deepUserData = await scrapeUserProfile(githubUrl);
-        Object.assign(userData, deepUserData);
       }
+      const deepUserData = await scrapeUserProfile(githubUrl);
+      Object.assign(userData, deepUserData);
 
       // bio not always displayed
       const bio = await user.$(".color-fg-muted.text-small.mb-2");

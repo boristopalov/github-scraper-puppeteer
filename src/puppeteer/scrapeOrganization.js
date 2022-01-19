@@ -3,6 +3,7 @@ import { readmeKeywords, generalKeywords } from "../keywords.js";
 import getHrefFromAnchor from "../utils/getHrefFromAnchor.js";
 import { scrapeRepo } from "./scrapeRepo.js";
 import sleep from "../utils/sleep.js";
+import checkForBotDetection from "../utils/checkForBotDetection.js";
 
 export const scrapeOrganization = async (browser, url) => {
   const data = {
@@ -13,7 +14,8 @@ export const scrapeOrganization = async (browser, url) => {
   const page = await browser.newPage();
   // go to organization page and sort repos by number of stars
   await page.goto(url);
-  await sleep(1000);
+  await checkForBotDetection(page);
+  // await sleep(1000);
   await page.waitForSelector(
     ".d-flex.flex-wrap.flex-items-start.flex-md-items-center.my-3"
   );

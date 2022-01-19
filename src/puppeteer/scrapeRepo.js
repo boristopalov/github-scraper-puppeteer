@@ -1,6 +1,7 @@
 import searchTextForKeywords from "../utils/searchTextForKeywords.js";
 import { readmeKeywords } from "../keywords.js";
 import sleep from "../utils/sleep.js";
+import checkForBotDetection from "../utils/checkForBotDetection.js";
 
 export const scrapeRepo = async (repoPage) => {
   const data = {
@@ -8,7 +9,8 @@ export const scrapeRepo = async (repoPage) => {
     isRepoReadmeKeywordMatch: false,
   };
 
-  await sleep(1000);
+  await checkForBotDetection(repoPage);
+  // await sleep(1000);
   await repoPage.waitForSelector(".Counter.js-social-count");
   let repoStarCount = await repoPage.$eval(
     ".Counter.js-social-count",
