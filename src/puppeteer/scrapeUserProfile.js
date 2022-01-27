@@ -17,97 +17,124 @@ export const scrapeUserProfile = async (url) => {
     isUserReadmeKeywordMatch: false,
     userCompanyIsOrg: false,
     githubFollowers: 0,
+    githubFollowing: 0,
     twitterFollowers: -1,
     numOrgBioKeywordMatch: 0,
     numOrgReposWithHundredStars: 0,
     numOrgReposReadmeKeywordMatch: 0,
   };
 
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto(url);
   await checkForBotDetection(page);
-  // await sleep(1000);
+  await sleep(1000);
   const reposPage = await browser.newPage();
   await reposPage.goto(url);
   const tenStarRepoCount = await scrapeUserProfileRepos(reposPage);
   data.tenStarRepoCount = tenStarRepoCount;
 
   // if user has a readme, search for keywords in readme
-  const readmeElement = await page.$(
-    "article.markdown-body.entry-content.container-lg.f5"
-  );
-  if (readmeElement) {
-    // $eval() crashes puppeteer if it doesn't find the element so we need to check if the element exists first
-    const readmeText = await page.evaluate((e) => e.innerText, readmeElement);
-    // console.log(readmeText)
-    const readmeMatchesKeywords = searchTextForKeywords(
-      readmeText,
-      generalKeywords
+  try {
+    const readmeElement = await page.$(
+      "article.markdown-body.entry-content.container-lg.f5"
     );
+    if (readmeElement) {
+      // $eval() crashes puppeteer if it doesn't find the element so we need to check if the element exists first
+      const readmeText = await page.evaluate((e) => e.innerText, readmeElement);
+      // console.log(readmeText)
+      const readmeMatchesKeywords = searchTextForKeywords(
+        readmeText,
+        generalKeywords
+      );
 
-    data.isUserReadmeKeywordMatch = readmeMatchesKeywords;
-  }
-
-  const contributionCount = await page.$eval(
-    ".js-yearly-contributions > div > h2",
-    (e) => e.innerText.split(" ")[0].replace(",", "")
-  );
-
-  data.contributionCount = parseInt(contributionCount);
-
-  // get the number of followers a user has
-  const followersDiv = await page.$("span.text-bold.color-fg-default");
-  if (followersDiv) {
-    let followersCountText = await page.evaluate(
-      (e) => e.innerText,
-      followersDiv
-    );
-    followersCountText = followersCountText.replace(",", "");
-    data.githubFollowers = convertNumStringToDigits(followersCountText);
-  }
-
-  const userCompanyIsOrg = await getHrefFromAnchor(page, ".p-org > div > a");
-  if (userCompanyIsOrg) {
-    data.userCompanyIsOrg = true;
-  }
-
-  // checks if they have a twitter
-  const twitterUrl = await getHrefFromAnchor(page, "[itemprop='twitter'] > a");
-  if (twitterUrl) {
-    const twitterFollowers = await scrapeTwitterFollowers(twitterUrl, browser);
-    data.twitterFollowers = twitterFollowers;
-  }
-
-  let orgs = await page.$$(
-    ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a[data-hovercard-type ='organization']"
-  );
-
-  // if user is a member of any organizations, scrape data from each organization
-  if (orgs) {
-    if (orgs.length > 5) {
-      orgs = orgs.slice(0, 5);
+      data.isUserReadmeKeywordMatch = readmeMatchesKeywords;
     }
-    // console.log(orgs);
-    const orgUrls = await Promise.all(
-      orgs.map((org) => org.getProperty("href").then((res) => res.jsonValue()))
+
+    const contributionCount = await page.$eval(
+      ".js-yearly-contributions > div > h2",
+      (e) => e.innerText.split(" ")[0].replace(",", "")
     );
 
-    const orgBrowser = await puppeteer.launch({ headless: false });
-    const promises = orgUrls.map((url) => scrapeOrganization(orgBrowser, url));
-    const results = await Promise.all(promises);
-    await orgBrowser.close();
-    for (const result of results) {
-      if (result.bioKeywordMatch) {
-        data.numOrgBioKeywordMatch++;
+    data.contributionCount = parseInt(contributionCount);
+
+    // get the number of followers a user has
+    const followersDiv = await page.$("span.text-bold.color-fg-default");
+    if (followersDiv) {
+      let followersCountText = await page.evaluate(
+        (e) => e.innerText,
+        followersDiv
+      );
+      followersCountText = followersCountText.replace(",", "");
+      data.githubFollowers = convertNumStringToDigits(followersCountText);
+    }
+
+    const following = await page.$(
+      ".flex-order-1.flex-md-order-none.mt-2.mt-md-0 > div > a:nth-child(2) > span"
+    );
+
+    if (following) {
+      const text = await page.evaluate((e) => e.innerText, following);
+      const following = convertNumStringToDigits(text);
+      data.githubFollowing = following;
+    }
+
+    const userCompanyIsOrg = await getHrefFromAnchor(page, ".p-org > div > a");
+    if (userCompanyIsOrg) {
+      data.userCompanyIsOrg = true;
+    }
+
+    // checks if they have a twitter
+    const twitterUrl = await getHrefFromAnchor(
+      page,
+      "[itemprop='twitter'] > a"
+    );
+    if (twitterUrl !== null) {
+      const twitterFollowers = await scrapeTwitterFollowers(
+        twitterUrl,
+        browser
+      );
+      data.twitterFollowers = twitterFollowers;
+    }
+
+    let orgs = await page.$$(
+      ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a[data-hovercard-type ='organization']"
+    );
+
+    // if user is a member of any organizations, scrape data from each organization
+    if (orgs) {
+      if (orgs.length > 5) {
+        orgs = orgs.slice(0, 5);
       }
-      data.numOrgReposReadmeKeywordMatch += result.numRepoReadmeKeywordMatch;
-      data.numOrgReposWithHundredStars += result.numReposWithHundredStars;
-    }
-  }
+      // console.log(orgs);
+      const orgUrls = await Promise.all(
+        orgs.map((org) =>
+          org.getProperty("href").then((res) => res.jsonValue())
+        )
+      );
 
-  await browser.close();
-  return new Promise((resolve) => resolve(data));
+      const orgBrowser = await puppeteer.launch({ headless: true });
+      const promises = orgUrls.map((url) =>
+        scrapeOrganization(orgBrowser, url)
+      );
+      const results = await Promise.all(promises);
+      await orgBrowser.close();
+      for (const result of results) {
+        if (result.bioKeywordMatch) {
+          data.numOrgBioKeywordMatch++;
+        }
+        data.numOrgReposReadmeKeywordMatch += result.numRepoReadmeKeywordMatch;
+        data.numOrgReposWithHundredStars += result.numReposWithHundredStars;
+      }
+    }
+
+    await browser.close();
+    return new Promise((resolve) => resolve(data));
+  } catch (e) {
+    console.log(e.message);
+    await browser.close();
+    return new Promise((resolve) => resolve(data));
+  }
 };
 
-// scrapeUserProfile("https://github.com/boristopalov");
+// scrapeUserProfile("https://github.com/da-bao-jian");

@@ -5,7 +5,7 @@ import arrayOfObjectsToCSV from "./utils/arrayOfObjectsToCSV.js";
 const main = async () => {
   const DATAFILE = "../data/data-test.csv";
   const JSONFILE = "../data/data-test.json";
-  const url = "https://github.com/mikedemarais?tab=following";
+  const url = "https://github.com/mikedemarais?page=101&tab=following";
 
   // if you want to scrape >100 pages you have to manually change the page url and re-run
   // i.e. scrape('https://github.com/mikedemarais?tab=following') runs for 100 pages -> re-run with scrape('https://github.com/mikedemarais?page=101&tab=following')
@@ -21,6 +21,7 @@ const main = async () => {
   const csvString = arrayOfObjectsToCSV(data);
   dataStream.write(csvString);
   dataStream.end();
+  return;
 };
 
 // didn't use these

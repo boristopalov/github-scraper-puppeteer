@@ -15,7 +15,7 @@ export const scrapeOrganization = async (browser, url) => {
   // go to organization page and sort repos by number of stars
   await page.goto(url);
   await checkForBotDetection(page);
-  // await sleep(1000);
+  await sleep(1000);
   await page.waitForSelector(
     ".d-flex.flex-wrap.flex-items-start.flex-md-items-center.my-3"
   );
@@ -58,10 +58,10 @@ export const scrapeOrganization = async (browser, url) => {
   );
   await sleep(1000);
 
-  await page.waitForSelector(".org-repos.repo-list > div > ul > li");
   let repos = await page.$$(".org-repos.repo-list > div > ul > li");
   if (repos.length === 0) {
     console.log(`No repos for ${orgName}`);
+    await page.close();
     return new Promise((resolve) => {
       resolve(data);
     });

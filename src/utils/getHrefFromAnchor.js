@@ -1,6 +1,6 @@
 export default async function getHrefFromAnchor(context, selector) {
   const element = await context.$(selector);
-  if (!element) {
+  if (element === null) {
     return null;
   }
   const hrefProp = await element.getProperty("href");

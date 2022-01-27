@@ -6,7 +6,6 @@ import { getEvents } from "../api/getEvents.js";
 import { generalKeywords } from "../keywords.js";
 import { scrapeUserProfile } from "./scrapeUserProfile.js";
 import { scrapeRepo } from "./scrapeRepo.js";
-import sleep from "../utils/sleep.js";
 import checkForBotDetection from "../utils/checkForBotDetection.js";
 
 export const scrape = async (url) => {
@@ -17,7 +16,7 @@ export const scrape = async (url) => {
   const page = await browser.newPage();
   await page.goto(url);
   await checkForBotDetection(page);
-  scrape: while (true) {
+  scrape: while (pageCount < 50) {
     // array of divs with information on a user
     const users = await page.$$(".d-table-cell.col-9.v-align-top.pr-3");
     for await (const user of users) {
@@ -114,9 +113,9 @@ export const scrape = async (url) => {
           }
         }
         // scrape the user's profile
+        const deepUserData = await scrapeUserProfile(githubUrl);
+        Object.assign(userData, deepUserData);
       }
-      const deepUserData = await scrapeUserProfile(githubUrl);
-      Object.assign(userData, deepUserData);
 
       // bio not always displayed
       const bio = await user.$(".color-fg-muted.text-small.mb-2");
@@ -154,8 +153,6 @@ export const scrape = async (url) => {
     await nextButton[0].click();
     await page.waitForNavigation();
   }
-
-  console.log(data);
 
   await browser.close();
   return new Promise((resolve) => resolve(data));
