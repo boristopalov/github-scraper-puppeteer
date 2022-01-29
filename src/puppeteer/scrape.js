@@ -7,16 +7,22 @@ import { generalKeywords } from "../keywords.js";
 import { scrapeUserProfile } from "./scrapeUserProfile.js";
 import { scrapeRepo } from "./scrapeRepo.js";
 import checkForBotDetection from "../utils/checkForBotDetection.js";
+import saveData from "../utils/saveData.js";
 
 export const scrape = async (url) => {
   let data = [];
   let pageCount = 1;
 
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto(url);
   await checkForBotDetection(page);
-  scrape: while (pageCount < 50) {
+  scrape: while (true) {
+    // save data and clear it so duplicates don't get saved
+    if (pageCount % 10 == 0) {
+      saveData(data);
+      data = [];
+    }
     // array of divs with information on a user
     const users = await page.$$(".d-table-cell.col-9.v-align-top.pr-3");
     for await (const user of users) {

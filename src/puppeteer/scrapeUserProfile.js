@@ -69,12 +69,12 @@ export const scrapeUserProfile = async (url) => {
       data.githubFollowers = convertNumStringToDigits(followersCountText);
     }
 
-    const following = await page.$(
+    const followingEl = await page.$(
       ".flex-order-1.flex-md-order-none.mt-2.mt-md-0 > div > a:nth-child(2) > span"
     );
 
-    if (following) {
-      const text = await page.evaluate((e) => e.innerText, following);
+    if (followingEl) {
+      const text = await page.evaluate((e) => e.innerText, followingEl);
       const following = convertNumStringToDigits(text);
       data.githubFollowing = following;
     }
