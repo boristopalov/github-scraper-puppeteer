@@ -11,7 +11,6 @@ const main = async () => {
   const port = 8080;
 
   app.use(cors());
-  const url = "https://github.com/Marak?page=12&tab=following";
   app.get("/following/:id", async (req, res) => {
     const url = `https://github.com/${req.params.id}?tab=following`;
     // if you want to scrape >100 pages you have to manually change the page url and re-run
@@ -19,6 +18,7 @@ const main = async () => {
     // saves the data and returns the path to the data
     const data = await scrape(url);
     const pathToData = saveData(data);
+    console.log("path", pathToData);
     res.download(pathToData);
   });
 

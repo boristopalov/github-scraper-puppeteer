@@ -8,8 +8,9 @@ import { scrapeUserProfile } from "./scrapeUserProfile.js";
 import { scrapeRepo } from "./scrapeRepo.js";
 import checkForBotDetection from "../utils/checkForBotDetection.js";
 import saveData from "../utils/saveData.js";
+import fs from "fs";
 
-export const scrape = async (url) => {
+export const scrape = async (url, db = null) => {
   let data = [];
   let pageCount = 1;
 
@@ -23,6 +24,12 @@ export const scrape = async (url) => {
       saveData(data);
       data = [];
     }
+
+    // create a write stream to keep track of users that get scraped
+    // const scrapedUsersFile = "../../data/scraped-users.json";
+    // const jsonFile = JSON.parse(fs.readFileSync(scrapedUsersFile));
+    // let writeStream = fs.createWriteStream(scrapedUsersFile, { flags: "a" });
+
     // array of divs with information on a user
     const users = await page.$$(".d-table-cell.col-9.v-align-top.pr-3");
     for await (const user of users) {
@@ -119,7 +126,7 @@ export const scrape = async (url) => {
           }
         }
         // scrape the user's profile
-        const deepUserData = await scrapeUserProfile(githubUrl);
+        const deepUserData = await scrapeUserProfile(githubUrl, false);
         Object.assign(userData, deepUserData);
       }
 
@@ -140,6 +147,23 @@ export const scrape = async (url) => {
       userData.bioMatchesKeywords = bioMatchesKeywords;
 
       data.push(userData);
+
+      if (!(await db.collection("users").findOne({ username: username }))) {
+        db.collection("users").insertOne(userData);
+      }
+      // const scrapedUsersFile = "../../data/scraped-users.json";
+      // fs.readFile(scrapedUsersFile, (e, content) => {
+      //   const json = JSON.parse(content);
+
+      //   if (!json[username]) {
+      //     json[username] = true;
+      //     fs.writeFile(scrapedUsersFile, JSON.stringify(json), (e) => {
+      //       if (e) {
+      //         console.log(e);
+      //       }
+      //     });
+      //   }
+      // });
     }
     console.log("Page scraped: ", pageCount++);
     const paginationContainer = await page.$(".pagination");

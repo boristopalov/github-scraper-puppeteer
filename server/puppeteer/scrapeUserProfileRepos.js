@@ -40,7 +40,7 @@ export const scrapeUserProfileRepos = async (page) => {
 
     await sleep(500);
 
-    await page.waitForSelector(".col-10.col-lg-9.d-inline-block");
+    // await page.waitForSelector(".col-10.col-lg-9.d-inline-block");
     const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
 
     let tenStarRepoCount = 0;
