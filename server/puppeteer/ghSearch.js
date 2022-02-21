@@ -44,10 +44,10 @@ const ghSearch = async (query, type, db) => {
 };
 
 dotenv.config();
-dbUser = process.env.DB_USER;
-dbPass = process.env.DB_PASS;
+// dbUser = process.env.DB_USER;
+// dbPass = process.env.DB_PASS;
 
-const uri = `mongodb+srv://${dbUser}:${dbPass}@ghscraper.eyaht.mongodb.net/GHScraper?retryWrites=true&w=majority`;
+const uri = process.env.URI;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,

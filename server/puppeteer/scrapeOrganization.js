@@ -143,11 +143,9 @@ export const scrapeOrganization = async (browser, url, db = null) => {
 };
 
 dotenv.config();
-dbUser = process.env.DB_USER;
-dbPass = process.env.DB_PASS;
 
 // const uri =
-//  `mongodb+srv://${dbUser}:${dbPass}@ghscraper.eyaht.mongodb.net/GHScraper?retryWrites=true&w=majority`;
+//  process.env.URI;
 // const client = new MongoClient(uri, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
