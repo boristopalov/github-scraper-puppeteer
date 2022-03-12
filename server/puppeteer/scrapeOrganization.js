@@ -95,13 +95,12 @@ export const scrapeOrganization = async (browser, url, db = null) => {
     }
     data.reposInOrg = repoUrls;
 
-    for (const repoUrl of repoUrls) {
-      if (!(await db.collection("scraped_repos").findOne({ url: repoUrl }))) {
-        // weird work-around
-        await db.collection("scraped_repos").insertOne({ url: repoUrl });
+    for (const url of repoUrls) {
+      if (!(await db.collection("scraped_repos").findOne({ url: url }))) {
+        await db.collection("scraped_repos").insertOne({ url: url });
         const repoPage = await browser.newPage();
-        await repoPage.goto(repoUrl);
-        const repoData = await scrapeRepo(repoPage, db);
+        await repoPage.goto(url);
+        const repoData = await scrapeRepo(browser, repoPage, db);
         if (repoData.repoStarCount >= 100) {
           data.numReposWithHundredStars++;
         }
@@ -115,37 +114,18 @@ export const scrapeOrganization = async (browser, url, db = null) => {
       await db.collection("orgs").insertOne(data);
     }
 
-    // const scrapedOrgsFile = "../../data/scraped-orgs.json";
-    // fs.readFile(scrapedOrgsFile, (e, content) => {
-    //   const json = JSON.parse(content);
-
-    //   if (!json[orgName]) {
-    //     json[orgName] = true;
-    //     fs.writeFile(scrapedOrgsFile, JSON.stringify(json), (e) => {
-    //       if (e) {
-    //         console.log(e);
-    //       }
-    //     });
-    //   }
-    // });
-
     await browser.close();
-    return new Promise((resolve) => {
-      resolve(data);
-    });
+    return new Promise((resolve) => resolve(data));
   } catch (e) {
     console.log(e.message);
     await browser.close();
-    return new Promise((resolve) => {
-      resolve(data);
-    });
+    return new Promise((resolve) => resolve(data));
   }
 };
 
-dotenv.config();
+// dotenv.config();
 
-// const uri =
-//  process.env.URI;
+// const uri = process.env.URI;
 // const client = new MongoClient(uri, {
 //   useNewUrlParser: true,
 //   useUnifiedTopology: true,
@@ -155,9 +135,9 @@ dotenv.config();
 // client.connect(async (err) => {
 //   if (err) {
 //     console.log(err);
+//     return;
 //   }
 //   const db = client.db("scraper");
-//   await scrapeOrganization(browser, "https://github.com/glossier", db);
-//   // saveData(res);
+//   await scrapeOrganization(browser, "https://github.com/better", db);
 //   await client.close();
 // });
