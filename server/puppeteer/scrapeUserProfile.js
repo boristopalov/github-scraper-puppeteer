@@ -19,7 +19,7 @@ export const scrapeUserProfile = async (
   db = null,
   dataObj = null
 ) => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto(url);
   await checkForBotDetection(page);
@@ -209,7 +209,7 @@ export const scrapeUserProfile = async (
       for (const url of orgUrls) {
         if (!(await db.collection("scraped_orgs").findOne({ url: url }))) {
           await db.collection("scraped_orgs").insertOne({ url: url });
-          const orgBrowser = await puppeteer.launch({ headless: false });
+          const orgBrowser = await puppeteer.launch({ headless: true });
           const orgData = await scrapeOrganization(orgBrowser, url, db);
           if (orgData.bioKeywordMatch) {
             data.numOrgBioKeywordMatch++;

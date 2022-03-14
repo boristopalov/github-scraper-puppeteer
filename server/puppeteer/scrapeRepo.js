@@ -223,7 +223,7 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
-const browser = await puppeteer.launch({ headless: false });
+const browser = await puppeteer.launch({ headless: true });
 const page = await browser.newPage();
 await page.goto("https://github.com/0xBubki/donate");
 client.connect(async (err) => {
