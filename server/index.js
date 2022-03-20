@@ -55,28 +55,29 @@ const main = async () => {
     }
     const db = client.db("scraper");
     const type = process.argv[2];
-    const url = process.argv[3];
-    if (!url.includes("github.com")) {
-      console.error(`Please enter a valid GitHub url, you entered: ${url}`);
-      process.exit(1);
-    }
-    if (type === "repo") {
-      const browser = await puppeteer.launch({ headless: true });
-      const page = await browser.newPage();
-      await page.goto(url);
-      await scrapeRepo(browser, page, db);
-    }
-    if (type === "org") {
-      const browser = await puppeteer.launch({ headless: true });
-      await scrapeOrganization(browser, url, db);
-    }
-    if (type === "user") {
-      await scrapeUserProfile(url, true, db, null);
-    }
     if (type === "search") {
-      const searchType = process.argv[4];
-      const query = process.argv[5];
+      const searchType = process.argv[3];
+      const query = process.argv[4];
       await ghSearch(query, searchType, db);
+    } else {
+      const url = process.argv[3];
+      if (!url.includes("github.com")) {
+        console.error(`Please enter a valid GitHub url, you entered: ${url}`);
+        process.exit(1);
+      }
+      if (type === "repo") {
+        const browser = await puppeteer.launch({ headless: true });
+        const page = await browser.newPage();
+        await page.goto(url);
+        await scrapeRepo(browser, page, db);
+      }
+      if (type === "org") {
+        const browser = await puppeteer.launch({ headless: true });
+        await scrapeOrganization(browser, url, db);
+      }
+      if (type === "user") {
+        await scrapeUserProfile(url, true, db, null);
+      }
     }
     await browser.close();
     await client.close();
