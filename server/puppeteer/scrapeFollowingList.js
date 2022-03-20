@@ -10,7 +10,7 @@ import checkForBotDetection from "../utils/checkForBotDetection.js";
 import saveData from "../utils/saveData.js";
 import fs from "fs";
 
-export const scrape = async (url, db = null) => {
+export const scrapeFollowingList = async (url, db = null) => {
   let data = [];
   let pageCount = 1;
 

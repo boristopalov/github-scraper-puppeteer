@@ -6,7 +6,12 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "scrape-repo": "node index.js repo",
+    "scrape-org": "node index.js org",
+    "scrape-user": "node index.js user",
+    "search-repos": "node index.js search repositories",
+    "search-users": "node index.js search users"
   },
   "author": "Boris Topalov",
   "license": "ISC",

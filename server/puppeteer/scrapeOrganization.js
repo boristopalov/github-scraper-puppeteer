@@ -4,11 +4,6 @@ import getHrefFromAnchor from "../utils/getHrefFromAnchor.js";
 import { scrapeRepo } from "./scrapeRepo.js";
 import sleep from "../utils/sleep.js";
 import checkForBotDetection from "../utils/checkForBotDetection.js";
-import fs from "fs";
-import puppeteer from "puppeteer";
-import { MongoClient, ServerApiVersion } from "mongodb";
-import saveData from "../utils/saveData.js";
-import dotenv from "dotenv";
 
 export const scrapeOrganization = async (browser, url, db = null) => {
   try {
@@ -122,22 +117,3 @@ export const scrapeOrganization = async (browser, url, db = null) => {
     return new Promise((resolve) => resolve(data));
   }
 };
-
-// dotenv.config();
-
-// const uri = process.env.URI;
-// const client = new MongoClient(uri, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-//   serverApi: ServerApiVersion.v1,
-// });
-// const browser = await puppeteer.launch({ headless: false });
-// client.connect(async (err) => {
-//   if (err) {
-//     console.log(err);
-//     return;
-//   }
-//   const db = client.db("scraper");
-//   await scrapeOrganization(browser, "https://github.com/better", db);
-//   await client.close();
-// });

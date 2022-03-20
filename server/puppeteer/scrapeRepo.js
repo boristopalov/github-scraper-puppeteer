@@ -7,10 +7,6 @@ import { scrapeUserProfile } from "./scrapeUserProfile.js";
 import { getEvents } from "../api/getEvents.js";
 import searchEventsForEmail from "../utils/searchEventsForEmail.js";
 import searchEventsForPullRequests from "../utils/searchEventsForPullRequests.js";
-import fs from "fs";
-import dotenv from "dotenv";
-import { MongoClient, ServerApiVersion } from "mongodb";
-import puppeteer from "puppeteer";
 
 export const scrapeRepo = async (browser, repoPage, db = null) => {
   const data = {
@@ -214,25 +210,3 @@ export const scrapeRepo = async (browser, repoPage, db = null) => {
     return new Promise((resolve) => resolve(data));
   }
 };
-
-dotenv.config();
-
-const uri = process.env.URI;
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
-});
-const browser = await puppeteer.launch({ headless: true });
-const page = await browser.newPage();
-await page.goto("https://github.com/0xBubki/donate");
-client.connect(async (err) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  const db = client.db("scraper");
-  await scrapeRepo(browser, page, db);
-  await browser.close();
-  await client.close();
-});

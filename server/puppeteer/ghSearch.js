@@ -1,13 +1,10 @@
 import puppeteer from "puppeteer";
 import axios from "axios";
 import { scrapeUserProfile } from "./scrapeUserProfile.js";
-import { MongoClient, ServerApiVersion } from "mongodb";
-import dotenv from "dotenv";
 import { scrapeRepo } from "./scrapeRepo.js";
-dotenv.config({ path: "../.env" });
 const TOKEN = process.env.TOKEN;
 
-const ghSearch = async (query, type, db) => {
+export const ghSearch = async (query, type, db) => {
   // add in options for users or repos or other types
   // error handling ?
   // rate limit: 30 requests per minute since we are authenticated
@@ -35,7 +32,7 @@ const ghSearch = async (query, type, db) => {
         }
       }
     }
-    if (type === "user") {
+    if (type === "users") {
       const username = item.login;
       if (
         !(await db.collection("scraped_users").findOne({ username: username }))
@@ -53,23 +50,3 @@ const ghSearch = async (query, type, db) => {
     return;
   }
 };
-
-dotenv.config();
-
-const uri = process.env.URI;
-
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
-});
-client.connect(async (err) => {
-  if (err) {
-    console.log(err);
-  }
-  const db = client.db("scraper");
-  await ghSearch("peloton", "users", db);
-  await browser.close();
-  // saveData(res);
-  await client.close();
-});
