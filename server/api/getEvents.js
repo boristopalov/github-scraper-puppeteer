@@ -4,8 +4,6 @@ dotenv.config({ path: "../.env" });
 
 export async function getEvents(username) {
   const TOKEN = process.env.TOKEN;
-  console.log("TOKEN:", TOKEN);
-  console.log("from getEvents()", username);
   const url = `https://api.github.com/users/${username}/events/public`;
   const res = await axios
     .get(url, {
