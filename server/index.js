@@ -71,16 +71,16 @@ const main = async () => {
         const page = await browser.newPage();
         await page.goto(url);
         await scrapeRepo(browser, page, db);
+        await browser.close();
       }
       if (type === "org") {
-        browser = await puppeteer.launch({ headless: true });
+        browser = await puppeteer.launch({ headless: false });
         await scrapeOrganization(browser, url, db);
       }
       if (type === "user") {
         await scrapeUserProfile(url, true, db, null);
       }
     }
-    await browser.close();
     await client.close();
   });
   // return;
