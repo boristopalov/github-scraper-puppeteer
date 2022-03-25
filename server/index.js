@@ -74,7 +74,7 @@ const main = async () => {
         await browser.close();
       }
       if (type === "org") {
-        browser = await puppeteer.launch({ headless: false });
+        browser = await puppeteer.launch({ headless: true });
         await scrapeOrganization(browser, url, db);
       }
       if (type === "user") {
