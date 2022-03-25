@@ -67,7 +67,7 @@ const main = async () => {
       }
       let browser;
       if (type === "repo") {
-        browser = await puppeteer.launch({ headless: true });
+        browser = await puppeteer.launch({ headless: false });
         const page = await browser.newPage();
         await page.goto(url);
         await scrapeRepo(browser, page, db);

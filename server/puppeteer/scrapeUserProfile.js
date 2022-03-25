@@ -39,7 +39,6 @@ export const scrapeUserProfile = async (
   };
 
   try {
-    console.log("scraping", url);
     if (isStartingScrape) {
       data = {
         name: "n/a", //

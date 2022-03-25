@@ -165,7 +165,6 @@ export const scrapeRepo = async (browser, repoPage, db = null) => {
         // we don't want to do this further scraping for every user because then there would just be way too much
         // data/too many puppeteer sessions open and we might get memory leaks
         const numPages = (await browser.pages()).length;
-        console.log(numPages);
         if (isInNewYork || numPages <= 5) {
           const pullRequestRepoUrls = searchEventsForPullRequests(events);
 
