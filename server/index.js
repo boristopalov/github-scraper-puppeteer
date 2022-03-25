@@ -65,14 +65,15 @@ const main = async () => {
         console.error(`Please enter a valid GitHub url, you entered: ${url}`);
         process.exit(1);
       }
+      let browser;
       if (type === "repo") {
-        const browser = await puppeteer.launch({ headless: true });
+        browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
         await page.goto(url);
         await scrapeRepo(browser, page, db);
       }
       if (type === "org") {
-        const browser = await puppeteer.launch({ headless: true });
+        browser = await puppeteer.launch({ headless: true });
         await scrapeOrganization(browser, url, db);
       }
       if (type === "user") {
