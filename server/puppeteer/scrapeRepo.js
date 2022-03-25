@@ -64,10 +64,10 @@ export const scrapeRepo = async (browser, repoPage, db = null) => {
     await repoPage.click("#insights-tab");
 
     await repoPage.waitForSelector(
-      "#repo-content-pjax-container > div > div.Layout-sidebar > nav > a:nth-child(2)"
+      ".clearfix > .Layout > .Layout-sidebar > .menu > .js-selected-navigation-item:nth-child(2)"
     );
     await repoPage.click(
-      "#repo-content-pjax-container > div > div.Layout-sidebar > nav > a:nth-child(2)"
+      ".clearfix > .Layout > .Layout-sidebar > .menu > .js-selected-navigation-item:nth-child(2)"
     );
 
     await repoPage.waitForSelector("ol.contrib-data.list-style-none");
