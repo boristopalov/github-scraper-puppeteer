@@ -12,14 +12,25 @@ import searchEventsForEmail from "../utils/searchEventsForEmail.js";
 import searchEventsForPullRequests from "../utils/searchEventsForPullRequests.js";
 import { getEvents } from "../api/getEvents.js";
 import { scrapeRepo } from "./scrapeRepo.js";
+import {
+  decrementTaskCounter,
+  incrementTaskCounter,
+  taskCounter,
+  TASKLIMIT,
+} from "./taskCounter.js";
+import { scrapeFromQueue } from "./scrapeFromQueue.js";
 
 export const scrapeUserProfile = async (
   url,
   isStartingScrape = false,
-  db = null,
-  dataObj = null
+  db,
+  dataObj = null,
+  queue,
+  isFromQueue = false
 ) => {
-  const browser = await puppeteer.launch({ headless: true });
+  incrementTaskCounter();
+  console.log(`${taskCounter} tasks currently.`);
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto(url);
   await checkForBotDetection(page);
@@ -123,16 +134,33 @@ export const scrapeUserProfile = async (
       const pullRequestRepoUrls = searchEventsForPullRequests(events);
       for (const url of pullRequestRepoUrls) {
         if (!(await db.collection("scraped_repos").findOne({ url: url }))) {
-          await db.collection("scraped_repos").insertOne({ url: url });
-          const newPage = await browser.newPage();
-          await newPage.goto(url);
-          // const repoName = url.split("/")[4];
-          const repoData = await scrapeRepo(browser, newPage, db);
-          if (repoData.repoStarCount >= 100) {
-            data.numPullRequestReposWithHundredStars++;
-          }
-          if (repoData.isRepoReadmeKeywordMatch) {
-            data.numPullRequestReposWithReadmeKeywordMatch++;
+          if (taskCounter < TASKLIMIT) {
+            await db.collection("scraped_repos").insertOne({ url: url });
+            const newPage = await browser.newPage();
+            await newPage.goto(url);
+            // const repoName = url.split("/")[4];
+            const repoData = await scrapeRepo(browser, newPage, db, queue);
+            if (repoData.repoStarCount >= 100) {
+              data.numPullRequestReposWithHundredStars++;
+            }
+            if (repoData.isRepoReadmeKeywordMatch) {
+              data.numPullRequestReposWithReadmeKeywordMatch++;
+            }
+          } else {
+            const taskToQueue = {
+              context: {
+                db: db,
+                type: "repo",
+                repoUrl: url,
+                parentType: "user",
+                id: username,
+                toInsert: { username: username },
+              },
+              runTask: async (browser, newPage, db, queue) =>
+                await scrapeRepo(browser, newPage, db, queue, true),
+            };
+            queue.push(taskToQueue);
+            console.log("queue size:", queue.length);
           }
         }
       }
@@ -208,27 +236,57 @@ export const scrapeUserProfile = async (
       );
       for (const url of orgUrls) {
         if (!(await db.collection("scraped_orgs").findOne({ url: url }))) {
-          await db.collection("scraped_orgs").insertOne({ url: url });
-          const orgBrowser = await puppeteer.launch({ headless: true });
-          const orgData = await scrapeOrganization(orgBrowser, url, db);
-          if (orgData.bioKeywordMatch) {
-            data.numOrgBioKeywordMatch++;
+          if (taskCounter < TASKLIMIT) {
+            await db.collection("scraped_orgs").insertOne({ url: url });
+            const orgBrowser = await puppeteer.launch({ headless: false });
+            const orgData = await scrapeOrganization(
+              orgBrowser,
+              url,
+              db,
+              queue
+            );
+            if (orgData.bioKeywordMatch) {
+              data.numOrgBioKeywordMatch++;
+            }
+            data.numOrgReposReadmeKeywordMatch +=
+              orgData.numRepoReadmeKeywordMatch;
+            data.numOrgReposWithHundredStars +=
+              orgData.numReposWithHundredStars;
+            await orgBrowser.close();
+          } else {
+            const taskToQueue = {
+              context: {
+                db: db,
+                type: "org",
+                orgUrl: url,
+                parentType: "user",
+                id: data.username,
+                toInsert: { url: url },
+              },
+              runTask: async (browser, url, db, queue) =>
+                await scrapeOrganization(browser, url, db, queue, true),
+            };
+            queue.push(taskToQueue);
+            console.log("queue size:", queue.length);
           }
-          data.numOrgReposReadmeKeywordMatch +=
-            orgData.numRepoReadmeKeywordMatch;
-          data.numOrgReposWithHundredStars += orgData.numReposWithHundredStars;
-          await orgBrowser.close();
         }
       }
     }
     if (!(await db.collection("users").findOne({ username: data.username }))) {
       await db.collection("users").insertOne(data);
     }
+    decrementTaskCounter();
     await browser.close();
-    return new Promise((resolve) => resolve(data));
+    if (!isFromQueue) {
+      while (queue.length > 0 && taskCounter < TASKLIMIT) {
+        await scrapeFromQueue(queue);
+      }
+    }
+    return data;
   } catch (e) {
-    console.log(e.message);
+    decrementTaskCounter();
+    console.log(e.stack);
     await browser.close();
-    return new Promise((resolve) => resolve(data));
+    return data;
   }
 };

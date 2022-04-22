@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { scrapeUserProfile } from "./puppeteer/scrapeUserProfile.js";
 import { ghSearch } from "./puppeteer/ghSearch.js";
+import { taskCounter, TASKLIMIT } from "./puppeteer/taskCounter.js";
 
 const main = async () => {
   // const app = express();
@@ -41,6 +42,7 @@ const main = async () => {
   //   console.log(`Listening on port ${port}`);
   // });
 
+  const queue = [];
   dotenv.config({ path: "./.env" });
   const uri = process.env.URI;
   const client = new MongoClient(uri, {
@@ -70,16 +72,21 @@ const main = async () => {
         browser = await puppeteer.launch({ headless: false });
         const page = await browser.newPage();
         await page.goto(url);
-        await scrapeRepo(browser, page, db);
+        await scrapeRepo(browser, page, db, queue);
         await browser.close();
       }
       if (type === "org") {
-        browser = await puppeteer.launch({ headless: true });
-        await scrapeOrganization(browser, url, db);
+        browser = await puppeteer.launch({ headless: false });
+        await scrapeOrganization(browser, url, db, queue);
       }
       if (type === "user") {
-        await scrapeUserProfile(url, true, db, null);
+        await scrapeUserProfile(url, true, db, null, queue);
       }
+    }
+    // in theory there should be 0 tasks at this point
+    console.log("There should be 0 tasks now.", "Actual tasks:", taskCounter);
+    while (queue.length > 0 && taskCounter < TASKLIMIT) {
+      await scrapeFromQueue(queue);
     }
     await client.close();
   });

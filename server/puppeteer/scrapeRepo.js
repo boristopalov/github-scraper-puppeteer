@@ -7,8 +7,21 @@ import { scrapeUserProfile } from "./scrapeUserProfile.js";
 import { getEvents } from "../api/getEvents.js";
 import searchEventsForEmail from "../utils/searchEventsForEmail.js";
 import searchEventsForPullRequests from "../utils/searchEventsForPullRequests.js";
+import {
+  taskCounter,
+  decrementTaskCounter,
+  incrementTaskCounter,
+  TASKLIMIT,
+} from "./taskCounter.js";
+import { scrapeFromQueue } from "./scrapeFromQueue.js";
 
-export const scrapeRepo = async (browser, repoPage, db = null) => {
+export const scrapeRepo = async (
+  browser,
+  repoPage,
+  db,
+  queue,
+  isFromQueue = false
+) => {
   const data = {
     name: "n/a",
     url: "n/a",
@@ -16,7 +29,8 @@ export const scrapeRepo = async (browser, repoPage, db = null) => {
     isRepoReadmeKeywordMatch: false,
     topLanguage: "n/a",
   };
-
+  incrementTaskCounter();
+  console.log(`${taskCounter} tasks currently.`);
   await checkForBotDetection(repoPage);
   await sleep(1000);
   try {
@@ -164,27 +178,79 @@ export const scrapeRepo = async (browser, repoPage, db = null) => {
         // OR if there are less than 5 tabs open, we keep scraping to reduce the chance of running out users to scrape
         // we don't want to do this further scraping for every user because then there would just be way too much
         // data/too many puppeteer sessions open and we might get memory leaks
-        const numPages = (await browser.pages()).length;
-        if (isInNewYork || numPages <= 5) {
+        if (isInNewYork || taskCounter < TASKLIMIT) {
           const pullRequestRepoUrls = searchEventsForPullRequests(events);
-
           for (const url of pullRequestRepoUrls) {
             if (!(await db.collection("scraped_repos").findOne({ url: url }))) {
-              await db.collection("scraped_repos").insertOne({ url: url });
-              const newPage = await browser.newPage();
-              await newPage.goto(url);
-              const repoData = await scrapeRepo(browser, newPage, db);
-              if (repoData.repoStarCount >= 100) {
-                userData.numPullRequestReposWithHundredStars++;
-              }
-              if (repoData.isRepoReadmeKeywordMatch) {
-                userData.numPullRequestReposWithReadmeKeywordMatch++;
+              if (taskCounter < TASKLIMIT) {
+                await db.collection("scraped_repos").insertOne({ url: url });
+                const newPage = await browser.newPage();
+                await newPage.goto(url);
+                const repoData = await scrapeRepo(browser, newPage, db, queue);
+                if (repoData.repoStarCount >= 100) {
+                  userData.numPullRequestReposWithHundredStars++;
+                }
+                if (repoData.isRepoReadmeKeywordMatch) {
+                  userData.numPullRequestReposWithReadmeKeywordMatch++;
+                }
+              } else {
+                const taskToQueue = {
+                  context: {
+                    db: db,
+                    type: "repo",
+                    repoUrl: url,
+                    parentType: "user",
+                    id: username,
+                    toInsert: { username: username },
+                  },
+                  runTask: async (browser, newPage, db, queue) =>
+                    await scrapeRepo(browser, newPage, db, queue, true),
+                };
+                queue.push(taskToQueue);
+                console.log("queue size:", queue.length);
               }
             }
           }
-          await scrapeUserProfile(url, false, db, userData);
+          if (taskCounter < TASKLIMIT) {
+            await scrapeUserProfile(url, false, db, userData, queue);
+          } else {
+            // not directly updating the DB with this task but we still need to pass in DB
+            // for potential dependent tasks to update the DB
+            const taskToQueue = {
+              context: {
+                db: db,
+                data: userData,
+                url: url,
+                type: null,
+                parentType: null,
+                id: null,
+                toInsert: null,
+              },
+              runTask: async (url, db, data, queue) =>
+                await scrapeUserProfile(url, false, db, data, queue, true),
+            };
+            queue.push(taskToQueue);
+          }
         } else {
           await db.collection("users").insertOne(userData);
+        }
+        // why did i add this?
+        if (!isInNewYork && taskCounter >= TASKLIMIT) {
+          const taskToQueue = {
+            context: {
+              db: db,
+              data: userData,
+              url: url,
+              type: null,
+              parentType: null,
+              id: null,
+              toInsert: null,
+            },
+            runTask: async (url, db, data, queue) =>
+              await scrapeUserProfile(url, false, db, data, queue, true),
+          };
+          queue.push(taskToQueue);
+          console.log("queue size:", queue.length);
         }
       } else {
         // if we have already scraped the user then append this repo to their repoCommits
@@ -200,12 +266,18 @@ export const scrapeRepo = async (browser, repoPage, db = null) => {
     if (!(await db.collection("repos").findOne({ url: repoUrl }))) {
       await db.collection("repos").insertOne(data);
     }
-
+    decrementTaskCounter();
     await repoPage.close();
-    return new Promise((resolve) => resolve(data));
+    if (!isFromQueue) {
+      while (queue.length > 0 && taskCounter < TASKLIMIT) {
+        await scrapeFromQueue(queue);
+      }
+    }
+    return data;
   } catch (e) {
-    console.log(e.message);
+    decrementTaskCounter();
+    console.log(e.stack);
     await repoPage.close();
-    return new Promise((resolve) => resolve(data));
+    return data;
   }
 };

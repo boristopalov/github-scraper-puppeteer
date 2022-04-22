@@ -4,8 +4,21 @@ import getHrefFromAnchor from "../utils/getHrefFromAnchor.js";
 import { scrapeRepo } from "./scrapeRepo.js";
 import sleep from "../utils/sleep.js";
 import checkForBotDetection from "../utils/checkForBotDetection.js";
+import {
+  decrementTaskCounter,
+  incrementTaskCounter,
+  taskCounter,
+  TASKLIMIT,
+} from "./taskCounter.js";
+import { scrapeFromQueue } from "./scrapeFromQueue.js";
 
-export const scrapeOrganization = async (browser, url, db = null) => {
+export const scrapeOrganization = async (
+  browser,
+  url,
+  db,
+  queue,
+  isFromQueue = false
+) => {
   try {
     const data = {
       name: "n/a",
@@ -14,8 +27,9 @@ export const scrapeOrganization = async (browser, url, db = null) => {
       numRepoReadmeKeywordMatch: 0,
       reposInOrg: [],
     };
+    incrementTaskCounter();
+    console.log(`${taskCounter} tasks currently.`);
     const page = await browser.newPage();
-
     // go to organization page and sort repos by number of stars
     await page.goto(url);
     await checkForBotDetection(page);
@@ -92,15 +106,32 @@ export const scrapeOrganization = async (browser, url, db = null) => {
 
     for (const url of repoUrls) {
       if (!(await db.collection("scraped_repos").findOne({ url: url }))) {
-        await db.collection("scraped_repos").insertOne({ url: url });
-        const repoPage = await browser.newPage();
-        await repoPage.goto(url);
-        const repoData = await scrapeRepo(browser, repoPage, db);
-        if (repoData.repoStarCount >= 100) {
-          data.numReposWithHundredStars++;
-        }
-        if (repoData.isRepoReadmeKeywordMatch) {
-          data.numRepoReadmeKeywordMatch++;
+        if (taskCounter < TASKLIMIT) {
+          await db.collection("scraped_repos").insertOne({ url: url });
+          const repoPage = await browser.newPage();
+          await repoPage.goto(url);
+          const repoData = await scrapeRepo(browser, repoPage, db, queue);
+          if (repoData.repoStarCount >= 100) {
+            data.numReposWithHundredStars++;
+          }
+          if (repoData.isRepoReadmeKeywordMatch) {
+            data.numRepoReadmeKeywordMatch++;
+          }
+          // if there are too many tasks we add this child task to the queue
+        } else {
+          const taskToQueue = {
+            context: {
+              db: db,
+              type: "repo",
+              parentType: "org",
+              id: orgName,
+              toInsert: { url: url },
+            },
+            runTask: async (browser, repoPage, db, queue) =>
+              await scrapeRepo(browser, repoPage, db, queue, true),
+          };
+          queue.push(taskToQueue);
+          console.log("queue size:", queue.length);
         }
       }
     }
@@ -108,12 +139,19 @@ export const scrapeOrganization = async (browser, url, db = null) => {
     if (!(await db.collection("orgs").findOne({ name: orgName }))) {
       await db.collection("orgs").insertOne(data);
     }
-
+    // tasks in queue take priority so we try to run those first
+    decrementTaskCounter();
     await browser.close();
-    return new Promise((resolve) => resolve(data));
+    if (!isFromQueue) {
+      while (queue.length > 0 && taskCounter < TASKLIMIT) {
+        await scrapeFromQueue(queue);
+      }
+    }
+    return data;
   } catch (e) {
-    console.log(e.message);
+    decrementTaskCounter();
+    console.log(e.stack);
     await browser.close();
-    return new Promise((resolve) => resolve(data));
+    return data;
   }
 };
