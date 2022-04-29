@@ -3,15 +3,19 @@ import puppeteer from "puppeteer";
 export const scrapeFromQueue = async (queue) => {
   const newTask = queue.shift();
 
-  const { db, type, parentType, id, toInsert } = newTask.context;
-  console.log(`Scraping ${id} from the queue!`);
+  const { db, type, parentType, parentId, toInsert } = newTask.context;
+
   // no need to update the DB if type is null
   // this is the 2nd case from scrapeRepo.js
+  // i can make this more clear/give better names
   if (type === null) {
     await newTask.runTask(newTask.context.url, db, newTask.context.data, queue);
     return;
   }
   if (type === "repo" && parentType === "org") {
+    console.log(
+      `Scraping ${toInsert.url} from the queue!, ${queue.length} tasks left in the queue.`
+    );
     // i think we have to relaunch here because
     // it's possible that the puppeteer instance
     // from the parent task was terminated.
@@ -41,9 +45,16 @@ export const scrapeFromQueue = async (queue) => {
         numReposWithHundredStars: numReposWithHundredStars,
       },
     };
-    await db.collection("orgs").updateOne({ name: id }, updatedDoc);
+    browser.close();
+    await db.collection("orgs").updateOne({ name: parentId }, updatedDoc);
+    console.log(
+      `updated ${parentId}. numReposWithHundredStars value is now ${numReposWithHundredStars} and numRepoReadmeKeywordMatch is now ${numRepoReadmeKeywordMatch}`
+    );
   }
   if (type === "repo" && parentType === "user") {
+    console.log(
+      `Scraping ${newTask.context.repoUrl} from the queue!, ${queue.length} tasks left in the queue.`
+    );
     const browser = await puppeteer.launch({ headless: false });
     const repoPage = await browser.newPage();
     await repoPage.goto(newTask.context.repoUrl);
@@ -71,9 +82,16 @@ export const scrapeFromQueue = async (queue) => {
           numPullRequestReposWithHundredStars,
       },
     };
-    await db.collection("users").updateOne({ username: id }, updatedDoc);
+    browser.close();
+    await db.collection("users").updateOne({ username: parentId }, updatedDoc);
+    console.log(
+      `updated ${parentId}. numPullRequestReposWithHundredStars value is now ${numPullRequestReposWithHundredStars} and numPullRequestReposWithReadmeKeywordMatch is now ${numPullRequestReposWithReadmeKeywordMatch}`
+    );
   }
   if (type === "org" && parentType === "user") {
+    console.log(
+      `Scraping ${newTask.context.orgUrl} from the queue!, ${queue.length} tasks left in the queue.`
+    );
     const browser = await puppeteer.launch({ headless: false });
     // run the task
     const data = await newTask.runTask(
@@ -101,6 +119,9 @@ export const scrapeFromQueue = async (queue) => {
         numOrgReposWithHundredStars: numOrgReposWithHundredStars,
       },
     };
-    await db.collection("users").updateOne({ username: id }, updatedDoc);
+    await db.collection("users").updateOne({ username: parentId }, updatedDoc);
+    console.log(
+      `updated ${parentId}. numOrgReposReadmeKeywordMatch value is now ${numOrgReposReadmeKeywordMatch} and numOrgReposWithHundredStars is now ${numOrgReposWithHundredStars}`
+    );
   }
 };

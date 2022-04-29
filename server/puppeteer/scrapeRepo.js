@@ -134,7 +134,6 @@ export const scrapeRepo = async (
         !(await db.collection("scraped_users").findOne({ username: username }))
       ) {
         await db.collection("scraped_users").insertOne({ username: username });
-        console.log(`${username} not found in DB, scraping the user...`);
 
         let bio = await popup.$(".mt-1");
         bio = bio
@@ -183,6 +182,9 @@ export const scrapeRepo = async (
           for (const url of pullRequestRepoUrls) {
             if (!(await db.collection("scraped_repos").findOne({ url: url }))) {
               if (taskCounter < TASKLIMIT) {
+                console.log(
+                  `${username} not found in DB, scraping the user...`
+                );
                 await db.collection("scraped_repos").insertOne({ url: url });
                 const newPage = await browser.newPage();
                 await newPage.goto(url);
@@ -194,36 +196,35 @@ export const scrapeRepo = async (
                   userData.numPullRequestReposWithReadmeKeywordMatch++;
                 }
               } else {
+                console.log(`adding scraping ${url} to the queue...`);
                 const taskToQueue = {
                   context: {
                     db: db,
                     type: "repo",
                     repoUrl: url,
                     parentType: "user",
-                    id: username,
+                    parentId: username,
                     toInsert: { username: username },
                   },
                   runTask: async (browser, newPage, db, queue) =>
                     await scrapeRepo(browser, newPage, db, queue, true),
                 };
                 queue.push(taskToQueue);
-                console.log("queue size:", queue.length);
               }
             }
           }
           if (taskCounter < TASKLIMIT) {
             await scrapeUserProfile(url, false, db, userData, queue);
           } else {
-            // not directly updating the DB with this task but we still need to pass in DB
-            // for potential dependent tasks to update the DB
+            console.log(`adding scraping ${username} to the queue...`);
             const taskToQueue = {
               context: {
-                db: db,
+                db: db, // not directly updating the DB with this task but we still need to pass in DB for potential dependent tasks to update the DB
                 data: userData,
                 url: url,
                 type: null,
                 parentType: null,
-                id: null,
+                parentId: username, // no parentId needed but passing it in for logging purposes
                 toInsert: null,
               },
               runTask: async (url, db, data, queue) =>
@@ -235,7 +236,11 @@ export const scrapeRepo = async (
           await db.collection("users").insertOne(userData);
         }
         // why did i add this?
+        // do we want this? if someone is not in new york and the queue
+        // is full we don't want to do the deep scrape on them right
+        // maybe get rid after testing since it helps for testing
         if (!isInNewYork && taskCounter >= TASKLIMIT) {
+          console.log(`adding scraping ${username} to the queue...`);
           const taskToQueue = {
             context: {
               db: db,
@@ -243,14 +248,13 @@ export const scrapeRepo = async (
               url: url,
               type: null,
               parentType: null,
-              id: null,
+              parentId: username,
               toInsert: null,
             },
             runTask: async (url, db, data, queue) =>
               await scrapeUserProfile(url, false, db, data, queue, true),
           };
           queue.push(taskToQueue);
-          console.log("queue size:", queue.length);
         }
       } else {
         // if we have already scraped the user then append this repo to their repoCommits

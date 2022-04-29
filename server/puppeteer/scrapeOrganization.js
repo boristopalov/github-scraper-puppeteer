@@ -119,12 +119,13 @@ export const scrapeOrganization = async (
           }
           // if there are too many tasks we add this child task to the queue
         } else {
+          console.log(`adding scraping ${url} to the queue...`);
           const taskToQueue = {
             context: {
               db: db,
               type: "repo",
               parentType: "org",
-              id: orgName,
+              parentId: orgName,
               toInsert: { url: url },
             },
             runTask: async (browser, repoPage, db, queue) =>

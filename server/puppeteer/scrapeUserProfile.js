@@ -52,17 +52,17 @@ export const scrapeUserProfile = async (
   try {
     if (isStartingScrape) {
       data = {
-        name: "n/a", //
-        email: "n/a", //
-        username: "n/a", //
-        location: "n/a", //
-        isInNewYork: false, //
-        bio: "n/a", //
-        githubUrl: "n/a", //
-        bioMatchesKeywords: false, //
-        repoCommits: [], //
-        numPullRequestReposWithHundredStars: 0, //
-        numPullRequestReposWithReadmeKeywordMatch: 0, //
+        name: "n/a",
+        email: "n/a",
+        username: "n/a",
+        location: "n/a",
+        isInNewYork: false,
+        bio: "n/a",
+        githubUrl: "n/a",
+        bioMatchesKeywords: false,
+        repoCommits: [],
+        numPullRequestReposWithHundredStars: 0,
+        numPullRequestReposWithReadmeKeywordMatch: 0,
         ...data,
       };
       const name = await page.$eval(
@@ -79,14 +79,6 @@ export const scrapeUserProfile = async (
       data.githubUrl = `https://github.com/${username}`;
       const events = await getEvents(username);
       const email = await searchEventsForEmail(events, username, name);
-
-      // searchEventsForEmail() returns null if the API request doesn't go through
-      // we don't want to keep scraping if we run out of API requests
-      // maybe we don't want to break if the request doesn't work though?
-      // commented out now, don't think returning is a good idea here anymore
-      // if (!email) {
-      //   return;
-      // }
       data.email = email;
 
       const bio = await page.$(
@@ -147,20 +139,20 @@ export const scrapeUserProfile = async (
               data.numPullRequestReposWithReadmeKeywordMatch++;
             }
           } else {
+            console.log(`adding scraping ${url} to the queue...`);
             const taskToQueue = {
               context: {
                 db: db,
                 type: "repo",
                 repoUrl: url,
                 parentType: "user",
-                id: username,
+                parentId: username,
                 toInsert: { username: username },
               },
               runTask: async (browser, newPage, db, queue) =>
                 await scrapeRepo(browser, newPage, db, queue, true),
             };
             queue.push(taskToQueue);
-            console.log("queue size:", queue.length);
           }
         }
       }
@@ -254,20 +246,20 @@ export const scrapeUserProfile = async (
               orgData.numReposWithHundredStars;
             await orgBrowser.close();
           } else {
+            console.log(`adding scraping ${url} to the queue...`);
             const taskToQueue = {
               context: {
                 db: db,
                 type: "org",
                 orgUrl: url,
                 parentType: "user",
-                id: data.username,
+                parentId: data.username,
                 toInsert: { url: url },
               },
               runTask: async (browser, url, db, queue) =>
                 await scrapeOrganization(browser, url, db, queue, true),
             };
             queue.push(taskToQueue);
-            console.log("queue size:", queue.length);
           }
         }
       }

@@ -10,6 +10,7 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 import { scrapeUserProfile } from "./puppeteer/scrapeUserProfile.js";
 import { ghSearch } from "./puppeteer/ghSearch.js";
 import { taskCounter, TASKLIMIT } from "./puppeteer/taskCounter.js";
+import { scrapeFromQueue } from "./puppeteer/scrapeFromQueue.js";
 
 const main = async () => {
   // const app = express();
