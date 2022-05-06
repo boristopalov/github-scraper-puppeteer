@@ -70,14 +70,14 @@ const main = async () => {
       }
       let browser;
       if (type === "repo") {
-        browser = await puppeteer.launch({ headless: false });
+        browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
         await page.goto(url);
         await scrapeRepo(browser, page, db, queue);
         await browser.close();
       }
       if (type === "org") {
-        browser = await puppeteer.launch({ headless: false });
+        browser = await puppeteer.launch({ headless: true });
         await scrapeOrganization(browser, url, db, queue);
       }
       if (type === "user") {
