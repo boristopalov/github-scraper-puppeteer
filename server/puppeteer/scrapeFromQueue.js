@@ -19,7 +19,7 @@ export const scrapeFromQueue = async (queue) => {
     // i think we have to relaunch here because
     // it's possible that the puppeteer instance
     // from the parent task was terminated.
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const repoPage = await browser.newPage();
     // grab the url from the object we are inserting into DB
     await repoPage.goto(toInsert.url);
@@ -38,11 +38,18 @@ export const scrapeFromQueue = async (queue) => {
       numRepoReadmeKeywordMatch++;
     }
 
+    const {
+      currentNumReposWithHundredStars,
+      currentNumRepoReadmeKeywordMatch,
+    } = await db.collection("orgs").findOne({ name: parentId });
+
     // update the DB
     const updatedDoc = {
       $set: {
-        numRepoReadmeKeywordMatch: numRepoReadmeKeywordMatch,
-        numReposWithHundredStars: numReposWithHundredStars,
+        numRepoReadmeKeywordMatch:
+          currentNumRepoReadmeKeywordMatch + numRepoReadmeKeywordMatch,
+        numReposWithHundredStars:
+          currentNumReposWithHundredStars + numReposWithHundredStars,
       },
     };
     browser.close();
@@ -55,7 +62,7 @@ export const scrapeFromQueue = async (queue) => {
     console.log(
       `Scraping ${newTask.context.repoUrl} from the queue!, ${queue.length} tasks left in the queue.`
     );
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const repoPage = await browser.newPage();
     await repoPage.goto(newTask.context.repoUrl);
 
@@ -73,12 +80,19 @@ export const scrapeFromQueue = async (queue) => {
       numPullRequestReposWithReadmeKeywordMatch++;
     }
 
+    const {
+      currentNumPullRequestReposWithHundredStars,
+      currentNumPullRequestReposWithReadmeKeywordMatch,
+    } = await db.collection("users").findOne({ username: parentId });
+
     // update the DB
     const updatedDoc = {
       $set: {
         numPullRequestReposWithReadmeKeywordMatch:
+          currentNumPullRequestReposWithReadmeKeywordMatch +
           numPullRequestReposWithReadmeKeywordMatch,
         numPullRequestReposWithHundredStars:
+          currentNumPullRequestReposWithHundredStars +
           numPullRequestReposWithHundredStars,
       },
     };
@@ -92,7 +106,7 @@ export const scrapeFromQueue = async (queue) => {
     console.log(
       `Scraping ${newTask.context.orgUrl} from the queue!, ${queue.length} tasks left in the queue.`
     );
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     // run the task
     const data = await newTask.runTask(
       browser,
@@ -102,23 +116,34 @@ export const scrapeFromQueue = async (queue) => {
     );
 
     // collect the data we need to update in the DB
-    let numOrgReposWithHundredStars = 0;
     let numOrgReposReadmeKeywordMatch = 0;
+    let numOrgReposWithHundredStars = 0;
+    let numOrgBioKeywordMatch = 0;
     await db.collection("scraped_orgs").insertOne(toInsert);
-    if (data.repoStarCount >= 100) {
-      numOrgReposWithHundredStars++;
+    if (data.bioKeywordMatch) {
+      numOrgBioKeywordMatch++;
     }
-    if (data.isRepoReadmeKeywordMatch) {
-      numOrgReposReadmeKeywordMatch++;
-    }
+    numOrgReposReadmeKeywordMatch += data.numRepoReadmeKeywordMatch;
+    numOrgReposWithHundredStars += data.numReposWithHundredStars;
+
+    const {
+      currentNumOrgBioKeywordMatch,
+      currentNumOrgReposWithHundredStars,
+      currentNumOrgReposReadmeKeywordMatch,
+    } = await db.collection("users").findOne({ username: parentId });
 
     // update the DB
     const updatedDoc = {
       $set: {
-        numOrgReposReadmeKeywordMatch: numOrgReposReadmeKeywordMatch,
-        numOrgReposWithHundredStars: numOrgReposWithHundredStars,
+        numOrgReposReadmeKeywordMatch:
+          currentNumOrgReposReadmeKeywordMatch + numOrgReposReadmeKeywordMatch,
+        numOrgReposWithHundredStars:
+          currentNumOrgReposWithHundredStars + numOrgReposWithHundredStars,
+        numOrgBioKeywordMatch:
+          currentNumOrgBioKeywordMatch + numOrgBioKeywordMatch,
       },
     };
+    await browser.close();
     await db.collection("users").updateOne({ username: parentId }, updatedDoc);
     console.log(
       `updated ${parentId}. numOrgReposReadmeKeywordMatch value is now ${numOrgReposReadmeKeywordMatch} and numOrgReposWithHundredStars is now ${numOrgReposWithHundredStars}`

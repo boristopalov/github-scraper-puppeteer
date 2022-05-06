@@ -196,7 +196,7 @@ export const scrapeRepo = async (
                   userData.numPullRequestReposWithReadmeKeywordMatch++;
                 }
               } else {
-                console.log(`adding scraping ${url} to the queue...`);
+                // console.log(`adding scraping ${url} to the queue...`);
                 const taskToQueue = {
                   context: {
                     db: db,
@@ -216,7 +216,7 @@ export const scrapeRepo = async (
           if (taskCounter < TASKLIMIT) {
             await scrapeUserProfile(url, false, db, userData, queue);
           } else {
-            console.log(`adding scraping ${username} to the queue...`);
+            // console.log(`adding scraping ${username} to the queue...`);
             const taskToQueue = {
               context: {
                 db: db, // not directly updating the DB with this task but we still need to pass in DB for potential dependent tasks to update the DB
@@ -240,7 +240,7 @@ export const scrapeRepo = async (
         // is full we don't want to do the deep scrape on them right
         // maybe get rid after testing since it helps for testing
         if (!isInNewYork && taskCounter >= TASKLIMIT) {
-          console.log(`adding scraping ${username} to the queue...`);
+          // console.log(`adding scraping ${username} to the queue...`);
           const taskToQueue = {
             context: {
               db: db,

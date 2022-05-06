@@ -30,7 +30,7 @@ export const scrapeUserProfile = async (
 ) => {
   incrementTaskCounter();
   console.log(`${taskCounter} tasks currently.`);
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto(url);
   await checkForBotDetection(page);
@@ -139,7 +139,7 @@ export const scrapeUserProfile = async (
               data.numPullRequestReposWithReadmeKeywordMatch++;
             }
           } else {
-            console.log(`adding scraping ${url} to the queue...`);
+            // console.log(`adding scraping ${url} to the queue...`);
             const taskToQueue = {
               context: {
                 db: db,
@@ -230,7 +230,7 @@ export const scrapeUserProfile = async (
         if (!(await db.collection("scraped_orgs").findOne({ url: url }))) {
           if (taskCounter < TASKLIMIT) {
             await db.collection("scraped_orgs").insertOne({ url: url });
-            const orgBrowser = await puppeteer.launch({ headless: false });
+            const orgBrowser = await puppeteer.launch({ headless: true });
             const orgData = await scrapeOrganization(
               orgBrowser,
               url,
@@ -246,7 +246,7 @@ export const scrapeUserProfile = async (
               orgData.numReposWithHundredStars;
             await orgBrowser.close();
           } else {
-            console.log(`adding scraping ${url} to the queue...`);
+            // console.log(`adding scraping ${url} to the queue...`);
             const taskToQueue = {
               context: {
                 db: db,

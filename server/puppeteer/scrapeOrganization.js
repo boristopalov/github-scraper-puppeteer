@@ -119,7 +119,7 @@ export const scrapeOrganization = async (
           }
           // if there are too many tasks we add this child task to the queue
         } else {
-          console.log(`adding scraping ${url} to the queue...`);
+          // console.log(`adding scraping ${url} to the queue...`);
           const taskToQueue = {
             context: {
               db: db,
@@ -132,7 +132,6 @@ export const scrapeOrganization = async (
               await scrapeRepo(browser, repoPage, db, queue, true),
           };
           queue.push(taskToQueue);
-          console.log("queue size:", queue.length);
         }
       }
     }
