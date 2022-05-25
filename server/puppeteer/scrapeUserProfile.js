@@ -149,8 +149,8 @@ export const scrapeUserProfile = async (
                 parentId: username,
                 toInsert: { username: username },
               },
-              runTask: async (browser, newPage, db, queue) =>
-                await scrapeRepo({
+              runTask: (browser, newPage, db, queue) =>
+                scrapeRepo({
                   browser,
                   repoPage: newPage,
                   db,
