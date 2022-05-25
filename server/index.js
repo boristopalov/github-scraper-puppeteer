@@ -1,4 +1,3 @@
-import { scrapeFollowingList } from "./puppeteer/scrapeFollowingList.js";
 import express from "express";
 import cors from "cors";
 import saveData from "./utils/saveData.js";
@@ -31,7 +30,7 @@ const main = async () => {
     if (type === "search") {
       const searchType = process.argv[3];
       const query = process.argv[4];
-      await ghSearch(query, searchType, db);
+      await ghSearch(query, searchType, db, queue);
     } else {
       const url = process.argv[3];
       if (!url.includes("github.com")) {

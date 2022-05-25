@@ -4,7 +4,7 @@ import { scrapeUserProfile } from "./scrapeUserProfile.js";
 import { scrapeRepo } from "./scrapeRepo.js";
 const TOKEN = process.env.TOKEN;
 
-export const ghSearch = async (query, type, db) => {
+export const ghSearch = async (query, type, db, queue) => {
   // add in options for users or repos or other types
   // error handling ?
   // rate limit: 30 requests per minute since we are authenticated
@@ -28,7 +28,7 @@ export const ghSearch = async (query, type, db) => {
           const page = await browser.newPage();
           await page.goto(repoUrl);
           console.log(`${repoUrl} not found in DB, scraping it...`);
-          await scrapeRepo(browser, page, db);
+          await scrapeRepo(browser, page, db, queue);
         }
       }
     }
