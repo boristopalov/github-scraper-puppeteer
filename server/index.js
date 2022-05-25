@@ -13,36 +13,6 @@ import { taskCounter, TASKLIMIT } from "./puppeteer/taskCounter.js";
 import { scrapeFromQueue } from "./puppeteer/scrapeFromQueue.js";
 
 const main = async () => {
-  // const app = express();
-  // const port = 8080;
-
-  // app.use(cors());
-  // app.get("/following/:id", async (req, res) => {
-  //   const url = `https://github.com/${req.params.id}?tab=following`;
-  //   // if you want to scrape >100 pages you have to manually change the page url and re-run
-  //   // i.e. scrape('https://github.com/mikedemarais?tab=following') runs for 100 pages -> re-run with scrape('https://github.com/mikedemarais?page=101&tab=following')
-  //   // saves the data and returns the path to the data
-  //   const data = await scrapeFollowingList(url);
-  // });
-
-  // app.get("/org/:id", async (req, res) => {
-  //   const url = `https://github.com/${req.params.id}`;
-  //   const browser = await puppeteer.launch();
-  //   const data = await scrapeOrganization(browser, url);
-  // });
-
-  // app.get("/repo/:id", async (req, res) => {
-  //   const url = `https://github.com/${req.params.id}`;
-  //   const browser = await puppeteer.launch();
-  //   const page = await browser.newPage();
-  //   const repoPage = await page.goto(url);
-  //   const data = await scrapeRepo(repoPage);
-  // });
-
-  // app.listen(port, () => {
-  //   console.log(`Listening on port ${port}`);
-  // });
-
   const queue = [];
   dotenv.config({ path: "./.env" });
   const uri = process.env.URI;
