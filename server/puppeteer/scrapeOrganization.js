@@ -110,7 +110,7 @@ export const scrapeOrganization = async (
           await db.collection("scraped_repos").insertOne({ url: url });
           const repoPage = await browser.newPage();
           await repoPage.goto(url);
-          const repoData = await scrapeRepo(browser, repoPage, db, queue);
+          const repoData = await scrapeRepo({ browser, repoPage, db, queue });
           if (repoData.repoStarCount >= 100) {
             data.numReposWithHundredStars++;
           }
@@ -129,7 +129,7 @@ export const scrapeOrganization = async (
               toInsert: { url: url },
             },
             runTask: async (browser, repoPage, db, queue) =>
-              await scrapeRepo(browser, repoPage, db, queue, true),
+              await scrapeRepo({ browser, repoPage, db, queue, isFromQueue: true }),
           };
           queue.push(taskToQueue);
         }

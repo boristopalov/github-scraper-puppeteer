@@ -42,7 +42,7 @@ const main = async () => {
         browser = await puppeteer.launch({ headless: true });
         const page = await browser.newPage();
         await page.goto(url);
-        await scrapeRepo(browser, page, db, queue);
+        await scrapeRepo({ browser, repoPage: page, db, queue });
         await browser.close();
       }
       if (type === "org") {

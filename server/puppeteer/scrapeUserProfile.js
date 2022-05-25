@@ -131,7 +131,7 @@ export const scrapeUserProfile = async (
             const newPage = await browser.newPage();
             await newPage.goto(url);
             // const repoName = url.split("/")[4];
-            const repoData = await scrapeRepo(browser, newPage, db, queue);
+            const repoData = await scrapeRepo({ browser, repoPage: newPage, db, queue });
             if (repoData.repoStarCount >= 100) {
               data.numPullRequestReposWithHundredStars++;
             }
@@ -150,7 +150,13 @@ export const scrapeUserProfile = async (
                 toInsert: { username: username },
               },
               runTask: async (browser, newPage, db, queue) =>
-                await scrapeRepo(browser, newPage, db, queue, true),
+                await scrapeRepo({
+                  browser,
+                  repoPage: newPage,
+                  db,
+                  queue,
+                  isFromQueue: true,
+                }),
             };
             queue.push(taskToQueue);
           }

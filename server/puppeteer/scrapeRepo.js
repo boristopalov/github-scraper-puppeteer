@@ -16,13 +16,13 @@ import {
 import { scrapeFromQueue } from "./scrapeFromQueue.js";
 import formattedDate from "../utils/formattedDate.js";
 
-export const scrapeRepo = async (
+export const scrapeRepo = async ({
   browser,
   repoPage,
   db,
   queue,
   isFromQueue = false
-) => {
+}) => {
   let success = false;
   let tries = 1;
   const data = {
@@ -199,12 +199,12 @@ export const scrapeRepo = async (
                   await db.collection("scraped_repos").insertOne({ url: url });
                   const newPage = await browser.newPage();
                   await newPage.goto(url);
-                  const repoData = await scrapeRepo(
+                  const repoData = await scrapeRepo({
                     browser,
                     newPage,
                     db,
                     queue
-                  );
+                  });
                   if (repoData.repoStarCount >= 100) {
                     userData.numPullRequestReposWithHundredStars++;
                   }
@@ -224,7 +224,13 @@ export const scrapeRepo = async (
                       toInsert: { username: username },
                     },
                     runTask: async (browser, newPage, db, queue) =>
-                      await scrapeRepo(browser, newPage, db, queue, true),
+                      await scrapeRepo({
+                        browser,
+                        repoPage: newPage,
+                        db,
+                        queue,
+                        isFromQueue: true,
+                      }),
                   };
                   queue.push(taskToQueue);
                 }

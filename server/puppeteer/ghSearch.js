@@ -28,7 +28,7 @@ export const ghSearch = async (query, type, db, queue) => {
           const page = await browser.newPage();
           await page.goto(repoUrl);
           console.log(`${repoUrl} not found in DB, scraping it...`);
-          await scrapeRepo(browser, page, db, queue);
+          await scrapeRepo({ browser, repoPage: page, db, queue });
         }
       }
     }
