@@ -152,8 +152,13 @@ const enqueueUserOrgs = async (queue, orgs, db) => {
   }
 };
 
+async function waitForAndSelect(page, selector) {
+  await page.waitForSelector(selector);
+  return await page.$(selector);
+}
+
 const scrapeStartingData = async (page, db) => {
-  data = {
+  const data = {
     name: "n/a",
     email: "n/a",
     username: "n/a",
@@ -168,64 +173,107 @@ const scrapeStartingData = async (page, db) => {
     queuedTasks: 0,
     exported: false,
   };
-  const name = await page.$eval("span[itemprop='name']", (e) => e.innerText);
-  data.name = name;
-  const username = await page.$eval(
-    "span[itemprop='additionalName']",
-    (e) => e.innerText
-  );
-  data.username = username;
 
-  data.githubUrl = `https://github.com/${username}`;
-  const events = await getEvents(username);
-  const email = await searchEventsForEmail(events, username, name);
-  data.email = email;
+  const namePromise = (async () => {
+    const nameElement = await waitForAndSelect(page, "span[itemprop='name']");
+    data.name = nameElement.innerText;
+    return name;
+  })();
 
-  const bio = await page.$(
-    ".p-note.user-profile-bio.mb-3.js-user-profile-bio.f4 > div"
-  );
-  let bioText = bio
-    ? await (await bio.getProperty("textContent")).jsonValue()
-    : "n/a";
-  bioText = bioText.trim().toLowerCase();
-  data.bio = bioText;
-  const bioMatchesKeywords = searchTextForKeywords(bioText, generalKeywords);
-  data.bioMatchesKeywords = bioMatchesKeywords;
+  const usernamePromise = (async () => {
+    const usernameElement = await waitForAndSelect(page, "span[itemprop='additionalName']");
+    data.username = usernameElement.innerText;
+    data.githubUrl = `https://github.com/${username}`;
+    return username;
+  })();
 
-  // location not always displayed
-  const location = await page.$("li[itemprop='homeLocation'] > span");
-  let locationText = location
-    ? await (await location.getProperty("textContent")).jsonValue()
-    : "n/a";
-  locationText = locationText.trim();
-  let locationArr = locationText.split(/\s+/);
+  const emailPromise = (async () => {
+    const [name, username] = await Promise.all([namePromise, usernamePromise]);
+    const events = await getEvents(username);
+    const email = await searchEventsForEmail(events, username, name);
+    data.email = email;
+    return email;
+  })();
 
-  // work-around to get rid of work text, sometimes the data retrieval is iffy
-  // locationArr = locationArr.filter((e) => !workArr.includes(e));
-  locationText = locationArr.length > 0 ? locationArr.join(" ") : "n/a";
-  locationText = locationText.toLowerCase();
-  data.location = locationText;
-
-  const isInNewYork =
-    searchTextForKeywords(locationText, ["new york", "ny"]) &&
-    !searchTextForKeywords(locationText, ["germany", "sunnyvale"]);
-
-  data.isInNewYork = isInNewYork;
-  const pullRequestRepoUrls = searchEventsForPullRequests(events);
-  for (const url of pullRequestRepoUrls) {
-    if (await db.collection("scraped_repos").findOne({ url: url })) {
-      continue;
-    }
-    queueTask(
-      queue,
-      {
-        db,
-        type: "repo",
-        parentType: "user",
-        parentId: username,
-      },
-      async () => await scrapeRepo(url, db, queue)
+  const bioTextPromise = (async () => {
+    const bio = await waitForAndSelect(
+      page,
+      ".p-note.user-profile-bio.mb-3.js-user-profile-bio.f4 > div",
     );
-  }
+    if (!bio) {
+      return "n/a";
+    }
+    const textContentProperty = await bio.getProperty("textContent");
+    return await textContentProperty.jsonValue();
+  })();
+
+  const bioPromise = (async () => {
+    const bioText = await bioTextPromise;
+    const parsedBioText = bioText.trim().toLowerCase();
+    data.bio = parsedBioText;
+
+    const bioMatchesKeywords = searchTextForKeywords(bioText, generalKeywords);
+    data.bioMatchesKeywords = bioMatchesKeywords;
+
+    return parsedBioText;
+  })();
+
+  const pageLocationTextPromise = (async () => {
+    const location = await waitForAndSelect(page, "li[itemprop='homeLocation'] > span");
+    if (!location) {
+      return "n/a";
+    }
+    const locationTextProperty = await location.getProperty("textContent");
+    return await locationTextProperty.jsonValue();
+  })();
+
+  const locationPromise = (async () => {
+    const pageLocationText = await pageLocationTextPromise;
+    const parsedPageLocationText = pageLocationText.trim();
+    const locationArr = parsedPageLocationText.split(/\s+/);
+
+    const locationText = locationArr.length > 0 ? locationArr.join(" ") : "n/a";
+    const parsedLocationText = locationText.toLowerCase();
+    data.location = parsedLocationText;
+
+    const isInNewYork =
+      searchTextForKeywords(parsedLocationText, ["new york", "ny"]) &&
+      !searchTextForKeywords(parsedLocationText, ["germany", "sunnyvale"]);
+    data.isInNewYork = isInNewYork;
+
+    return parsedLocationText;
+  })();
+
+  const queuePromise = (async () => {
+    const username = await usernamePromise;
+    const pullRequestRepoUrls = searchEventsForPullRequests(events);
+    const queuePromises = pullRequestRepoUrls.map(async url => {
+      const dbResults = await db.collection("scraped_repos").findOne({ url });
+      if (dbResults) {
+        return;
+      }
+      queueTask(
+        queue,
+        {
+          db,
+          type: "repo",
+          parentType: "user",
+          parentId: username,
+        },
+        () => scrapeRepo(url, db, queue),
+      );
+    });
+    await Promise.all(queuePromises);
+  })();
+
+  await Promise.all([
+    namePromise,
+    usernamePromise,
+    emailPromise,
+    bioPromise,
+    locationPromise,
+    queuePromise,
+  ]);
+
   return data;
 };
