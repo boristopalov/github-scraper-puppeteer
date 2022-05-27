@@ -50,7 +50,6 @@ export const scrapeUserProfile = async (url, db, data = null, queue) => {
 
 const tryScrapeUser = async (url, db, queue) => {
   let data = {
-    ...dataObj,
     contributionCount: 0,
     tenStarRepoCount: 0,
     isUserReadmeKeywordMatch: false,
@@ -69,17 +68,8 @@ const tryScrapeUser = async (url, db, queue) => {
   await page.goto(url);
   await checkForBotDetection(page);
   await sleep(1000);
-  if (isStartingScrape) {
-    const startingScrapeData = scrapeStartingData(page, db);
-    data = {
-      ...data,
-      ...startingScrapeData,
-    };
-  }
 
-  const reposPage = await browser.newPage();
-  await reposPage.goto(url);
-  data.tenStarRepoCount = await scrapeUserProfileRepos(reposPage);
+  data.tenStarRepoCount = await scrapeUserProfileRepos(page);
 
   const readmeElement = await page.$(
     "article.markdown-body.entry-content.container-lg.f5"
