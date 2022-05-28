@@ -2,8 +2,7 @@ import puppeteer from "puppeteer";
 import getHrefFromAnchor from "../../utils/getHrefFromAnchor.js";
 import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
 import { generalKeywords } from "../../keywords.js";
-import { scrapeTwitterFollowers } from "./scrapeTwitterFollowers.js";
-import { scrapeOrganization } from "../scrapeOrganization.js";
+import { scrapeOrganization } from "../orgs/scrapeOrganization.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
 import { scrapeUserProfileRepos } from "./scrapeUserProfileRepos.js";
 import sleep from "../../utils/sleep.js";
@@ -11,7 +10,7 @@ import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import searchEventsForEmail from "../../utils/searchEventsForEmail.js";
 import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests.js";
 import { getEvents } from "../../api/getEvents.js";
-import { scrapeRepo } from "../scrapeRepo.js";
+import { scrapeRepo } from "../repos/scrapeRepo.js";
 import { decrementTaskCounter, incrementTaskCounter } from "../taskCounter.js";
 import {
   incrementUsersScrapedCounter,
@@ -19,37 +18,57 @@ import {
 } from "./usersScrapedCounter.js";
 import { csvExport } from "../../csvExport.js";
 import { queueTask } from "../../utils/queueTask.js";
+import waitForAndSelect from "../../utils/waitForAndSelect.js";
 
-export const scrapeUserProfile = async (url, db, data = null, queue) => {
-  if (await db.collection("scraped_users").findOne({ url: url })) {
-    return null;
-  }
+export const scrapeUserProfile = async (
+  url,
+  db,
+  data = null,
+  queue,
+  isStartingScrape = false
+) => {
+  // if (await db.collection("scraped_users").findOne({ url: url })) {
+  //   return null;
+  // }
+
   if (usersScrapedCounter > 0 && usersScrapedCounter % 100 === 0) {
     csvExport(db);
   }
+
+  if (isStartingScrape) {
+    const newData = await scrapeStartingData(url, db, queue);
+    data = {
+      ...data,
+      ...newData,
+    };
+  }
+
   let success = false;
   let tries = 1;
-  incrementUsersScrapedCounter();
-  incrementTaskCounter();
   while (tries > 0 && !success) {
     try {
-      data = await tryScrapeUser(url, db, queue);
+      const newData = await tryScrapeUser(url, db, queue);
+      data = {
+        ...data,
+        ...newData,
+      };
+      success = true;
     } catch (e) {
-      console.log(e.stack);
+      console.error(e.stack);
       tries--;
     }
   }
   if (!data) {
     return null;
   }
+  incrementUsersScrapedCounter();
   await db.collection("scraped_users").insertOne({ url: url });
   await db.collection("users").insertOne(data);
-  decrementTaskCounter();
-  return null;
+  return data;
 };
 
 const tryScrapeUser = async (url, db, queue) => {
-  let data = {
+  const data = {
     contributionCount: 0,
     tenStarRepoCount: 0,
     isUserReadmeKeywordMatch: false,
@@ -63,81 +82,113 @@ const tryScrapeUser = async (url, db, queue) => {
     createdAt: new Date(),
     updatedAt: new Date(),
   };
-  const browser = await puppeteer.launch({ headless: true });
+
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto(url);
   await checkForBotDetection(page);
-  await sleep(1000);
 
-  data.tenStarRepoCount = await scrapeUserProfileRepos(page);
+  data.tenStarRepoCount = await scrapeUserProfileRepos(url);
 
-  const readmeElement = await page.$(
-    "article.markdown-body.entry-content.container-lg.f5"
-  );
-  if (readmeElement) {
-    // $eval() crashes puppeteer if it doesn't find the element so we need to check if the element exists first
-    const readmeText = await page.evaluate((e) => e.innerText, readmeElement);
+  const readmePromise = (async () => {
+    const readmeElement = await page.$(
+      "article.markdown-body.entry-content.container-lg.f5"
+    );
+    if (!readmeElement) {
+      return;
+    }
+    const readMe = await readmeElement.evaluate((el) => el.textContent);
+    const innerTextProperty = await readMe.jsonValue();
     data.isUserReadmeKeywordMatch = searchTextForKeywords(
-      readmeText,
+      innerTextProperty,
       generalKeywords
     );
-  }
+  })();
 
-  const contributionCount = await page.$eval(
-    ".js-yearly-contributions > div > h2",
-    (e) => e.innerText.split(" ")[0].replace(",", "")
-  );
-  data.contributionCount = parseInt(contributionCount);
-
-  const followersDiv = await page.$("span.text-bold.color-fg-default");
-  if (followersDiv) {
-    let followersCountText = await page.evaluate(
-      (e) => e.innerText,
-      followersDiv
+  const contributionsPromise = (async () => {
+    const contributorsElement = await waitForAndSelect(
+      page,
+      ".js-yearly-contributions > div > h2"
     );
-    followersCountText = followersCountText.replace(",", "");
-    data.githubFollowers = convertNumStringToDigits(followersCountText);
-  }
+    const contributionCount = await contributorsElement.evaluate(
+      (el) => el.textContent
+    );
+    data.contributionCount = parseInt(contributionCount);
+  })();
 
-  const followingEl = await page.$(
-    ".flex-order-1.flex-md-order-none.mt-2.mt-md-0 > div > a:nth-child(2) > span"
-  );
-  if (followingEl) {
-    const text = await page.evaluate((e) => e.innerText, followingEl);
-    data.githubFollowing = convertNumStringToDigits(text);
-  }
+  const followersPromise = (async () => {
+    const followersElement = await page.$("span.text-bold.color-fg-default");
+    if (!followersElement) {
+      return;
+    }
+    const followersCountText = await followersElement.evaluate(
+      (el) => el.innerText
+    );
+    const parsedFollowersCountText = followersCountText.replace(",", "");
+    data.githubFollowers = convertNumStringToDigits(parsedFollowersCountText);
+  })();
 
-  const company = await page.$("span.p-org");
-  let companyText = company
-    ? await (await company.getProperty("textContent")).jsonValue()
-    : "n/a";
-  data.company = companyText.trim().split(/\s+/).join(" ");
+  const followingPromise = (async () => {
+    const followingElement = await page.$(
+      ".flex-order-1.flex-md-order-none.mt-2.mt-md-0 > div > a:nth-child(2) > span"
+    );
+    if (!followingElement) {
+      return;
+    }
+    const followingCountText = await followingElement.evaluate(
+      (el) => el.innerText
+    );
+    data.githubFollowing = convertNumStringToDigits(followingCountText);
+  })();
 
-  const userCompanyIsOrg = await getHrefFromAnchor(page, ".p-org > div > a");
-  if (userCompanyIsOrg) {
-    data.userCompanyIsOrg = true;
-  }
+  const companyPromise = (async () => {
+    const company = await page.$("span.p-org");
+    if (!company) {
+      data.company = "n/a";
+      return;
+    }
+    const companyText = await company.getProperty("textContent");
+    const companyTextValue = await companyText.jsonValue();
+    data.company = companyTextValue.trim().split(/\s+/).join(" ");
+  })();
 
-  // if user is a member of any organizations, scrape data from each organization
-  let orgs = await page.$$(
-    ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a[data-hovercard-type ='organization']"
-  );
-  if (!orgs) {
-    return data;
-  }
-  orgs = orgs.slice(0, 5); // only scrape 5 orgs at most
-  await enqueueUserOrgs(queue, orgs, db);
+  const companyIsOrgPromise = (async () => {
+    const companyIsOrg = await getHrefFromAnchor(page, ".p-org > div > a");
+    if (companyIsOrg) {
+      data.userCompanyIsOrg = true;
+    }
+  })();
+
+  const enqueueUserOrgsPromise = (async () => {
+    const orgs = await page.$$(
+      ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a[data-hovercard-type ='organization']"
+    );
+    if (!orgs) {
+      return;
+    }
+    const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
+    enqueueUserOrgs(queue, orgsToQueue, db);
+  })();
+
+  await Promise.all([
+    readmePromise,
+    contributionsPromise,
+    followersPromise,
+    followingPromise,
+    companyPromise,
+    companyIsOrgPromise,
+    enqueueUserOrgsPromise,
+  ]);
   await browser.close();
   return data;
 };
 
 const enqueueUserOrgs = async (queue, orgs, db) => {
-  const orgUrls = await Promise.all(
-    orgs.map((org) => org.getProperty("href").then((res) => res.jsonValue()))
-  );
-  for (const url of orgUrls) {
-    if (await db.collection("scraped_orgs").findOne({ url: url })) {
-      continue;
+  const promises = orgs.map(async (org) => {
+    const urlElement = await org.getProperty("href");
+    const url = await urlElement.jsonValue();
+    if (await db.collection("scraped_orgs").findOne({ url })) {
+      return;
     }
     queueTask(
       queue,
@@ -147,17 +198,13 @@ const enqueueUserOrgs = async (queue, orgs, db) => {
         parentType: "user",
         parentId: data.username,
       },
-      async () => await scrapeOrganization(url, db, queue)
+      () => scrapeOrganization(url, db, queue)
     );
-  }
+  });
+  await Promise.all(promises);
 };
 
-async function waitForAndSelect(page, selector) {
-  await page.waitForSelector(selector);
-  return await page.$(selector);
-}
-
-const scrapeStartingData = async (page, db) => {
+const scrapeStartingData = async (url, db, queue) => {
   const data = {
     name: "n/a",
     email: "n/a",
@@ -174,31 +221,47 @@ const scrapeStartingData = async (page, db) => {
     exported: false,
   };
 
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+  await page.goto(url);
+
   const namePromise = (async () => {
     const nameElement = await waitForAndSelect(page, "span[itemprop='name']");
-    data.name = nameElement.innerText;
+    const name = await nameElement.evaluate((el) => el.innerText);
+    data.name = name;
     return name;
   })();
 
   const usernamePromise = (async () => {
-    const usernameElement = await waitForAndSelect(page, "span[itemprop='additionalName']");
-    data.username = usernameElement.innerText;
+    const usernameElement = await waitForAndSelect(
+      page,
+      "span[itemprop='additionalName']"
+    );
+    const username = await usernameElement.evaluate((el) => el.innerText);
+    data.username = username;
     data.githubUrl = `https://github.com/${username}`;
     return username;
   })();
 
+  const eventsPromise = (async () => {
+    const username = await usernamePromise;
+    return await getEvents(username);
+  })();
+
   const emailPromise = (async () => {
-    const [name, username] = await Promise.all([namePromise, usernamePromise]);
-    const events = await getEvents(username);
+    const [name, username, events] = await Promise.all([
+      namePromise,
+      usernamePromise,
+      eventsPromise,
+    ]);
     const email = await searchEventsForEmail(events, username, name);
     data.email = email;
     return email;
   })();
 
   const bioTextPromise = (async () => {
-    const bio = await waitForAndSelect(
-      page,
-      ".p-note.user-profile-bio.mb-3.js-user-profile-bio.f4 > div",
+    const bio = await page.$(
+      ".p-note.user-profile-bio.mb-3.js-user-profile-bio.f4 > div"
     );
     if (!bio) {
       return "n/a";
@@ -219,11 +282,13 @@ const scrapeStartingData = async (page, db) => {
   })();
 
   const pageLocationTextPromise = (async () => {
-    const location = await waitForAndSelect(page, "li[itemprop='homeLocation'] > span");
+    const location = await page.$("li[itemprop='homeLocation'] > span");
     if (!location) {
       return "n/a";
     }
-    const locationTextProperty = await location.getProperty("textContent");
+    const locationTextProperty = await location.evalaute(
+      (el) => el.textContent
+    );
     return await locationTextProperty.jsonValue();
   })();
 
@@ -245,9 +310,12 @@ const scrapeStartingData = async (page, db) => {
   })();
 
   const queuePromise = (async () => {
-    const username = await usernamePromise;
+    const [username, events] = await Promise.all([
+      usernamePromise,
+      eventsPromise,
+    ]);
     const pullRequestRepoUrls = searchEventsForPullRequests(events);
-    const queuePromises = pullRequestRepoUrls.map(async url => {
+    const queuePromises = pullRequestRepoUrls.map(async (url) => {
       const dbResults = await db.collection("scraped_repos").findOne({ url });
       if (dbResults) {
         return;
@@ -260,7 +328,7 @@ const scrapeStartingData = async (page, db) => {
           parentType: "user",
           parentId: username,
         },
-        () => scrapeRepo(url, db, queue),
+        () => scrapeRepo(url, db, queue)
       );
     });
     await Promise.all(queuePromises);
@@ -274,6 +342,6 @@ const scrapeStartingData = async (page, db) => {
     locationPromise,
     queuePromise,
   ]);
-
+  await browser.close();
   return data;
 };
