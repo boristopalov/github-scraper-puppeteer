@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import axios from "axios";
-import { scrapeUserProfile } from "./scrapeUserProfile.js";
-import { scrapeRepo } from "./scrapeRepo.js";
+import { scrapeUserProfile } from "./users/scrapeUser.js";
+import { scrapeRepo } from "./repos/scrapeRepo.js";
 const TOKEN = process.env.TOKEN;
 
 export const ghSearch = async (query, type, db, queue) => {
