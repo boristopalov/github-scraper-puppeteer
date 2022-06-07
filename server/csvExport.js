@@ -1,5 +1,4 @@
 import { exec } from "child_process";
-import formattedDate from "./utils/formattedDate.js";
 
 export const csvExport = (db) => {
   // only export users that have 0 queued tasks and have not been exported already
@@ -22,7 +21,7 @@ export const csvExport = (db) => {
       const updatedDoc = {
         $set: {
           exported: true,
-          updatedAt: formattedDate(),
+          updatedAt: new Date(),
         },
       };
       await db.collection("users").updateMany(
