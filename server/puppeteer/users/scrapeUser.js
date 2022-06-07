@@ -5,13 +5,11 @@ import { generalKeywords } from "../../keywords.js";
 import { scrapeOrganization } from "../orgs/scrapeOrganization.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
 import { scrapeUserProfileRepos } from "./scrapeUserProfileRepos.js";
-import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import searchEventsForEmail from "../../utils/searchEventsForEmail.js";
 import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests.js";
 import { getEvents } from "../../api/getEvents.js";
 import { scrapeRepo } from "../repos/scrapeRepo.js";
-import { decrementTaskCounter, incrementTaskCounter } from "../taskCounter.js";
 import {
   incrementUsersScrapedCounter,
   usersScrapedCounter,
@@ -27,47 +25,47 @@ export const scrapeUserProfile = async (
   queue,
   isStartingScrape = false
 ) => {
-  // if (await db.collection("scraped_users").findOne({ url: url })) {
-  //   return null;
-  // }
+  if (await db.collection("scraped_users").findOne({ url })) {
+    return null;
+  }
 
   if (usersScrapedCounter > 0 && usersScrapedCounter % 100 === 0) {
     csvExport(db);
   }
 
-  if (isStartingScrape) {
-    const newData = await scrapeStartingData(url, db, queue);
-    data = {
-      ...data,
-      ...newData,
-    };
-  }
-
-  let success = false;
-  let tries = 1;
-  while (tries > 0 && !success) {
+  let tries = 2;
+  while (tries > 0) {
+    const browser = await puppeteer.launch({ headless: false });
+    const page = await browser.newPage();
+    await page.goto(url);
     try {
-      const newData = await tryScrapeUser(url, db, queue);
+      if (isStartingScrape) {
+        const startingData = await scrapeStartingData(page, db, queue);
+        data = {
+          ...data,
+          ...startingData,
+        };
+      }
+      const newData = await tryScrapeUser(page, db, queue);
       data = {
         ...data,
         ...newData,
       };
-      success = true;
+      await db.collection("scraped_users").insertOne({ url });
+      await db.collection("users").insertOne(data);
+      incrementUsersScrapedCounter();
+      return data;
     } catch (e) {
       console.error(e.stack);
       tries--;
+    } finally {
+      await browser.close();
     }
   }
-  if (!data) {
-    return null;
-  }
-  incrementUsersScrapedCounter();
-  await db.collection("scraped_users").insertOne({ url: url });
-  await db.collection("users").insertOne(data);
-  return data;
+  return null;
 };
 
-const tryScrapeUser = async (url, db, queue) => {
+const tryScrapeUser = async (page, db, queue) => {
   const data = {
     contributionCount: 0,
     tenStarRepoCount: 0,
@@ -83,9 +81,6 @@ const tryScrapeUser = async (url, db, queue) => {
     updatedAt: new Date(),
   };
 
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
-  await page.goto(url);
   await checkForBotDetection(page);
 
   data.tenStarRepoCount = await scrapeUserProfileRepos(url);
@@ -167,7 +162,7 @@ const tryScrapeUser = async (url, db, queue) => {
       return;
     }
     const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
-    enqueueUserOrgs(queue, orgsToQueue, db);
+    await enqueueUserOrgs(queue, orgsToQueue, db);
   })();
 
   await Promise.all([
@@ -179,7 +174,6 @@ const tryScrapeUser = async (url, db, queue) => {
     companyIsOrgPromise,
     enqueueUserOrgsPromise,
   ]);
-  await browser.close();
   return data;
 };
 
@@ -204,7 +198,7 @@ const enqueueUserOrgs = async (queue, orgs, db) => {
   await Promise.all(promises);
 };
 
-const scrapeStartingData = async (url, db, queue) => {
+const scrapeStartingData = async (page, db, queue) => {
   const data = {
     name: "n/a",
     email: "n/a",
@@ -220,10 +214,6 @@ const scrapeStartingData = async (url, db, queue) => {
     queuedTasks: 0,
     exported: false,
   };
-
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage();
-  await page.goto(url);
 
   const namePromise = (async () => {
     const nameElement = await waitForAndSelect(page, "span[itemprop='name']");
@@ -342,6 +332,5 @@ const scrapeStartingData = async (url, db, queue) => {
     locationPromise,
     queuePromise,
   ]);
-  await browser.close();
   return data;
 };
