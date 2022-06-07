@@ -1,15 +1,11 @@
-import express from "express";
-import cors from "cors";
-import saveData from "./utils/saveData.js";
-import { scrapeOrganization } from "./puppeteer/scrapeOrganization.js";
-import puppeteer from "puppeteer";
-import { scrapeRepo } from "./puppeteer/scrapeRepo.js";
+import { scrapeOrganization } from "./puppeteer/orgs/scrapeOrganization.js";
+import { scrapeRepo } from "./puppeteer/repos/scrapeRepo.js";
 import dotenv from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
-import { scrapeUserProfile } from "./puppeteer/scrapeUserProfile.js";
+import { scrapeUserProfile } from "./puppeteer/users/scrapeUser.js";
 import { ghSearch } from "./puppeteer/ghSearch.js";
 import { taskCounter, TASKLIMIT } from "./puppeteer/taskCounter.js";
-import { scrapeFromQueue } from "./puppeteer/scrapeFromQueue.js";
+import { scrapeFromQueue } from "./puppeteer/queue/scrapeFromQueue.js";
 
 const main = async () => {
   const queue = [];
@@ -23,7 +19,7 @@ const main = async () => {
   client.connect(async (err) => {
     if (err) {
       console.log(err);
-      return;
+      process.exit(1);
     }
     const db = client.db("scraper");
     const type = process.argv[2];
@@ -37,30 +33,26 @@ const main = async () => {
         console.error(`Please enter a valid GitHub url, you entered: ${url}`);
         process.exit(1);
       }
-      let browser;
       if (type === "repo") {
-        browser = await puppeteer.launch({ headless: true });
-        const page = await browser.newPage();
-        await page.goto(url);
-        await scrapeRepo({ browser, repoPage: page, db, queue });
-        await browser.close();
+        await scrapeRepo(url, db, queue);
       }
       if (type === "org") {
-        browser = await puppeteer.launch({ headless: true });
-        await scrapeOrganization(browser, url, db, queue);
+        await scrapeOrganization(url, db, queue);
       }
       if (type === "user") {
-        await scrapeUserProfile(url, true, db, null, queue);
+        await scrapeUserProfile(url, db, null, queue, true);
       }
     }
-    // in theory there should be 0 tasks at this point
-    console.log("There should be 0 tasks now.", "Actual tasks:", taskCounter);
-    while (queue.length > 0 && taskCounter < TASKLIMIT) {
-      await scrapeFromQueue(queue);
+    console.log("scraping from da queue now ");
+    console.log(queue);
+    while (queue.length > 0) {
+      if (taskCounter < TASKLIMIT) {
+        await scrapeFromQueue(queue);
+      }
     }
     await client.close();
   });
-  // return;
+  return;
 };
 
 main();
