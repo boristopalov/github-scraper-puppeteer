@@ -1,4 +1,7 @@
+import { scrapeOrganization } from "../orgs/scrapeOrganization.js";
+import { scrapeRepo } from "../repos/scrapeRepo.js";
 import { incrementTaskCounter, decrementTaskCounter } from "../taskCounter.js";
+import { scrapeUserProfile } from "../users/scrapeUser.js";
 export const scrapeFromQueue = async (queue) => {
   const { context, task } = queue.shift();
   const { db, type, parentType, parentId } = context;
@@ -28,6 +31,45 @@ export const scrapeFromQueue = async (queue) => {
     await updateUserOrgFromQueue(data, db, parentId);
   }
   decrementTaskCounter();
+};
+
+export const scrapeFromQueuedb = async (db) => {
+  if (!db) {
+    console.error("Something went wrong- can't access the DB");
+    return;
+  }
+  const { context, task } = await db.collection("queue").findOne(); // retieves the first record, like a queue
+  const { type, parentType, parentId } = context;
+  const { fn, args } = task;
+
+  let data;
+  incrementTaskCounter();
+  if (fn === "scrapeOrganization") {
+    data = await scrapeOrganization(db, ...args);
+  }
+  if (fn === "scrapeRepo") {
+    data = await scrapeRepo(db, ...args);
+  }
+  if (fn === "scrapeUserProfile") {
+    data = await scrapeUserProfile(db, ...args);
+  }
+  decrementTaskCounter();
+
+  if (!parentType || (parentType && !data)) {
+    return;
+  }
+
+  if (type === "repo" && parentType === "org") {
+    await updateOrgRepoFromQueue(data, db, parentId);
+  }
+  if (type === "repo" && parentType === "user") {
+    await updateUserRepoFromQueue(data, db, parentId);
+  }
+  if (type === "org" && parentType === "user") {
+    await updateUserOrgFromQueue(data, db, parentId);
+  }
+  await db.collection("queue").deleteOne({}); // deletes the first record
+  return;
 };
 
 const updateOrgRepoFromQueue = async (data, db, parentId) => {
