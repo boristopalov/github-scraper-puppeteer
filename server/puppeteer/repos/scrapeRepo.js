@@ -8,13 +8,13 @@ import { scrapeUserProfile } from "../users/scrapeUser.js";
 import { getEvents } from "../../api/getEvents.js";
 import searchEventsForEmail from "../../utils/searchEventsForEmail.js";
 import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests.js";
-import { queueTask } from "../../utils/queueTask.js";
+import { queueTask, queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 
-export const scrapeRepo = async (url, db, queue) => {
-  // if (await db.collection("scraped_repos").findOne({ url })) {
-  //   return null;
-  // }
+export const scrapeRepo = async (db, url) => {
+  if (await db.collection("scraped_repos").findOne({ url })) {
+    return null;
+  }
   let tries = 2;
   while (tries > 0) {
     const browser = await puppeteer.launch({ headless: false });
@@ -295,6 +295,18 @@ const tryScrapeContributor = async (
     },
     () => scrapeUserProfile(githubUrl, db, userData, queue)
   );
+  await queueTaskdb(
+    db,
+    {
+      type: "user",
+      parentType: null,
+      parentId: null,
+    },
+    {
+      fn: "scrapeUserProfile",
+      args: [githubUrl, userData],
+    }
+  );
 
   const pullRequestRepoUrls = searchEventsForPullRequests(events);
   const queuePromises = pullRequestRepoUrls.map(async (url) => {
@@ -312,6 +324,18 @@ const tryScrapeContributor = async (
         parentId: username,
       },
       () => scrapeRepo(url, db, queue)
+    );
+    await queueTaskdb(
+      db,
+      {
+        type: "repo",
+        parentType: "user",
+        parentId: username,
+      },
+      {
+        fn: "scrapeRepo",
+        args: [url],
+      }
     );
   });
   await Promise.all(queuePromises);

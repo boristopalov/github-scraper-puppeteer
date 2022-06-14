@@ -5,11 +5,11 @@ import getHrefFromAnchor from "../../utils/getHrefFromAnchor.js";
 import { scrapeRepo } from "../repos/scrapeRepo.js";
 import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
-import { queueTask } from "../../utils/queueTask.js";
+import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import waitForAndSelectAll from "../../utils/waitForAndSelectAll.js";
 
-export const scrapeOrganization = async (url, db, queue) => {
+export const scrapeOrganization = async (db, url) => {
   // if (await db.collection("scraped_orgs").findOne({ url })) {
   //   return null;
   // }
@@ -19,7 +19,7 @@ export const scrapeOrganization = async (url, db, queue) => {
     const page = await browser.newPage();
     await page.goto(url);
     try {
-      const data = await tryScrapeOrg(page, queue, db);
+      const data = await tryScrapeOrg(page, db);
       await db.collection("scraped_orgs").insertOne({ url });
       await db.collection("orgs").insertOne(data);
       return data;
@@ -33,7 +33,7 @@ export const scrapeOrganization = async (url, db, queue) => {
   return null;
 };
 
-const tryScrapeOrg = async (page, queue, db) => {
+const tryScrapeOrg = async (page, db) => {
   const data = {
     name: "n/a",
     bioKeywordMatch: false,
@@ -85,15 +85,17 @@ const tryScrapeOrg = async (page, queue, db) => {
     if (await db.collection("scraped_repos").findOne({ url })) {
       return;
     }
-    queueTask(
-      queue,
+    await queueTaskdb(
+      db,
       {
-        db,
         type: "repo",
         parentType: "org",
         parentId: orgName,
       },
-      () => scrapeRepo(url, db, queue)
+      {
+        fn: "scrapeRepo",
+        args: [url],
+      }
     );
   });
   await Promise.all([bioContainsKeywordsPromise, enqueueRepoPromises]);

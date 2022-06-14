@@ -15,14 +15,13 @@ import {
   usersScrapedCounter,
 } from "./usersScrapedCounter.js";
 import { csvExport } from "../../csvExport.js";
-import { queueTask } from "../../utils/queueTask.js";
+import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 
 export const scrapeUserProfile = async (
-  url,
   db,
+  url,
   data = null,
-  queue,
   isStartingScrape = false
 ) => {
   if (await db.collection("scraped_users").findOne({ url })) {
@@ -40,13 +39,13 @@ export const scrapeUserProfile = async (
     await page.goto(url);
     try {
       if (isStartingScrape) {
-        const startingData = await scrapeStartingData(page, db, queue);
+        const startingData = await scrapeStartingData(page, db);
         data = {
           ...data,
           ...startingData,
         };
       }
-      const newData = await tryScrapeUser(page, db, queue);
+      const newData = await tryScrapeUser(page, db);
       data = {
         ...data,
         ...newData,
@@ -65,7 +64,7 @@ export const scrapeUserProfile = async (
   return null;
 };
 
-const tryScrapeUser = async (page, db, queue) => {
+const tryScrapeUser = async (page, db) => {
   const data = {
     contributionCount: 0,
     tenStarRepoCount: 0,
@@ -162,7 +161,7 @@ const tryScrapeUser = async (page, db, queue) => {
       return;
     }
     const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
-    await enqueueUserOrgs(queue, orgsToQueue, db);
+    await enqueueUserOrgs(orgsToQueue, db);
   })();
 
   await Promise.all([
@@ -177,28 +176,30 @@ const tryScrapeUser = async (page, db, queue) => {
   return data;
 };
 
-const enqueueUserOrgs = async (queue, orgs, db) => {
+const enqueueUserOrgs = async (orgs, db) => {
   const promises = orgs.map(async (org) => {
     const urlElement = await org.getProperty("href");
     const url = await urlElement.jsonValue();
     if (await db.collection("scraped_orgs").findOne({ url })) {
       return;
     }
-    queueTask(
-      queue,
+    await queueTaskdb(
+      db,
       {
-        db: db,
         type: "org",
         parentType: "user",
         parentId: data.username,
       },
-      () => scrapeOrganization(url, db, queue)
+      {
+        fn: "scrapeOrganization",
+        args: [url],
+      }
     );
   });
   await Promise.all(promises);
 };
 
-const scrapeStartingData = async (page, db, queue) => {
+const scrapeStartingData = async (page, db) => {
   const data = {
     name: "n/a",
     email: "n/a",
@@ -310,15 +311,17 @@ const scrapeStartingData = async (page, db, queue) => {
       if (dbResults) {
         return;
       }
-      queueTask(
-        queue,
+      await queueTaskdb(
+        db,
         {
-          db,
           type: "repo",
           parentType: "user",
           parentId: username,
         },
-        () => scrapeRepo(url, db, queue)
+        {
+          fn: "scrapeRepo",
+          args: [url],
+        }
       );
     });
     await Promise.all(queuePromises);
