@@ -8,20 +8,20 @@ import { scrapeUserProfile } from "../users/scrapeUser.js";
 import { getEvents } from "../../api/getEvents.js";
 import searchEventsForEmail from "../../utils/searchEventsForEmail.js";
 import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests.js";
-import { queueTask, queueTaskdb } from "../../utils/queueTask.js";
+import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 
 export const scrapeRepo = async (db, url) => {
-  if (await db.collection("scraped_repos").findOne({ url })) {
-    return null;
-  }
+  // if (await db.collection("scraped_repos").findOne({ url })) {
+  //   return null;
+  // }
   let tries = 2;
   while (tries > 0) {
     const browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
     await page.goto(url);
     try {
-      const data = await tryScrapeRepo(page, db, queue);
+      const data = await tryScrapeRepo(page, db);
       await db.collection("scraped_repos").insertOne({ url });
       await db.collection("repos").insertOne(data);
       return data;
@@ -35,7 +35,7 @@ export const scrapeRepo = async (db, url) => {
   return null;
 };
 
-const tryScrapeRepo = async (page, db, queue) => {
+const tryScrapeRepo = async (page, db) => {
   const data = {
     name: "n/a",
     url: "n/a",
@@ -105,7 +105,7 @@ const tryScrapeRepo = async (page, db, queue) => {
   for (const c of contributors) {
     const contributorCard = await openUserCard(c, page);
     if (contributorCard) {
-      await tryScrapeContributor(repoName, c, contributorCard, queue, db);
+      await tryScrapeContributor(repoName, c, contributorCard, db);
     }
   }
   return data;
@@ -148,7 +148,6 @@ const tryScrapeContributor = async (
   repoName,
   contributorEl,
   contributorCard,
-  queue,
   db
 ) => {
   const nameAndUsernamePromise = (async () => {
@@ -274,7 +273,7 @@ const tryScrapeContributor = async (
     createdAt: new Date(),
     updatedAt: new Date(),
   };
-  if (!isInNewYork && queue.length > 50) {
+  if (!isInNewYork) {
     return userData;
   }
 
@@ -285,16 +284,6 @@ const tryScrapeContributor = async (
     console.log(`already scraped ${githubUrl}`);
     return;
   }
-  queueTask(
-    queue,
-    {
-      db, // not directly updating the DB with this task but we still need to pass in DB for potential dependent tasks to update the DB
-      type: "user",
-      parentType: null,
-      parentId: null,
-    },
-    () => scrapeUserProfile(githubUrl, db, userData, queue)
-  );
   await queueTaskdb(
     db,
     {
@@ -315,16 +304,6 @@ const tryScrapeContributor = async (
       console.log(`already scraped ${url}`);
       return;
     }
-    queueTask(
-      queue,
-      {
-        db,
-        type: "repo",
-        parentType: "user",
-        parentId: username,
-      },
-      () => scrapeRepo(url, db, queue)
-    );
     await queueTaskdb(
       db,
       {
