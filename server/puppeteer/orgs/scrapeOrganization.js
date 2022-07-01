@@ -10,21 +10,22 @@ import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import waitForAndSelectAll from "../../utils/waitForAndSelectAll.js";
 
 export const scrapeOrganization = async (db, url) => {
-  // if (await db.collection("scraped_orgs").findOne({ url })) {
-  //   return null;
-  // }
+  if (await db.collection("scraped_orgs").findOne({ url })) {
+    console.log("Already scraped", url);
+    return null;
+  }
   let tries = 2;
   while (tries > 0) {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto(url);
     try {
       const data = await tryScrapeOrg(page, db);
-      await db.collection("scraped_orgs").insertOne({ url });
       await db.collection("orgs").insertOne(data);
       return data;
     } catch (e) {
       console.error(e.stack);
+      console.error("Error occured for:", url);
       tries--;
     } finally {
       await browser.close();
@@ -36,6 +37,7 @@ export const scrapeOrganization = async (db, url) => {
 const tryScrapeOrg = async (page, db) => {
   const data = {
     name: "n/a",
+    url: "n/a",
     bioKeywordMatch: false,
     numReposWithHundredStars: 0,
     numRepoReadmeKeywordMatch: 0,
@@ -54,6 +56,7 @@ const tryScrapeOrg = async (page, db) => {
   const namePromise = (async () => {
     const name = await header.$eval(".flex-1 > h1", (e) => e.innerText);
     data.name = name;
+    data.url = `https://github.com/${name}`;
     return name;
   })();
 
@@ -78,11 +81,10 @@ const tryScrapeOrg = async (page, db) => {
     return data;
   }
   data.reposInOrg = repoUrls;
-  console.log("repo urls", repoUrls);
 
   const enqueueRepoPromises = repoUrls.map(async (url) => {
     const orgName = await namePromise;
-    if (await db.collection("scraped_repos").findOne({ url })) {
+    if (await db.collection("repos").findOne({ url })) {
       return;
     }
     await queueTaskdb(
@@ -103,9 +105,13 @@ const tryScrapeOrg = async (page, db) => {
 };
 
 const getOrgRepoUrls = async (page) => {
-  await page.waitForSelector(
+  const tab = await page.$(
     ".col-12 > .d-flex > .d-flex > #type-options > .btn"
   );
+  if (!tab) {
+    console.log("No repos for", page.url());
+    return;
+  }
   await page.click(".col-12 > .d-flex > .d-flex > #type-options > .btn");
 
   await page.waitForSelector(
