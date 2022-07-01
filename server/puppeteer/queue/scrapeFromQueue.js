@@ -55,7 +55,9 @@ export const scrapeFromQueuedb = async (db) => {
   }
   decrementTaskCounter();
 
-  if (!parentType || (parentType && !data)) {
+  await db.collection("queue").deleteOne({}); // deletes the first record
+
+  if (!data) {
     return;
   }
 
@@ -68,7 +70,6 @@ export const scrapeFromQueuedb = async (db) => {
   if (type === "org" && parentType === "user") {
     await updateUserOrgFromQueue(data, db, parentId);
   }
-  await db.collection("queue").deleteOne({}); // deletes the first record
   return;
 };
 
