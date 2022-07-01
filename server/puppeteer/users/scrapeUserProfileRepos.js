@@ -2,14 +2,13 @@ import sleep from "../../utils/sleep.js";
 import puppeteer from "puppeteer";
 
 export const scrapeUserProfileRepos = async (url) => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto(url);
 
   await sleep(1000);
   await navigateToRepos(page);
 
-  await page.waitForSelector(".col-10.col-lg-9.d-inline-block");
   const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
   let tenStarRepoCount = 0;
 

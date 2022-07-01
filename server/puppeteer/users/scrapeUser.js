@@ -24,7 +24,8 @@ export const scrapeUserProfile = async (
   data = null,
   isStartingScrape = false
 ) => {
-  if (await db.collection("scraped_users").findOne({ url })) {
+  if (await db.collection("users").findOne({ githubUrl: url })) {
+    console.log("Already scraped", url);
     return null;
   }
 
@@ -34,28 +35,20 @@ export const scrapeUserProfile = async (
 
   let tries = 2;
   while (tries > 0) {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto(url);
     try {
       if (isStartingScrape) {
-        const startingData = await scrapeStartingData(page, db);
-        data = {
-          ...data,
-          ...startingData,
-        };
+        data = await scrapeStartingData(page, db, data);
       }
-      const newData = await tryScrapeUser(page, db);
-      data = {
-        ...data,
-        ...newData,
-      };
-      await db.collection("scraped_users").insertOne({ url });
+      data = await tryScrapeUser(page, db, data);
       await db.collection("users").insertOne(data);
       incrementUsersScrapedCounter();
       return data;
     } catch (e) {
       console.error(e.stack);
+      console.error("Error occured for:", url);
       tries--;
     } finally {
       await browser.close();
@@ -64,8 +57,9 @@ export const scrapeUserProfile = async (
   return null;
 };
 
-const tryScrapeUser = async (page, db) => {
-  const data = {
+const tryScrapeUser = async (page, db, data) => {
+  data = {
+    ...data,
     contributionCount: 0,
     tenStarRepoCount: 0,
     isUserReadmeKeywordMatch: false,
@@ -82,7 +76,7 @@ const tryScrapeUser = async (page, db) => {
 
   await checkForBotDetection(page);
 
-  data.tenStarRepoCount = await scrapeUserProfileRepos(url);
+  data.tenStarRepoCount = await scrapeUserProfileRepos(page.url());
 
   const readmePromise = (async () => {
     const readmeElement = await page.$(
@@ -92,9 +86,8 @@ const tryScrapeUser = async (page, db) => {
       return;
     }
     const readMe = await readmeElement.evaluate((el) => el.textContent);
-    const innerTextProperty = await readMe.jsonValue();
     data.isUserReadmeKeywordMatch = searchTextForKeywords(
-      innerTextProperty,
+      readMe,
       generalKeywords
     );
   })();
@@ -141,9 +134,8 @@ const tryScrapeUser = async (page, db) => {
       data.company = "n/a";
       return;
     }
-    const companyText = await company.getProperty("textContent");
-    const companyTextValue = await companyText.jsonValue();
-    data.company = companyTextValue.trim().split(/\s+/).join(" ");
+    const companyText = await company.evaluate((el) => el.textContent);
+    data.company = companyText.trim().split(/\s+/).join(" ");
   })();
 
   const companyIsOrgPromise = (async () => {
@@ -161,7 +153,7 @@ const tryScrapeUser = async (page, db) => {
       return;
     }
     const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
-    await enqueueUserOrgs(orgsToQueue, db);
+    await enqueueUserOrgs(orgsToQueue, db, data.username);
   })();
 
   await Promise.all([
@@ -176,11 +168,13 @@ const tryScrapeUser = async (page, db) => {
   return data;
 };
 
-const enqueueUserOrgs = async (orgs, db) => {
+const enqueueUserOrgs = async (orgs, db, username) => {
   const promises = orgs.map(async (org) => {
-    const urlElement = await org.getProperty("href");
-    const url = await urlElement.jsonValue();
-    if (await db.collection("scraped_orgs").findOne({ url })) {
+    const url = await org.evaluate((el) => el.href);
+    if (
+      (await db.collection("scraped_orgs").findOne({ url })) ||
+      (await db.collection("orgs").findOne({ url }))
+    ) {
       return;
     }
     await queueTaskdb(
@@ -188,7 +182,7 @@ const enqueueUserOrgs = async (orgs, db) => {
       {
         type: "org",
         parentType: "user",
-        parentId: data.username,
+        parentId: username,
       },
       {
         fn: "scrapeOrganization",
@@ -199,8 +193,9 @@ const enqueueUserOrgs = async (orgs, db) => {
   await Promise.all(promises);
 };
 
-const scrapeStartingData = async (page, db) => {
-  const data = {
+const scrapeStartingData = async (page, db, data) => {
+  data = {
+    ...data,
     name: "n/a",
     email: "n/a",
     username: "n/a",
@@ -257,8 +252,7 @@ const scrapeStartingData = async (page, db) => {
     if (!bio) {
       return "n/a";
     }
-    const textContentProperty = await bio.getProperty("textContent");
-    return await textContentProperty.jsonValue();
+    return await bio.evaluate((el) => el.textContent);
   })();
 
   const bioPromise = (async () => {
@@ -277,10 +271,7 @@ const scrapeStartingData = async (page, db) => {
     if (!location) {
       return "n/a";
     }
-    const locationTextProperty = await location.evalaute(
-      (el) => el.textContent
-    );
-    return await locationTextProperty.jsonValue();
+    return await location.evaluate((el) => el.textContent);
   })();
 
   const locationPromise = (async () => {
@@ -307,7 +298,7 @@ const scrapeStartingData = async (page, db) => {
     ]);
     const pullRequestRepoUrls = searchEventsForPullRequests(events);
     const queuePromises = pullRequestRepoUrls.map(async (url) => {
-      const dbResults = await db.collection("scraped_repos").findOne({ url });
+      const dbResults = await db.collection("repos").findOne({ url });
       if (dbResults) {
         return;
       }
