@@ -17,7 +17,5 @@ export async function getEvents(username) {
       return null;
     });
 
-  return new Promise((resolve) => {
-    resolve(res.data);
-  });
+  return res.data || null;
 }
