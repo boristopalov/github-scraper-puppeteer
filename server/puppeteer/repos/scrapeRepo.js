@@ -10,23 +10,25 @@ import searchEventsForEmail from "../../utils/searchEventsForEmail.js";
 import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
+import { TASKLIMIT, taskCounter } from "../taskCounter.js";
 
 export const scrapeRepo = async (db, url) => {
-  // if (await db.collection("scraped_repos").findOne({ url })) {
-  //   return null;
-  // }
+  if (await db.collection("repos").findOne({ url })) {
+    console.log("Already scraped", url);
+    return null;
+  }
   let tries = 2;
   while (tries > 0) {
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto(url);
     try {
       const data = await tryScrapeRepo(page, db);
-      await db.collection("scraped_repos").insertOne({ url });
       await db.collection("repos").insertOne(data);
       return data;
     } catch (e) {
       console.error(e.stack);
+      console.error("Error occured for:", url);
       tries--;
     } finally {
       await browser.close();
@@ -45,9 +47,6 @@ const tryScrapeRepo = async (page, db) => {
     createdAt: new Date(),
     updatedAt: new Date(),
   };
-  // const browser = await puppeteer.launch({ headless: false });
-  // const page = await browser.newPage();
-  // await page.goto(url);
   await checkForBotDetection(page);
   await sleep(1000);
   await page.setViewport({ width: 1440, height: 796 });
@@ -70,27 +69,28 @@ const tryScrapeRepo = async (page, db) => {
   })();
 
   const readmePromise = (async () => {
-    const readmeElement = await waitForAndSelect(
-      page,
+    const readmeElement = await page.$(
       "[data-target='readme-toc.content'] > article"
     );
-    if (readmeElement) {
-      const readmeText = await readmeElement.evaluate((el) => el.innerText);
-      const isReadmeKeywordMatch = searchTextForKeywords(
-        readmeText,
-        readmeKeywords
-      );
-      data.isRepoReadmeKeywordMatch = isReadmeKeywordMatch;
+    if (!readmeElement) {
+      data.isRepoReadmeKeywordMatch = "n/a";
+      return;
     }
+    const readmeText = await readmeElement.evaluate((el) => el.innerText);
+    const isReadmeKeywordMatch = searchTextForKeywords(
+      readmeText,
+      readmeKeywords
+    );
+    data.isRepoReadmeKeywordMatch = isReadmeKeywordMatch;
   })();
 
   const topLanguagePromise = (async () => {
-    const topLanguageHTML = await waitForAndSelect(
-      page,
+    const topLanguageHTML = await page.$(
       "a.d-inline-flex.flex-items-center.flex-nowrap.Link--secondary.no-underline.text-small.mr-3"
     );
     if (!topLanguageHTML) {
-      return "n/a";
+      data.topLanguage = "n/a";
+      return;
     }
     const topLangugeText = await topLanguageHTML.evaluate(
       (el) => el.innerText.split("\n")[0]
@@ -101,7 +101,6 @@ const tryScrapeRepo = async (page, db) => {
   await Promise.all([starsPromise, readmePromise, topLanguagePromise]);
 
   const contributors = await getContributors(page);
-  // console.log(contributors.length);
   for (const c of contributors) {
     const contributorCard = await openUserCard(c, page);
     if (contributorCard) {
@@ -152,12 +151,10 @@ const tryScrapeContributor = async (
 ) => {
   const nameAndUsernamePromise = (async () => {
     await sleep(2000);
-    const name = await contributorCard.$(
+    const username = await contributorCard.$(
       "a.f5.text-bold.Link--primary.no-underline"
     );
-    const username = await contributorCard.$(
-      "a.Link--secondary.no-underline.ml-1"
-    );
+    const name = await contributorCard.$("a.Link--secondary.no-underline.ml-1");
 
     let nameText;
     if (!name) {
@@ -169,10 +166,6 @@ const tryScrapeContributor = async (
     if (!username) {
       usernameText = "n/a";
     } else usernameText = await username.evaluate((el) => el.innerText);
-    if (usernameText === "n/a") {
-      usernameText = nameText;
-      nameText = "n/a";
-    }
     return [usernameText, nameText];
   })();
 
@@ -194,7 +187,7 @@ const tryScrapeContributor = async (
   }
 
   const repoCommits = await commitsPromise;
-  if (await db.collection("scraped_users").findOne({ username })) {
+  if (await db.collection("users").findOne({ username })) {
     const updatedDoc = { $addToSet: { repoCommits } };
     await db.collection("users").updateOne({ username }, updatedDoc);
     return;
@@ -221,6 +214,9 @@ const tryScrapeContributor = async (
 
   const events = await getEvents(username);
   const emailPromise = (async () => {
+    if (!events) {
+      return "n/a";
+    }
     const email = await searchEventsForEmail(events, username, name);
     return email;
   })();
@@ -273,35 +269,35 @@ const tryScrapeContributor = async (
     createdAt: new Date(),
     updatedAt: new Date(),
   };
+
+  const dbResults = await db.collection("users").findOne({ username });
+  if (dbResults) {
+    console.log(`Already scraped ${username}`);
+    return;
+  }
+  if (taskCounter < TASKLIMIT) {
+    await queueTaskdb(
+      db,
+      {
+        type: "user",
+        parentType: null,
+        parentId: null,
+      },
+      {
+        fn: "scrapeUserProfile",
+        args: [githubUrl, userData],
+      }
+    );
+  }
   if (!isInNewYork) {
     return userData;
   }
 
-  const dbResults = await db
-    .collection("scraped_users")
-    .findOne({ url: githubUrl });
-  if (dbResults) {
-    console.log(`already scraped ${githubUrl}`);
-    return;
-  }
-  await queueTaskdb(
-    db,
-    {
-      type: "user",
-      parentType: null,
-      parentId: null,
-    },
-    {
-      fn: "scrapeUserProfile",
-      args: [githubUrl, userData],
-    }
-  );
-
   const pullRequestRepoUrls = searchEventsForPullRequests(events);
   const queuePromises = pullRequestRepoUrls.map(async (url) => {
-    const dbResults = await db.collection("scraped_repos").findOne({ url });
+    const dbResults = await db.collection("repos").findOne({ url });
     if (dbResults) {
-      console.log(`already scraped ${url}`);
+      console.log(`Already scraped ${url}`);
       return;
     }
     await queueTaskdb(
