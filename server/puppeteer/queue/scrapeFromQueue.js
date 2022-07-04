@@ -3,37 +3,6 @@ import { scrapeRepo } from "../repos/scrapeRepo.js";
 import { incrementTaskCounter, decrementTaskCounter } from "../taskCounter.js";
 import { scrapeUserProfile } from "../users/scrapeUser.js";
 
-export const scrapeFromQueue = async (queue) => {
-  const { context, task } = queue.shift();
-  const { db, type, parentType, parentId } = context;
-
-  incrementTaskCounter();
-  // no need to update the DB if type is null so we can stop here
-  if (parentType === null) {
-    await task();
-    decrementTaskCounter();
-    return;
-  }
-
-  const data = await task();
-  if (!data) {
-    decrementTaskCounter();
-    // this happens if the scraping fails or if we are trying to scrape something that's already been scraped
-    return;
-  }
-
-  if (type === "repo" && parentType === "org") {
-    await updateOrgRepoFromQueue(data, db, parentId);
-  }
-  if (type === "repo" && parentType === "user") {
-    await updateUserRepoFromQueue(data, db, parentId);
-  }
-  if (type === "org" && parentType === "user") {
-    await updateUserOrgFromQueue(data, db, parentId);
-  }
-  decrementTaskCounter();
-};
-
 export const scrapeFromQueuedb = async (db, n) => {
   if (!db) {
     console.error("Something went wrong- can't access the DB");
@@ -50,7 +19,6 @@ export const scrapeFromQueuedb = async (db, n) => {
   const id = record._id;
   const { context, task } = record;
   const { type, parentType, parentId } = context;
-  console.log(parentId);
   const { fn, args } = task;
 
   let data;
