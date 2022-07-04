@@ -17,7 +17,7 @@ const main = async () => {
   });
   client.connect(async (err) => {
     if (err) {
-      console.log(err);
+      console.error(err);
       process.exit(1);
     }
     const db = client.db("scraper");
@@ -44,11 +44,16 @@ const main = async () => {
     }
     console.log("scraping from da queue now ");
     let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
+    let qCounter = 0;
     while (queueSize > 0) {
-      if (taskCounter < TASKLIMIT) {
-        await scrapeFromQueuedb(db);
-        queueSize = await db.collection("queue").countDocuments();
+      const tasks = [];
+      while (qCounter < TASKLIMIT) {
+        tasks.push(scrapeFromQueuedb(db, qCounter));
+        qCounter++;
       }
+      await Promise.all(tasks);
+      qCounter -= TASKLIMIT;
+      queueSize = await db.collection("queue").countDocuments();
     }
     await client.close();
   });

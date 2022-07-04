@@ -2,6 +2,7 @@ import { scrapeOrganization } from "../orgs/scrapeOrganization.js";
 import { scrapeRepo } from "../repos/scrapeRepo.js";
 import { incrementTaskCounter, decrementTaskCounter } from "../taskCounter.js";
 import { scrapeUserProfile } from "../users/scrapeUser.js";
+
 export const scrapeFromQueue = async (queue) => {
   const { context, task } = queue.shift();
   const { db, type, parentType, parentId } = context;
@@ -33,13 +34,23 @@ export const scrapeFromQueue = async (queue) => {
   decrementTaskCounter();
 };
 
-export const scrapeFromQueuedb = async (db) => {
+export const scrapeFromQueuedb = async (db, n) => {
   if (!db) {
     console.error("Something went wrong- can't access the DB");
     return;
   }
-  const { context, task } = await db.collection("queue").findOne(); // retieves the first record, like a queue
+
+  const recordPromise = await db
+    .collection("queue")
+    .find()
+    .limit(1)
+    .skip(n)
+    .toArray(); // grabs the nth record
+  const record = recordPromise[0];
+  const id = record._id;
+  const { context, task } = record;
   const { type, parentType, parentId } = context;
+  console.log(parentId);
   const { fn, args } = task;
 
   let data;
@@ -55,7 +66,7 @@ export const scrapeFromQueuedb = async (db) => {
   }
   decrementTaskCounter();
 
-  await db.collection("queue").deleteOne({}); // deletes the first record
+  await db.collection("queue").deleteOne({ _id: id });
 
   if (!data) {
     return;
