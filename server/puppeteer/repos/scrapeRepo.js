@@ -149,24 +149,16 @@ const tryScrapeContributor = async (
   contributorCard,
   db
 ) => {
-  const nameAndUsernamePromise = (async () => {
+  const usernamePromise = (async () => {
     await sleep(2000);
+
     const username = await contributorCard.$(
       "a.f5.text-bold.Link--primary.no-underline"
     );
-    const name = await contributorCard.$("a.Link--secondary.no-underline.ml-1");
-
-    let nameText;
-    if (!name) {
-      nameText = "n/a";
-    } else nameText = await name.evaluate((el) => el.innerText);
-
-    // if there is no name, the username is in name element above so we just swap them
-    let usernameText;
     if (!username) {
-      usernameText = "n/a";
-    } else usernameText = await username.evaluate((el) => el.innerText);
-    return [usernameText, nameText];
+      return "n/a";
+    }
+    return await username.evaluate((el) => el.innerText);
   })();
 
   const commitsPromise = (async () => {
@@ -180,8 +172,8 @@ const tryScrapeContributor = async (
     return obj;
   })();
 
-  const [username, name] = await nameAndUsernamePromise;
-  // if the contributor is a bot there might not be a username
+  const username = await usernamePromise;
+  // contributor is a bot
   if (username === "n/a") {
     return;
   }
@@ -193,81 +185,12 @@ const tryScrapeContributor = async (
     return;
   }
 
-  const bioPromise = (async () => {
-    const bioElement = await contributorCard.$(".mt-1");
-    if (!bioElement) {
-      return "n/a";
-    }
-    const bioTextProperty = await bioElement.evaluate((el) => el.innerText);
-    const bioTextValue = bioTextProperty.trim().toLowerCase();
-    return bioTextValue;
-  })();
-
-  const bioMatchesKeywordsPromise = (async () => {
-    const bio = await bioPromise;
-    const bioMatchesKeywords = searchTextForKeywords(
-      bio.toLowerCase(),
-      generalKeywords
-    );
-    return bioMatchesKeywords;
-  })();
-
-  const events = await getEvents(username);
-  const emailPromise = (async () => {
-    if (!events) {
-      return "n/a";
-    }
-    const email = await searchEventsForEmail(events, username, name);
-    return email;
-  })();
-
-  const locationPromise = (async () => {
-    const location = await contributorCard.$(".mt-2.color-fg-muted.text-small");
-    if (!location) {
-      return "n/a";
-    }
-
-    const locationText = await location.evaluate((el) => el.innerText);
-    const parsedLocationText = locationText.trim().toLowerCase();
-
-    return parsedLocationText;
-  })();
-
-  const isInNewYorkPromise = (async () => {
-    const parsedLocationText = await locationPromise;
-    return (
-      searchTextForKeywords(parsedLocationText, ["new york", "ny"]) &&
-      !searchTextForKeywords(parsedLocationText, ["germany", "sunnyvale"])
-    );
-  })();
-
-  const [bio, bioMatchesKeywords, email, location, isInNewYork] =
-    await Promise.all([
-      bioPromise,
-      bioMatchesKeywordsPromise,
-      emailPromise,
-      locationPromise,
-      isInNewYorkPromise,
-    ]);
-
   const githubUrl = `https://github.com/${username}`;
 
   const userData = {
-    name,
-    email,
     username,
-    location,
-    isInNewYork,
-    bio,
     githubUrl,
-    bioMatchesKeywords,
     repoCommits,
-    numPullRequestReposWithHundredStars: 0,
-    numPullRequestReposWithReadmeKeywordMatch: 0,
-    queuedTasks: 0,
-    exported: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
   };
 
   const dbResults = await db.collection("users").findOne({ username });
@@ -275,44 +198,17 @@ const tryScrapeContributor = async (
     console.log(`Already scraped ${username}`);
     return;
   }
-  if (taskCounter < TASKLIMIT) {
-    await queueTaskdb(
-      db,
-      {
-        type: "user",
-        parentType: null,
-        parentId: null,
-      },
-      {
-        fn: "scrapeUserProfile",
-        args: [githubUrl, userData],
-      }
-    );
-  }
-  if (!isInNewYork) {
-    return userData;
-  }
-
-  const pullRequestRepoUrls = searchEventsForPullRequests(events);
-  const queuePromises = pullRequestRepoUrls.map(async (url) => {
-    const dbResults = await db.collection("repos").findOne({ url });
-    if (dbResults) {
-      console.log(`Already scraped ${url}`);
-      return;
+  await queueTaskdb(
+    db,
+    {
+      type: "user",
+      parentType: null,
+      parentId: null,
+    },
+    {
+      fn: "scrapeUserProfile",
+      args: [githubUrl, userData],
     }
-    await queueTaskdb(
-      db,
-      {
-        type: "repo",
-        parentType: "user",
-        parentId: username,
-      },
-      {
-        fn: "scrapeRepo",
-        args: [url],
-      }
-    );
-  });
-  await Promise.all(queuePromises);
+  );
   return userData;
 };

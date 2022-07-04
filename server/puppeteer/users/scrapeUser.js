@@ -18,20 +18,16 @@ import { csvExport } from "../../csvExport.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 
-export const scrapeUserProfile = async (
-  db,
-  url,
-  data = null,
-  isStartingScrape = false
-) => {
+export const scrapeUserProfile = async (db, url, data = null) => {
+  console.log(url);
   if (await db.collection("users").findOne({ githubUrl: url })) {
     console.log("Already scraped", url);
     return null;
   }
 
-  if (usersScrapedCounter > 0 && usersScrapedCounter % 100 === 0) {
-    csvExport(db);
-  }
+  // if (usersScrapedCounter > 0 && usersScrapedCounter % 100 === 0) {
+  //   csvExport(db);
+  // }
 
   let tries = 2;
   while (tries > 0) {
@@ -39,13 +35,15 @@ export const scrapeUserProfile = async (
     const page = await browser.newPage();
     await page.goto(url);
     try {
-      if (isStartingScrape) {
-        data = await scrapeStartingData(page, db, data);
-      }
-      data = await tryScrapeUser(page, db, data);
-      await db.collection("users").insertOne(data);
+      const scrapedData = await tryScrapeUser(page, db);
+      const fullData = {
+        ...data,
+        ...scrapedData,
+      };
+
+      await db.collection("users").insertOne(fullData);
       incrementUsersScrapedCounter();
-      return data;
+      return fullData;
     } catch (e) {
       console.error(e.stack);
       console.error("Error occured for:", url);
@@ -57,9 +55,21 @@ export const scrapeUserProfile = async (
   return null;
 };
 
-const tryScrapeUser = async (page, db, data) => {
-  data = {
-    ...data,
+const tryScrapeUser = async (page, db) => {
+  const data = {
+    name: "n/a",
+    email: "n/a",
+    username: "n/a",
+    location: "n/a",
+    isInNewYork: false,
+    bio: "n/a",
+    githubUrl: "n/a",
+    bioMatchesKeywords: false,
+    repoCommits: [],
+    numPullRequestReposWithHundredStars: 0,
+    numPullRequestReposWithReadmeKeywordMatch: 0,
+    queuedTasks: 0,
+    exported: false,
     contributionCount: 0,
     tenStarRepoCount: 0,
     isUserReadmeKeywordMatch: false,
@@ -77,6 +87,86 @@ const tryScrapeUser = async (page, db, data) => {
   await checkForBotDetection(page);
 
   data.tenStarRepoCount = await scrapeUserProfileRepos(page.url());
+
+  const namePromise = (async () => {
+    const nameElement = await waitForAndSelect(page, "span[itemprop='name']");
+    const name = await nameElement.evaluate((el) => el.innerText);
+    data.name = name;
+    return name;
+  })();
+
+  const usernamePromise = (async () => {
+    const usernameElement = await waitForAndSelect(
+      page,
+      "span[itemprop='additionalName']"
+    );
+    const username = await usernameElement.evaluate((el) => el.innerText);
+    data.username = username;
+    data.githubUrl = `https://github.com/${username}`;
+    return username;
+  })();
+
+  const pageLocationTextPromise = (async () => {
+    const location = await page.$("li[itemprop='homeLocation'] > span");
+    if (!location) {
+      return "n/a";
+    }
+    return await location.evaluate((el) => el.textContent);
+  })();
+
+  const locationPromise = (async () => {
+    const pageLocationText = await pageLocationTextPromise;
+    const parsedPageLocationText = pageLocationText.trim();
+    const locationArr = parsedPageLocationText.split(/\s+/);
+
+    const locationText = locationArr.length > 0 ? locationArr.join(" ") : "n/a";
+    const parsedLocationText = locationText.toLowerCase();
+    data.location = parsedLocationText;
+
+    const isInNewYork =
+      searchTextForKeywords(parsedLocationText, ["new york", "ny"]) &&
+      !searchTextForKeywords(parsedLocationText, ["germany", "sunnyvale"]);
+    data.isInNewYork = isInNewYork;
+
+    return parsedLocationText;
+  })();
+
+  const eventsPromise = (async () => {
+    const username = await usernamePromise;
+    return await getEvents(username);
+  })();
+
+  const emailPromise = (async () => {
+    const [name, username, events] = await Promise.all([
+      namePromise,
+      usernamePromise,
+      eventsPromise,
+    ]);
+    const email = await searchEventsForEmail(events, username, name);
+    data.email = email;
+    return email;
+  })();
+
+  const bioTextPromise = (async () => {
+    const bio = await page.$(
+      ".p-note.user-profile-bio.mb-3.js-user-profile-bio.f4 > div"
+    );
+    if (!bio) {
+      return "n/a";
+    }
+    return await bio.evaluate((el) => el.textContent);
+  })();
+
+  const bioPromise = (async () => {
+    const bioText = await bioTextPromise;
+    const parsedBioText = bioText.trim().toLowerCase();
+    data.bio = parsedBioText;
+
+    const bioMatchesKeywords = searchTextForKeywords(bioText, generalKeywords);
+    data.bioMatchesKeywords = bioMatchesKeywords;
+
+    return parsedBioText;
+  })();
 
   const readmePromise = (async () => {
     const readmeElement = await page.$(
@@ -145,17 +235,6 @@ const tryScrapeUser = async (page, db, data) => {
     }
   })();
 
-  const enqueueUserOrgsPromise = (async () => {
-    const orgs = await page.$$(
-      ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a[data-hovercard-type ='organization']"
-    );
-    if (!orgs) {
-      return;
-    }
-    const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
-    await enqueueUserOrgs(orgsToQueue, db, data.username);
-  })();
-
   await Promise.all([
     readmePromise,
     contributionsPromise,
@@ -163,168 +242,77 @@ const tryScrapeUser = async (page, db, data) => {
     followingPromise,
     companyPromise,
     companyIsOrgPromise,
-    enqueueUserOrgsPromise,
-  ]);
-  return data;
-};
-
-const enqueueUserOrgs = async (orgs, db, username) => {
-  const promises = orgs.map(async (org) => {
-    const url = await org.evaluate((el) => el.href);
-    if (
-      (await db.collection("scraped_orgs").findOne({ url })) ||
-      (await db.collection("orgs").findOne({ url }))
-    ) {
-      return;
-    }
-    await queueTaskdb(
-      db,
-      {
-        type: "org",
-        parentType: "user",
-        parentId: username,
-      },
-      {
-        fn: "scrapeOrganization",
-        args: [url],
-      }
-    );
-  });
-  await Promise.all(promises);
-};
-
-const scrapeStartingData = async (page, db, data) => {
-  data = {
-    ...data,
-    name: "n/a",
-    email: "n/a",
-    username: "n/a",
-    location: "n/a",
-    isInNewYork: false,
-    bio: "n/a",
-    githubUrl: "n/a",
-    bioMatchesKeywords: false,
-    repoCommits: [],
-    numPullRequestReposWithHundredStars: 0,
-    numPullRequestReposWithReadmeKeywordMatch: 0,
-    queuedTasks: 0,
-    exported: false,
-  };
-
-  const namePromise = (async () => {
-    const nameElement = await waitForAndSelect(page, "span[itemprop='name']");
-    const name = await nameElement.evaluate((el) => el.innerText);
-    data.name = name;
-    return name;
-  })();
-
-  const usernamePromise = (async () => {
-    const usernameElement = await waitForAndSelect(
-      page,
-      "span[itemprop='additionalName']"
-    );
-    const username = await usernameElement.evaluate((el) => el.innerText);
-    data.username = username;
-    data.githubUrl = `https://github.com/${username}`;
-    return username;
-  })();
-
-  const eventsPromise = (async () => {
-    const username = await usernamePromise;
-    return await getEvents(username);
-  })();
-
-  const emailPromise = (async () => {
-    const [name, username, events] = await Promise.all([
-      namePromise,
-      usernamePromise,
-      eventsPromise,
-    ]);
-    const email = await searchEventsForEmail(events, username, name);
-    data.email = email;
-    return email;
-  })();
-
-  const bioTextPromise = (async () => {
-    const bio = await page.$(
-      ".p-note.user-profile-bio.mb-3.js-user-profile-bio.f4 > div"
-    );
-    if (!bio) {
-      return "n/a";
-    }
-    return await bio.evaluate((el) => el.textContent);
-  })();
-
-  const bioPromise = (async () => {
-    const bioText = await bioTextPromise;
-    const parsedBioText = bioText.trim().toLowerCase();
-    data.bio = parsedBioText;
-
-    const bioMatchesKeywords = searchTextForKeywords(bioText, generalKeywords);
-    data.bioMatchesKeywords = bioMatchesKeywords;
-
-    return parsedBioText;
-  })();
-
-  const pageLocationTextPromise = (async () => {
-    const location = await page.$("li[itemprop='homeLocation'] > span");
-    if (!location) {
-      return "n/a";
-    }
-    return await location.evaluate((el) => el.textContent);
-  })();
-
-  const locationPromise = (async () => {
-    const pageLocationText = await pageLocationTextPromise;
-    const parsedPageLocationText = pageLocationText.trim();
-    const locationArr = parsedPageLocationText.split(/\s+/);
-
-    const locationText = locationArr.length > 0 ? locationArr.join(" ") : "n/a";
-    const parsedLocationText = locationText.toLowerCase();
-    data.location = parsedLocationText;
-
-    const isInNewYork =
-      searchTextForKeywords(parsedLocationText, ["new york", "ny"]) &&
-      !searchTextForKeywords(parsedLocationText, ["germany", "sunnyvale"]);
-    data.isInNewYork = isInNewYork;
-
-    return parsedLocationText;
-  })();
-
-  const queuePromise = (async () => {
-    const [username, events] = await Promise.all([
-      usernamePromise,
-      eventsPromise,
-    ]);
-    const pullRequestRepoUrls = searchEventsForPullRequests(events);
-    const queuePromises = pullRequestRepoUrls.map(async (url) => {
-      const dbResults = await db.collection("repos").findOne({ url });
-      if (dbResults) {
-        return;
-      }
-      await queueTaskdb(
-        db,
-        {
-          type: "repo",
-          parentType: "user",
-          parentId: username,
-        },
-        {
-          fn: "scrapeRepo",
-          args: [url],
-        }
-      );
-    });
-    await Promise.all(queuePromises);
-  })();
-
-  await Promise.all([
     namePromise,
     usernamePromise,
     emailPromise,
     bioPromise,
     locationPromise,
-    queuePromise,
   ]);
+
+  // we only care about scraping a user's organzations and repos if they are in new york
+  // otherwise, we shouldn't use resources/time to further scrape non-NYC users
+  // since all the code above doesn't take long, we can afford to do it for all users
+  // but since scraping more orgs and repos is significantly more time-consuming, we can
+  // only afford to do that for NYC users
+  if (data.isInNewYork) {
+    const enqueueOrgsPromise = (async () => {
+      const orgs = await page.$$(
+        ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a[data-hovercard-type ='organization']"
+      );
+      if (!orgs) {
+        return;
+      }
+      const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
+      const queuePromises = orgsToQueue.map(async (org) => {
+        const url = await org.evaluate((el) => el.href);
+        if (
+          (await db.collection("scraped_orgs").findOne({ url })) ||
+          (await db.collection("orgs").findOne({ url }))
+        ) {
+          return;
+        }
+        await queueTaskdb(
+          db,
+          {
+            type: "org",
+            parentType: "user",
+            parentId: data.username,
+          },
+          {
+            fn: "scrapeOrganization",
+            args: [url],
+          }
+        );
+        data.queuedTasks++;
+      });
+      await Promise.all(queuePromises);
+    })();
+
+    const enqueueReposPromise = (async () => {
+      const events = await getEvents(data.username);
+      const pullRequestRepoUrls = searchEventsForPullRequests(events);
+      const queuePromises = pullRequestRepoUrls.map(async (url) => {
+        const dbResults = await db.collection("repos").findOne({ url });
+        if (dbResults) {
+          return;
+        }
+        await queueTaskdb(
+          db,
+          {
+            type: "repo",
+            parentType: "user",
+            parentId: data.username,
+          },
+          {
+            fn: "scrapeRepo",
+            args: [url],
+          }
+        );
+      });
+      data.queuedTasks++;
+      await Promise.all(queuePromises);
+    })();
+    await Promise.all([enqueueOrgsPromise, enqueueReposPromise]);
+  }
   return data;
 };
