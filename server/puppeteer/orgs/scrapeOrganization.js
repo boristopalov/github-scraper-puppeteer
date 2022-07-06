@@ -110,7 +110,7 @@ const getOrgRepoUrls = async (page) => {
   );
   if (!tab) {
     console.log("No repos for", page.url());
-    return;
+    return null;
   }
   await page.click(".col-12 > .d-flex > .d-flex > #type-options > .btn");
 
@@ -134,10 +134,11 @@ const getOrgRepoUrls = async (page) => {
     "#sort-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
   );
 
-  const repos = await waitForAndSelectAll(
-    page,
-    ".org-repos.repo-list > div > ul > li"
-  );
+  const repos = await page.$$(".org-repos.repo-list > div > ul > li");
+  if (!repos) {
+    console.log("No repos for", page.url());
+    return null;
+  }
   // only look at the top 5 repos
   const reposToEval = repos.slice(0, 5);
   const repoUrls = [];
