@@ -77,7 +77,7 @@ const tryScrapeOrg = async (page, db) => {
   })();
 
   const repoUrls = await getOrgRepoUrls(page);
-  if (repoUrls.length === 0) {
+  if (!repoUrls || repoUrls.length === 0) {
     return data;
   }
   data.reposInOrg = repoUrls;
