@@ -62,9 +62,9 @@ const updateOrgRepoFromQueue = async (data, db, parentId) => {
     currentNumRepoReadmeKeywordMatch++;
   }
 
-  const { numReposWithHundredStars, numRepoReadmeKeywordMatch } = await db
-    .collection("orgs")
-    .findOne({ name: parentId });
+  const org = await db.collection("orgs").findOne({ name: parentId });
+  const numReposWithHundredStars = org.numReposWithHundredStars || 0;
+  const numRepoReadmeKeywordMatch = org.numRepoReadmeKeywordMatch || 0;
 
   // update the DB
   const updatedDoc = {
@@ -89,11 +89,12 @@ const updateUserRepoFromQueue = async (data, db, parentId) => {
     currentNumPullRequestReposWithReadmeKeywordMatch++;
   }
 
-  const {
-    numPullRequestReposWithHundredStars,
-    numPullRequestReposWithReadmeKeywordMatch,
-    queuedTasks,
-  } = await db.collection("users").findOne({ username: parentId });
+  const user = await db.collection("users").findOne({ username: parentId });
+  const numPullRequestReposWithHundredStars =
+    user.numPullRequestReposWithHundredStars || 0;
+  const numPullRequestReposWithReadmeKeywordMatch =
+    user.numPullRequestReposWithReadmeKeywordMatch || 0;
+  queuedTasks = user.queuedTasks || 0;
 
   // update the DB
   const updatedDoc = {
@@ -120,29 +121,11 @@ const updateUserOrgFromQueue = async (data, db, parentId) => {
   }
   currentNumOrgReposReadmeKeywordMatch += data.numRepoReadmeKeywordMatch;
   currentNumOrgReposWithHundredStars += data.numReposWithHundredStars;
-
-  let numOrgBioKeywordMatch,
-    numOrgReposWithHundredStars,
-    numOrgReposReadmeKeywordMatch,
-    queuedTasks;
-  ({
-    numOrgBioKeywordMatch,
-    numOrgReposWithHundredStars,
-    numOrgReposReadmeKeywordMatch,
-    queuedTasks,
-  } = await db.collection("users").findOne({ username: parentId }));
-  if (!numOrgBioKeywordMatch) {
-    numOrgBioKeywordMatch = 0;
-  }
-  if (!numOrgReposWithHundredStars) {
-    numOrgReposWithHundredStars = 0;
-  }
-  if (!numOrgReposReadmeKeywordMatch) {
-    numOrgReposReadmeKeywordMatch = 0;
-  }
-  if (!queuedTasks) {
-    queuedTasks = 0;
-  }
+  const user = await db.collection("users").findOne({ username: parentId });
+  const numOrgBioKeywordMatch = user.numOrgBioKeywordMatch || 0;
+  const numOrgReposWithHundredStars = user.numOrgReposWithHundredStars || 0;
+  const numOrgReposReadmeKeywordMatch = user.numOrgReposReadmeKeywordMatch || 0;
+  const queuedTasks = user.queuedTasks || 1;
 
   // update the DB
   const updatedDoc = {
