@@ -11,7 +11,8 @@
     "scrape-org": "node index.js org",
     "scrape-user": "node index.js user",
     "search-repos": "node index.js search repositories",
-    "search-users": "node index.js search users"
+    "search-users": "node index.js search users",
+    "queue": "cd utils && node queueFromTerminal.js"
   },
   "author": "Boris Topalov",
   "license": "ISC",
