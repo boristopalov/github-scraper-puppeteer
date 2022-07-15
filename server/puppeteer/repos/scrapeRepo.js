@@ -44,6 +44,7 @@ const tryScrapeRepo = async (page, db) => {
     repoStarCount: 0,
     isRepoReadmeKeywordMatch: false,
     topLanguage: "n/a",
+    contributors: [],
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -104,7 +105,13 @@ const tryScrapeRepo = async (page, db) => {
   for (const c of contributors) {
     const contributorCard = await openUserCard(c, page);
     if (contributorCard) {
-      await tryScrapeContributor(repoName, c, contributorCard, db);
+      const { githubUrl } = await tryScrapeContributor(
+        repoName,
+        c,
+        contributorCard,
+        db
+      );
+      data.contributors.push(githubUrl);
     }
   }
   return data;
