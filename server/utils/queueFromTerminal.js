@@ -4,9 +4,14 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 
 export const queueFromTerminal = () => {
   if (process.argv.length < 4) {
-    console.log(
-      "Error- please provide a URL and type ('repo', 'user', or 'org')"
-    );
+    console.error("Usage: yarn queue ['repo' | 'org' | 'user'] [URL]");
+    process.exit(1);
+  }
+  const type = process.argv2[2];
+  const url = process.argv[3];
+
+  if (type !== "repo" || type !== "repo" || type !== "org") {
+    console.error("Possible types are: 'repo', 'org', or 'user'");
     process.exit(1);
   }
   dotenv.config({ path: "../.env" });
@@ -22,8 +27,7 @@ export const queueFromTerminal = () => {
       process.exit(1);
     }
     const db = client.db("scraper");
-    const url = process.argv[2];
-    const type = process.argv[3];
+
     let fn;
     if (type === "repo") {
       fn = "srapeRepo";
