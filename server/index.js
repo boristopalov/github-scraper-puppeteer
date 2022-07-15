@@ -34,13 +34,12 @@ const main = async () => {
       }
       if (type === "repo") {
         await scrapeRepo(db, url);
-      }
-      if (type === "org") {
+      } else if (type === "org") {
         await scrapeOrganization(db, url);
-      }
-      if (type === "user") {
+      } else if (type === "user") {
         await scrapeUserProfile(db, url, null, true);
-      }
+      } else console.error(`possible types - 'repo', 'user', 'org'`);
+      process.exit(1);
     }
     console.log("scraping from da queue now ");
     let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
