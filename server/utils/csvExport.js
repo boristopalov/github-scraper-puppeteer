@@ -1,4 +1,5 @@
 import { exec } from "child_process";
+import { mongoClient } from "./dbConnect.js";
 
 export const csvExport = (db) => {
   // only export users that have 0 queued tasks and have not been exported already
@@ -30,7 +31,6 @@ export const csvExport = (db) => {
         },
         updatedDoc
       );
-      process.exit(0);
     }
   );
 };
