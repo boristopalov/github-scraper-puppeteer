@@ -34,12 +34,6 @@ export const scrapeFromQueuedb = async (db, n) => {
   }
   decrementTaskCounter();
 
-  await db.collection("queue").deleteOne({ _id: id });
-
-  if (!data) {
-    return;
-  }
-
   if (type === "repo" && parentType === "org") {
     await updateOrgRepoFromQueue(data, db, parentId);
   }
@@ -49,10 +43,15 @@ export const scrapeFromQueuedb = async (db, n) => {
   if (type === "org" && parentType === "user") {
     await updateUserOrgFromQueue(data, db, parentId);
   }
+  await db.collection("queue").deleteOne({ _id: id });
+
   return;
 };
 
 const updateOrgRepoFromQueue = async (data, db, parentId) => {
+  if (!data) {
+    return;
+  }
   let currentNumReposWithHundredStars = 0;
   let currentNumRepoReadmeKeywordMatch = 0;
   if (data.repoStarCount >= 100) {
@@ -63,6 +62,9 @@ const updateOrgRepoFromQueue = async (data, db, parentId) => {
   }
 
   const org = await db.collection("orgs").findOne({ name: parentId });
+  if (!org) {
+    console.error("Unable to find parent with ID", parentId);
+  }
   const numReposWithHundredStars = org.numReposWithHundredStars || 0;
   const numRepoReadmeKeywordMatch = org.numRepoReadmeKeywordMatch || 0;
 
@@ -80,6 +82,9 @@ const updateOrgRepoFromQueue = async (data, db, parentId) => {
 };
 
 const updateUserRepoFromQueue = async (data, db, parentId) => {
+  if (!data) {
+    return;
+  }
   let currentNumPullRequestReposWithHundredStars = 0;
   let currentNumPullRequestReposWithReadmeKeywordMatch = 0;
   if (data.repoStarCount >= 100) {
@@ -90,6 +95,9 @@ const updateUserRepoFromQueue = async (data, db, parentId) => {
   }
 
   const user = await db.collection("users").findOne({ username: parentId });
+  if (!user) {
+    console.error("Unable to find parent with ID", parentId);
+  }
   const numPullRequestReposWithHundredStars =
     user.numPullRequestReposWithHundredStars || 0;
   const numPullRequestReposWithReadmeKeywordMatch =
@@ -113,6 +121,9 @@ const updateUserRepoFromQueue = async (data, db, parentId) => {
 };
 
 const updateUserOrgFromQueue = async (data, db, parentId) => {
+  if (!data) {
+    return;
+  }
   let currentNumOrgReposReadmeKeywordMatch = 0;
   let currentNumOrgReposWithHundredStars = 0;
   let currentNumOrgBioKeywordMatch = 0;
@@ -122,6 +133,9 @@ const updateUserOrgFromQueue = async (data, db, parentId) => {
   currentNumOrgReposReadmeKeywordMatch += data.numRepoReadmeKeywordMatch;
   currentNumOrgReposWithHundredStars += data.numReposWithHundredStars;
   const user = await db.collection("users").findOne({ username: parentId });
+  if (!user) {
+    console.error("Unable to find parent with ID", parentId);
+  }
   const numOrgBioKeywordMatch = user.numOrgBioKeywordMatch || 0;
   const numOrgReposWithHundredStars = user.numOrgReposWithHundredStars || 0;
   const numOrgReposReadmeKeywordMatch = user.numOrgReposReadmeKeywordMatch || 0;
