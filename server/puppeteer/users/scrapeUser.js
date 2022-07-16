@@ -2,19 +2,12 @@ import puppeteer from "puppeteer";
 import getHrefFromAnchor from "../../utils/getHrefFromAnchor.js";
 import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
 import { generalKeywords } from "../../keywords.js";
-import { scrapeOrganization } from "../orgs/scrapeOrganization.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
 import { scrapeUserProfileRepos } from "./scrapeUserProfileRepos.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import searchEventsForEmail from "../../utils/searchEventsForEmail.js";
 import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests.js";
 import { getEvents } from "../../api/getEvents.js";
-import { scrapeRepo } from "../repos/scrapeRepo.js";
-import {
-  incrementUsersScrapedCounter,
-  usersScrapedCounter,
-} from "./usersScrapedCounter.js";
-import { csvExport } from "../../csvExport.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 
@@ -24,10 +17,6 @@ export const scrapeUserProfile = async (db, url, data = null) => {
     console.log("Already scraped", url);
     return null;
   }
-
-  // if (usersScrapedCounter > 0 && usersScrapedCounter % 100 === 0) {
-  //   csvExport(db);
-  // }
 
   let tries = 2;
   while (tries > 0) {
@@ -42,7 +31,6 @@ export const scrapeUserProfile = async (db, url, data = null) => {
       };
 
       await db.collection("users").insertOne(fullData);
-      incrementUsersScrapedCounter();
       return fullData;
     } catch (e) {
       console.error(e.stack);

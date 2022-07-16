@@ -4,13 +4,8 @@ import { readmeKeywords, generalKeywords } from "../../keywords.js";
 import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
-import { scrapeUserProfile } from "../users/scrapeUser.js";
-import { getEvents } from "../../api/getEvents.js";
-import searchEventsForEmail from "../../utils/searchEventsForEmail.js";
-import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
-import { TASKLIMIT, taskCounter } from "../taskCounter.js";
 
 export const scrapeRepo = async (db, url) => {
   if (await db.collection("repos").findOne({ url })) {

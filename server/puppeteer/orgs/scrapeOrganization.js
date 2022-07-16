@@ -2,12 +2,10 @@ import puppeteer from "puppeteer";
 import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
 import { readmeKeywords, generalKeywords } from "../../keywords.js";
 import getHrefFromAnchor from "../../utils/getHrefFromAnchor.js";
-import { scrapeRepo } from "../repos/scrapeRepo.js";
 import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
-import waitForAndSelectAll from "../../utils/waitForAndSelectAll.js";
 
 export const scrapeOrganization = async (db, url) => {
   if (await db.collection("scraped_orgs").findOne({ url })) {
