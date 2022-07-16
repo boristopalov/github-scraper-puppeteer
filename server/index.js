@@ -8,6 +8,11 @@ import { taskCounter, TASKLIMIT } from "./puppeteer/taskCounter.js";
 import { scrapeFromQueuedb } from "./puppeteer/queue/scrapeFromQueue.js";
 
 const main = async () => {
+  if (process.argv.length < 4) {
+    console.error("Usage: yarn scrape ['repo' | 'org' | 'user'] [URL]");
+    process.exit(1);
+  }
+  const type = process.argv[2];
   dotenv.config({ path: "./.env" });
   const uri = process.env.URI;
   const client = new MongoClient(uri, {
@@ -21,7 +26,7 @@ const main = async () => {
       process.exit(1);
     }
     const db = client.db("scraper");
-    const type = process.argv[2];
+
     if (type === "search") {
       const searchType = process.argv[3];
       const query = process.argv[4];
@@ -38,8 +43,10 @@ const main = async () => {
         await scrapeOrganization(db, url);
       } else if (type === "user") {
         await scrapeUserProfile(db, url, null, true);
-      } else console.error(`possible types - 'repo', 'user', 'org'`);
-      process.exit(1);
+      } else {
+        console.error(`possible types - 'repo', 'user', 'org'`);
+        process.exit(1);
+      }
     }
     console.log("scraping from da queue now ");
     let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?

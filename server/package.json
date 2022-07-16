@@ -7,13 +7,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "scrape-repo": "node index.js repo",
-    "scrape-org": "node index.js org",
-    "scrape-user": "node index.js user",
+    "scrape": "node index.js",
     "search-repos": "node index.js search repositories",
     "search-users": "node index.js search users",
     "queue": "cd utils && node queueFromTerminal.js",
-    "scrape-check": "cd utils && node checkIfFullyScraped.js",
+    "scheck": "cd utils && node checkIfFullyScraped.js",
     "export": "cd utils && node exportFromTerminal.js"
   },
   "author": "Boris Topalov",
