@@ -100,13 +100,15 @@ const tryScrapeRepo = async (page, db) => {
   for (const c of contributors) {
     const contributorCard = await openUserCard(c, page);
     if (contributorCard) {
-      const { githubUrl } = await tryScrapeContributor(
+      const userData = await tryScrapeContributor(
         repoName,
         c,
         contributorCard,
         db
       );
-      data.contributors.push(githubUrl);
+      if (userData && userData.hasOwnProperty(githubUrl)) {
+        data.contributors.push(userData.githubUrl);
+      }
     }
   }
   return data;
@@ -177,16 +179,9 @@ const tryScrapeContributor = async (
   const username = await usernamePromise;
   // contributor is a bot
   if (username === "n/a") {
-    return;
+    return null;
   }
-
   const repoCommits = await commitsPromise;
-  if (await db.collection("users").findOne({ username })) {
-    const updatedDoc = { $addToSet: { repoCommits } };
-    await db.collection("users").updateOne({ username }, updatedDoc);
-    return;
-  }
-
   const githubUrl = `https://github.com/${username}`;
 
   const userData = {
@@ -195,11 +190,13 @@ const tryScrapeContributor = async (
     repoCommits,
   };
 
-  const dbResults = await db.collection("users").findOne({ username });
-  if (dbResults) {
+  if (await db.collection("users").findOne({ username })) {
     console.log(`Already scraped ${username}`);
-    return;
+    const updatedDoc = { $addToSet: { repoCommits } };
+    await db.collection("users").updateOne({ username }, updatedDoc);
+    return userData;
   }
+
   await queueTaskdb(
     db,
     {
