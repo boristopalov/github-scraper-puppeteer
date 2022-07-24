@@ -106,7 +106,7 @@ const tryScrapeRepo = async (page, db) => {
         contributorCard,
         db
       );
-      if (userData && userData.hasOwnProperty(githubUrl)) {
+      if (userData && userData.hasOwnProperty("githubUrl")) {
         data.contributors.push(userData.githubUrl);
       }
     }
@@ -190,7 +190,10 @@ const tryScrapeContributor = async (
     repoCommits,
   };
 
-  if (await db.collection("users").findOne({ username })) {
+  if (
+    (await db.collection("users").findOne({ username })) ||
+    (await db.collection("queue").findOne({ "task.args.0": githubUrl }))
+  ) {
     console.log(`Already scraped ${username}`);
     const updatedDoc = { $addToSet: { repoCommits } };
     await db.collection("users").updateOne({ username }, updatedDoc);

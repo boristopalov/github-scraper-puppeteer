@@ -238,11 +238,9 @@ const tryScrapeUser = async (page, db) => {
   ]);
 
   // we only care about scraping a user's organzations and repos if they are in new york
-  // otherwise, we shouldn't use resources/time to further scrape non-NYC users
-  // since all the code above doesn't take long, we can afford to do it for all users
-  // but since scraping more orgs and repos is significantly more time-consuming, we can
-  // only afford to do that for NYC users
-  if (data.isInNewYork) {
+  // or if the queue size is too low
+  const queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
+  if (data.isInNewYork || queueSize < 50) {
     const enqueueOrgsPromise = (async () => {
       const orgs = await page.$$(
         ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a[data-hovercard-type ='organization']"
@@ -255,7 +253,8 @@ const tryScrapeUser = async (page, db) => {
         const url = await org.evaluate((el) => el.href);
         if (
           (await db.collection("scraped_orgs").findOne({ url })) ||
-          (await db.collection("orgs").findOne({ url }))
+          (await db.collection("orgs").findOne({ url })) ||
+          (await db.collection("queue").findOne({ "task.args.0": url }))
         ) {
           return;
         }

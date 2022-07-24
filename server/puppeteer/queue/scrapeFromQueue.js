@@ -104,7 +104,7 @@ const updateUserRepoFromQueue = async (data, db, parentId) => {
     user.numPullRequestReposWithHundredStars || 0;
   const numPullRequestReposWithReadmeKeywordMatch =
     user.numPullRequestReposWithReadmeKeywordMatch || 0;
-  queuedTasks = user.queuedTasks || 0;
+  const queuedTasks = user.queuedTasks || 1;
 
   // update the DB
   const updatedDoc = {

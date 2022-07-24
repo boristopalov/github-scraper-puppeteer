@@ -82,7 +82,10 @@ const tryScrapeOrg = async (page, db) => {
 
   const enqueueRepoPromises = repoUrls.map(async (url) => {
     const orgName = await namePromise;
-    if (await db.collection("repos").findOne({ url })) {
+    if (
+      (await db.collection("repos").findOne({ url })) ||
+      (await db.collection("queue").findOne({ "task.args.0": url }))
+    ) {
       return;
     }
     await queueTaskdb(
