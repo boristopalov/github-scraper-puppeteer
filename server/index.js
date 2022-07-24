@@ -50,7 +50,7 @@ const main = async () => {
     }
     console.log("scraping from da queue now ");
     let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
-    const batchSize = Math.min(queueSize, TASKLIMIT);
+    let batchSize = Math.min(queueSize, TASKLIMIT);
     let qCounter = 0;
     while (queueSize > 0) {
       const tasks = [];
@@ -59,8 +59,9 @@ const main = async () => {
         qCounter++;
       }
       await Promise.all(tasks);
-      qCounter -= TASKLIMIT;
+      qCounter -= batchSize;
       queueSize = await db.collection("queue").countDocuments();
+      batchSize = Math.min(queueSize, TASKLIMIT);
     }
     await client.close();
   });
