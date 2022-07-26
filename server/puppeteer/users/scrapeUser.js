@@ -7,7 +7,7 @@ import { scrapeUserProfileRepos } from "./scrapeUserProfileRepos.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import searchEventsForEmail from "../../utils/searchEventsForEmail.js";
 import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests.js";
-import { getEvents } from "../../api/getEvents.js";
+import { getEvents } from "../../utils/getEvents.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 
@@ -35,6 +35,7 @@ export const scrapeUserProfile = async (db, url, data = null) => {
     } catch (e) {
       console.error(e.stack);
       console.error("Error occured for:", url);
+      await sleep(60000);
       tries--;
     } finally {
       await browser.close();

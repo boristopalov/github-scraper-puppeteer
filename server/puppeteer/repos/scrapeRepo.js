@@ -24,6 +24,7 @@ export const scrapeRepo = async (db, url) => {
     } catch (e) {
       console.error(e.stack);
       console.error("Error occured for:", url);
+      await sleep(60000); // 1 minute
       tries--;
     } finally {
       await browser.close();
