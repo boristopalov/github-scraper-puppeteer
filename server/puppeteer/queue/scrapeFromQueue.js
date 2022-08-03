@@ -35,20 +35,20 @@ export const scrapeFromQueuedb = async (db, n) => {
   decrementTaskCounter();
 
   if (type === "repo" && parentType === "org") {
-    await updateOrgRepoFromQueue(data, db, parentId);
+    await updateOrgRepo(data, db, parentId);
   }
   if (type === "repo" && parentType === "user") {
-    await updateUserRepoFromQueue(data, db, parentId);
+    await updateUserRepo(data, db, parentId);
   }
   if (type === "org" && parentType === "user") {
-    await updateUserOrgFromQueue(data, db, parentId);
+    await updateUserOrg(data, db, parentId);
   }
   await db.collection("queue").deleteOne({ _id: id });
 
   return;
 };
 
-const updateOrgRepoFromQueue = async (data, db, parentId) => {
+export const updateOrgRepo = async (data, db, parentId) => {
   if (!data) {
     return;
   }
@@ -82,7 +82,7 @@ const updateOrgRepoFromQueue = async (data, db, parentId) => {
   await db.collection("orgs").updateOne({ name: parentId }, updatedDoc);
 };
 
-const updateUserRepoFromQueue = async (data, db, parentId) => {
+export const updateUserRepo = async (data, db, parentId) => {
   if (!data) {
     return;
   }
@@ -122,7 +122,7 @@ const updateUserRepoFromQueue = async (data, db, parentId) => {
   await db.collection("users").updateOne({ username: parentId }, updatedDoc);
 };
 
-const updateUserOrgFromQueue = async (data, db, parentId) => {
+export const updateUserOrg = async (data, db, parentId) => {
   if (!data) {
     return;
   }
