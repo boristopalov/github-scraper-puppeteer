@@ -6,6 +6,7 @@ import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
+import { updateOrgRepo } from "../queue/scrapeFromQueue.js";
 
 export const scrapeOrganization = async (db, url) => {
   if (await db.collection("scraped_orgs").findOne({ url })) {
@@ -24,7 +25,6 @@ export const scrapeOrganization = async (db, url) => {
     } catch (e) {
       console.error(e.stack);
       console.error("Error occured for:", url);
-      await sleep(60000); // 1 minute
       tries--;
     } finally {
       await browser.close();
@@ -83,11 +83,13 @@ const tryScrapeOrg = async (page, db) => {
 
   const enqueueRepoPromises = repoUrls.map(async (url) => {
     const orgName = await namePromise;
-    if (
-      (await db.collection("repos").findOne({ url })) ||
-      (await db.collection("queue").findOne({ "task.args.0": url }))
-    ) {
-      return;
+    const repoData = await db.collection("repos").findOne({ url });
+    if (repoData) {
+      await updateOrgRepo(repoData, db, data.name);
+      return data;
+    }
+    if (await db.collection("queue").findOne({ "task.args.0": url })) {
+      return data;
     }
     await queueTaskdb(
       db,

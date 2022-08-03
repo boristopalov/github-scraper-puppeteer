@@ -10,6 +10,7 @@ import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests
 import { getEvents } from "../../utils/getEvents.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
+import { updateUserOrg, updateUserRepo } from "../queue/scrapeFromQueue.js";
 
 export const scrapeUserProfile = async (db, url, data = null) => {
   console.log(url);
@@ -35,7 +36,6 @@ export const scrapeUserProfile = async (db, url, data = null) => {
     } catch (e) {
       console.error(e.stack);
       console.error("Error occured for:", url);
-      await sleep(60000);
       tries--;
     } finally {
       await browser.close();
@@ -172,11 +172,14 @@ const tryScrapeUser = async (page, db) => {
   })();
 
   const contributionsPromise = (async () => {
-    const contributorsElement = await waitForAndSelect(
-      page,
+    const contributionsElement = await page.$(
       ".js-yearly-contributions > div > h2"
     );
-    const contributionCount = await contributorsElement.evaluate(
+    if (!contributionsElement) {
+      data.contributionCount = 0;
+      return;
+    }
+    const contributionCount = await contributionsElement.evaluate(
       (el) => el.textContent
     );
     data.contributionCount = parseInt(contributionCount);
@@ -252,11 +255,12 @@ const tryScrapeUser = async (page, db) => {
       const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
       const queuePromises = orgsToQueue.map(async (org) => {
         const url = await org.evaluate((el) => el.href);
-        if (
-          (await db.collection("scraped_orgs").findOne({ url })) ||
-          (await db.collection("orgs").findOne({ url })) ||
-          (await db.collection("queue").findOne({ "task.args.0": url }))
-        ) {
+        const orgData = await db.collection("orgs").findOne({ url });
+        if (orgData) {
+          await updateUserOrg(orgData, db, data.username);
+          return;
+        }
+        if (await db.collection("queue").findOne({ "task.args.0": url })) {
           return;
         }
         await queueTaskdb(
@@ -280,8 +284,12 @@ const tryScrapeUser = async (page, db) => {
       const events = await getEvents(data.username);
       const pullRequestRepoUrls = searchEventsForPullRequests(events);
       const queuePromises = pullRequestRepoUrls.map(async (url) => {
-        const dbResults = await db.collection("repos").findOne({ url });
-        if (dbResults) {
+        const repoData = await db.collection("repos").findOne({ url });
+        if (repoData) {
+          await updateUserRepo(repoData, db, data.username);
+          return;
+        }
+        if (await db.collection("queue").findOne({ "task.args.0": url })) {
           return;
         }
         await queueTaskdb(

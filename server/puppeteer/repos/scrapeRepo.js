@@ -24,7 +24,6 @@ export const scrapeRepo = async (db, url) => {
     } catch (e) {
       console.error(e.stack);
       console.error("Error occured for:", url);
-      await sleep(60000); // 1 minute
       tries--;
     } finally {
       await browser.close();
@@ -172,7 +171,7 @@ const tryScrapeContributor = async (
       (e) => e.innerText.split(" ")[0]
     );
     const commitsNum = convertNumStringToDigits(commits);
-    const obj = [];
+    const obj = {};
     obj[repoName] = commitsNum;
     return obj;
   })();
@@ -191,13 +190,14 @@ const tryScrapeContributor = async (
     repoCommits,
   };
 
-  if (
-    (await db.collection("users").findOne({ username })) ||
-    (await db.collection("queue").findOne({ "task.args.0": githubUrl }))
-  ) {
+  if (await db.collection("users").findOne({ username })) {
     console.log(`Already scraped ${username}`);
     const updatedDoc = { $addToSet: { repoCommits } };
     await db.collection("users").updateOne({ username }, updatedDoc);
+    return userData;
+  }
+
+  if (await db.collection("queue").findOne({ "task.args.0": githubUrl })) {
     return userData;
   }
 
@@ -205,8 +205,8 @@ const tryScrapeContributor = async (
     db,
     {
       type: "user",
-      parentType: null,
-      parentId: null,
+      parentType: "repo", // for logging purposes
+      parentId: repoName, // for logging purposes -- no need to updated the database here but still nice to be able to see what is queueing up this task
     },
     {
       fn: "scrapeUserProfile",
