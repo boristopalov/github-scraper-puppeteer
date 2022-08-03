@@ -28,7 +28,7 @@ export const exportRepo = async (db, url) => {
       const updatedDoc = {
         $set: {
           exported: true,
-          updatedAt: new Date(),
+          updatedAt: Date.now(),
         },
       };
       await db.collection("users").updateMany(
@@ -76,7 +76,7 @@ export const exportOrg = async (db, url) => {
       const updatedDoc = {
         $set: {
           exported: true,
-          updatedAt: new Date(),
+          updatedAt: Date.now(),
         },
       };
       await db.collection("users").updateMany(
@@ -119,7 +119,7 @@ export const exportUser = async (db, _url) => {
       const updatedDoc = {
         $set: {
           exported: true,
-          updatedAt: new Date(),
+          updatedAt: Date.now(),
         },
       };
       await db.collection("users").updateMany(
