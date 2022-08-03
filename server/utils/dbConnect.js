@@ -1,6 +1,6 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import dotenv from "dotenv";
-dotenv.config({ path: "../.env" });
+dotenv.config();
 const uri = process.env.URI;
 
 export const mongoClient = async () => {
