@@ -7,10 +7,11 @@ export const queueFromTerminal = () => {
     console.error("Usage: yarn queue ['repo' | 'org' | 'user'] [URL]");
     process.exit(1);
   }
-  const type = process.argv2[2];
+  const type = process.argv[2];
   const url = process.argv[3];
+  // console.log(type);
 
-  if (type !== "repo" || type !== "repo" || type !== "org") {
+  if (type !== "repo" && type !== "user" && type !== "org") {
     console.error("Possible types are: 'repo', 'org', or 'user'");
     process.exit(1);
   }
