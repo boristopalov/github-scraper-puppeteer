@@ -1,18 +1,20 @@
 export const queueTaskdb = async (
   db,
   { type, parentType, parentId },
-  { fn, args }
+  { fn, args },
+  { sendToFront = false, depth = 0 }
 ) => {
   const context = {
     type,
     parentType,
     parentId,
   };
+  const inFront = { sendToFront, depth };
   const task = {
     fn,
     args,
   };
   await db
     .collection("queue")
-    .insertOne({ context, task, createdAt: Date.now() });
+    .insertOne({ inFront, context, task, createdAt: Date.now() });
 };

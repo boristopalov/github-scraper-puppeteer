@@ -1,6 +1,7 @@
 import { queueTaskdb } from "./queueTask.js";
 import dotenv from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
+import { scrapeFromQueuedb } from "../puppeteer/queue/scrapeFromQueue.js";
 
 export const queueFromTerminal = () => {
   if (process.argv.length < 4) {
@@ -30,19 +31,24 @@ export const queueFromTerminal = () => {
     const db = client.db("scraper");
 
     let fn;
+    let depth;
     if (type === "repo") {
-      fn = "srapeRepo";
+      fn = "scrapeRepo";
+      depth = 2;
     }
     if (type === "org") {
       fn = "scrapeOrganization";
+      depth = 1;
     }
     if (type === "user") {
       fn = "scrapeUserProfile";
+      depth = 3;
     }
     await queueTaskdb(
       db,
       { type, parentId: null, parentType: null },
-      { fn, args: [url] }
+      { fn, args: [url] },
+      { sendToFront: true, depth }
     );
     await client.close();
   });

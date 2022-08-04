@@ -8,7 +8,11 @@ import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { updateOrgRepo } from "../queue/scrapeFromQueue.js";
 
-export const scrapeOrganization = async (db, url) => {
+export const scrapeOrganization = async (
+  db,
+  url,
+  { sendToFront = false, depth = 0 } = {}
+) => {
   if (await db.collection("scraped_orgs").findOne({ url })) {
     console.log("Already scraped", url);
     return null;
@@ -19,7 +23,7 @@ export const scrapeOrganization = async (db, url) => {
     const page = await browser.newPage();
     await page.goto(url);
     try {
-      const data = await tryScrapeOrg(page, db);
+      const data = await tryScrapeOrg(page, db, { sendToFront, depth });
       await db.collection("orgs").insertOne(data);
       return data;
     } catch (e) {
@@ -33,7 +37,7 @@ export const scrapeOrganization = async (db, url) => {
   return null;
 };
 
-const tryScrapeOrg = async (page, db) => {
+const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
   const data = {
     name: "n/a",
     url: "n/a",
@@ -41,8 +45,8 @@ const tryScrapeOrg = async (page, db) => {
     numReposWithHundredStars: 0,
     numRepoReadmeKeywordMatch: 0,
     reposInOrg: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
   };
 
   await checkForBotDetection(page);
@@ -91,6 +95,12 @@ const tryScrapeOrg = async (page, db) => {
     if (await db.collection("queue").findOne({ "task.args.0": url })) {
       return data;
     }
+    if (!sendToFront || depth > 3) {
+      sendToFront = false;
+      depth = 0;
+    } else {
+      depth++;
+    }
     await queueTaskdb(
       db,
       {
@@ -101,7 +111,8 @@ const tryScrapeOrg = async (page, db) => {
       {
         fn: "scrapeRepo",
         args: [url],
-      }
+      },
+      { sendToFront, depth }
     );
   });
   await Promise.all([bioContainsKeywordsPromise, enqueueRepoPromises]);

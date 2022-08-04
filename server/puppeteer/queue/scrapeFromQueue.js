@@ -12,25 +12,28 @@ export const scrapeFromQueuedb = async (db, n) => {
   const recordPromise = await db
     .collection("queue")
     .find()
+    .sort({ "inFront.sendToFront": -1, "inFront.depth": -1, _id: 1 }) // tasks manually queued by the user will be in front
     .limit(1)
     .skip(n)
     .toArray(); // grabs the nth record
   const record = recordPromise[0];
   const id = record._id;
   const { context, task } = record;
+  const inFront = record.inFront || { sendToFront: false, depth: 0 };
   const { type, parentType, parentId } = context;
   const { fn, args } = task;
+  console.log(`scraping ${args[0]}`);
 
   let data;
   incrementTaskCounter();
   if (fn === "scrapeOrganization") {
-    data = await scrapeOrganization(db, ...args);
+    data = await scrapeOrganization(db, ...args, inFront);
   }
   if (fn === "scrapeRepo") {
-    data = await scrapeRepo(db, ...args);
+    data = await scrapeRepo(db, ...args, inFront);
   }
   if (fn === "scrapeUserProfile") {
-    data = await scrapeUserProfile(db, ...args);
+    data = await scrapeUserProfile(db, ...args, inFront);
   }
   decrementTaskCounter();
 
@@ -76,7 +79,7 @@ export const updateOrgRepo = async (data, db, parentId) => {
         currentNumRepoReadmeKeywordMatch + numRepoReadmeKeywordMatch,
       numReposWithHundredStars:
         currentNumReposWithHundredStars + numReposWithHundredStars,
-      updatedAt: new Date(),
+      updatedAt: Date.now(),
     },
   };
   await db.collection("orgs").updateOne({ name: parentId }, updatedDoc);
@@ -116,7 +119,7 @@ export const updateUserRepo = async (data, db, parentId) => {
       numPullRequestReposWithHundredStars:
         currentNumPullRequestReposWithHundredStars +
         numPullRequestReposWithHundredStars,
-      updatedAt: new Date(),
+      updatedAt: Date.now(),
     },
   };
   await db.collection("users").updateOne({ username: parentId }, updatedDoc);
@@ -154,7 +157,7 @@ export const updateUserOrg = async (data, db, parentId) => {
         currentNumOrgReposWithHundredStars + numOrgReposWithHundredStars,
       numOrgBioKeywordMatch:
         currentNumOrgBioKeywordMatch + numOrgBioKeywordMatch,
-      updatedAt: new Date(),
+      updatedAt: Date.now(),
     },
   };
   await db.collection("users").updateOne({ username: parentId }, updatedDoc);

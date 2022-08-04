@@ -12,8 +12,12 @@ import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { updateUserOrg, updateUserRepo } from "../queue/scrapeFromQueue.js";
 
-export const scrapeUserProfile = async (db, url, data = null) => {
-  console.log(url);
+export const scrapeUserProfile = async (
+  db,
+  url,
+  data = null,
+  { sendToFront = false, depth = 0 } = {}
+) => {
   if (await db.collection("users").findOne({ githubUrl: url })) {
     console.log("Already scraped", url);
     return null;
@@ -25,10 +29,10 @@ export const scrapeUserProfile = async (db, url, data = null) => {
     const page = await browser.newPage();
     await page.goto(url);
     try {
-      const scrapedData = await tryScrapeUser(page, db);
+      const scrapedData = await tryScrapeUser(page, db, { sendToFront, depth });
       const fullData = {
-        ...data,
         ...scrapedData,
+        ...data,
       };
 
       await db.collection("users").insertOne(fullData);
@@ -44,7 +48,7 @@ export const scrapeUserProfile = async (db, url, data = null) => {
   return null;
 };
 
-const tryScrapeUser = async (page, db) => {
+const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
   const data = {
     name: "n/a",
     email: "n/a",
@@ -69,8 +73,8 @@ const tryScrapeUser = async (page, db) => {
     numOrgReposWithHundredStars: 0,
     numOrgReposReadmeKeywordMatch: 0,
     company: "n/a",
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
   };
 
   await checkForBotDetection(page);
@@ -245,6 +249,12 @@ const tryScrapeUser = async (page, db) => {
   // or if the queue size is too low
   const queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
   if (data.isInNewYork || queueSize < 50) {
+    if (!sendToFront || depth > 3) {
+      sendToFront = false;
+      depth = 0;
+    } else {
+      depth++;
+    }
     const enqueueOrgsPromise = (async () => {
       const orgs = await page.$$(
         ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a[data-hovercard-type ='organization']"
@@ -255,6 +265,7 @@ const tryScrapeUser = async (page, db) => {
       const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
       const queuePromises = orgsToQueue.map(async (org) => {
         const url = await org.evaluate((el) => el.href);
+        console.log(url);
         const orgData = await db.collection("orgs").findOne({ url });
         if (orgData) {
           await updateUserOrg(orgData, db, data.username);
@@ -273,7 +284,8 @@ const tryScrapeUser = async (page, db) => {
           {
             fn: "scrapeOrganization",
             args: [url],
-          }
+          },
+          { sendToFront, depth }
         );
         data.queuedTasks++;
       });
@@ -302,7 +314,8 @@ const tryScrapeUser = async (page, db) => {
           {
             fn: "scrapeRepo",
             args: [url],
-          }
+          },
+          { sendToFront, depth }
         );
       });
       data.queuedTasks++;

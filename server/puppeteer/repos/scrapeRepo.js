@@ -7,7 +7,11 @@ import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 
-export const scrapeRepo = async (db, url) => {
+export const scrapeRepo = async (
+  db,
+  url,
+  { sendToFront = false, depth = 0 } = {}
+) => {
   if (await db.collection("repos").findOne({ url })) {
     console.log("Already scraped", url);
     return null;
@@ -18,7 +22,7 @@ export const scrapeRepo = async (db, url) => {
     const page = await browser.newPage();
     await page.goto(url);
     try {
-      const data = await tryScrapeRepo(page, db);
+      const data = await tryScrapeRepo(page, db, { sendToFront, depth });
       await db.collection("repos").insertOne(data);
       return data;
     } catch (e) {
@@ -32,7 +36,7 @@ export const scrapeRepo = async (db, url) => {
   return null;
 };
 
-const tryScrapeRepo = async (page, db) => {
+const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
   const data = {
     name: "n/a",
     url: "n/a",
@@ -40,8 +44,8 @@ const tryScrapeRepo = async (page, db) => {
     isRepoReadmeKeywordMatch: false,
     topLanguage: "n/a",
     contributors: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
   };
   await checkForBotDetection(page);
   await sleep(1000);
@@ -104,7 +108,8 @@ const tryScrapeRepo = async (page, db) => {
         repoName,
         c,
         contributorCard,
-        db
+        db,
+        { sendToFront, depth }
       );
       if (userData && userData.hasOwnProperty("githubUrl")) {
         data.contributors.push(userData.githubUrl);
@@ -151,7 +156,8 @@ const tryScrapeContributor = async (
   repoName,
   contributorEl,
   contributorCard,
-  db
+  db,
+  { sendToFront, depth }
 ) => {
   const usernamePromise = (async () => {
     await sleep(2000);
@@ -192,13 +198,19 @@ const tryScrapeContributor = async (
 
   if (await db.collection("users").findOne({ username })) {
     console.log(`Already scraped ${username}`);
-    const updatedDoc = { $addToSet: { repoCommits } };
+    const updatedDoc = { $addToSet: { repoCommits: repoCommits } };
     await db.collection("users").updateOne({ username }, updatedDoc);
     return userData;
   }
 
   if (await db.collection("queue").findOne({ "task.args.0": githubUrl })) {
     return userData;
+  }
+  if (!sendToFront || depth > 3) {
+    sendToFront = false;
+    depth = 0;
+  } else {
+    depth++;
   }
 
   await queueTaskdb(
@@ -211,7 +223,8 @@ const tryScrapeContributor = async (
     {
       fn: "scrapeUserProfile",
       args: [githubUrl, userData],
-    }
+    },
+    { sendToFront, depth } // if this repo was queued by the user, sendToFront will be true. Otherwise false
   );
   return userData;
 };
