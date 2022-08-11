@@ -1,11 +1,22 @@
-import { mongoClient } from "../dbConnect.js";
 import { csvExport } from "../csvExport.js";
 import { exportRepo, exportOrg, exportUser } from "./export.js";
+import dotenv from "dotenv";
+import { MongoClient, ServerApiVersion } from "mongodb";
 
 const exportFromTerminal = async () => {
-  try {
-    const client = await mongoClient();
+  dotenv.config({ path: "../../.env" });
+  const uri = process.env.URI;
+  const client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverApi: ServerApiVersion.v1,
+  });
+  client.connect(async (err) => {
+    if (err) {
+      return err;
+    }
     const db = client.db("scraper");
+
     if (process.argv.length === 2) {
       csvExport(db);
       return;
@@ -16,19 +27,16 @@ const exportFromTerminal = async () => {
     const type = process.argv[2];
     const url = process.argv[3];
     if (type === "repo") {
-      exportRepo(db, url);
+      await exportRepo(db, url);
     } else if (type === "org") {
-      exportOrg(db, url);
+      await exportOrg(db, url);
     } else if (type === "user") {
-      exportUser(db, url);
+      await exportUser(db, url);
     } else {
       console.error("Possible types are: 'repo', 'org', or 'user'");
       process.exit(1);
     }
-  } catch (e) {
-    console.error(e);
-    process.exit(1);
-  }
+  });
 };
 
 exportFromTerminal();
