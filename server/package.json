@@ -6,13 +6,14 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js",
     "scrape": "node index.js",
     "search-repos": "node index.js search repositories",
     "search-users": "node index.js search users",
     "queue": "cd utils && node queueFromTerminal.js",
-    "scheck": "cd utils && node checkIfFullyScraped.js",
-    "export": "cd utils && node exportFromTerminal.js"
+    "scheck": "cd utils/scrapeCheck && node checkIfScrapedTerminal.js",
+    "export": "cd utils/export && node exportFromTerminal.js",
+    "server": "node index.js server",
+    "dev": "nodemon index.js server"
   },
   "author": "Boris Topalov",
   "license": "ISC",
