@@ -59,6 +59,7 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
     githubUrl: "n/a",
     bioMatchesKeywords: false,
     repoCommits: [],
+    orgs: [],
     numPullRequestReposWithHundredStars: 0,
     numPullRequestReposWithReadmeKeywordMatch: 0,
     queuedTasks: 0,
@@ -265,7 +266,7 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
       const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
       const queuePromises = orgsToQueue.map(async (org) => {
         const url = await org.evaluate((el) => el.href);
-        console.log(url);
+        data.orgs.push(url);
         const orgData = await db.collection("orgs").findOne({ url });
         if (orgData) {
           await updateUserOrg(orgData, db, data.username);
