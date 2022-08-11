@@ -40,7 +40,7 @@ export const scrapeOrganization = async (
 const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
   const data = {
     name: "n/a",
-    url: "n/a",
+    url: page.url(),
     bioKeywordMatch: false,
     numReposWithHundredStars: 0,
     numRepoReadmeKeywordMatch: 0,
@@ -59,7 +59,6 @@ const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
   const namePromise = (async () => {
     const name = await header.$eval(".flex-1 > h1", (e) => e.innerText);
     data.name = name;
-    data.url = `https://github.com/${name}`;
     return name;
   })();
 
