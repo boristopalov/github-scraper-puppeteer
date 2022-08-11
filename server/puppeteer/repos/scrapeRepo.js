@@ -188,12 +188,13 @@ const tryScrapeContributor = async (
     return null;
   }
   const repoCommits = await commitsPromise;
+  const commitsArray = [repoCommits];
   const githubUrl = `https://github.com/${username}`;
 
   const userData = {
     username,
     githubUrl,
-    repoCommits,
+    repoCommits: commitsArray,
   };
 
   if (await db.collection("users").findOne({ username })) {
