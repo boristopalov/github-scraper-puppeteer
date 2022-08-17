@@ -10,7 +10,11 @@ import { startServer } from "./api/server.js";
 const main = async () => {
   try {
     const client = await mongoClient();
-    const db = client.db("scraper");
+    const db =
+      process.env.DB_ENV === "testing"
+        ? client.db("testing")
+        : client.db("scraper");
+    console.log(db.databaseName);
 
     if (process.argv[2] === "server") {
       startServer(db);

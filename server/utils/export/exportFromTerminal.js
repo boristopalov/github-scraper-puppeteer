@@ -15,8 +15,10 @@ const exportFromTerminal = async () => {
     if (err) {
       return err;
     }
-    const db = client.db("scraper");
-
+    const db =
+      process.env.DB_ENV === "testing"
+        ? client.db("testing")
+        : client.db("scraper");
     if (process.argv.length === 2) {
       csvExport(db);
       return;
