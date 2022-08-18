@@ -5,11 +5,9 @@
   "main": "./index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "scrape": "node index.js",
     "search-repos": "node index.js search repositories",
     "search-users": "node index.js search users",
-    "queue": "cd utils && node queueFromTerminal.js",
+    "scrape": "node index.js scrape",
     "scheck": "cd utils/scrapeCheck && node checkIfScrapedTerminal.js",
     "export": "cd utils/export && node exportFromTerminal.js",
     "server": "node index.js server",

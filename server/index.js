@@ -6,6 +6,7 @@ import { taskCounter, TASKLIMIT } from "./puppeteer/taskCounter.js";
 import { scrapeFromQueuedb } from "./puppeteer/queue/scrapeFromQueue.js";
 import { mongoClient } from "./utils/dbConnect.js";
 import { startServer } from "./api/server.js";
+import { isServerActive } from "./utils/isServerActive.js";
 
 const main = async () => {
   try {
@@ -14,7 +15,6 @@ const main = async () => {
       process.env.DB_ENV === "testing"
         ? client.db("testing")
         : client.db("scraper");
-    console.log(db.databaseName);
 
     if (process.argv[2] === "server") {
       startServer(db);
@@ -23,27 +23,31 @@ const main = async () => {
       console.error("Usage: yarn scrape ['repo' | 'org' | 'user'] [URL]");
       process.exit(1);
     }
-    const type = process.argv[2];
-    if (type === "search") {
-      const searchType = process.argv[3];
+    const cmd = process.argv[2];
+    const type = process.argv[3];
+    if (cmd === "search") {
       const query = process.argv[4];
-      await ghSearch(query, searchType, db);
+      await ghSearch(query, type, db);
+      return;
+    }
+    const url = process.argv[4];
+    if (!url.toLowerCase().includes("github.com")) {
+      console.error(`Please enter a valid GitHub url, you entered: ${url}`);
+      process.exit(1);
+    }
+    if (type === "repo") {
+      await scrapeRepo(db, url);
+    } else if (type === "org") {
+      await scrapeOrganization(db, url);
+    } else if (type === "user") {
+      await scrapeUserProfile(db, url, null, true);
     } else {
-      const url = process.argv[3];
-      if (!url.toLowerCase().includes("github.com")) {
-        console.error(`Please enter a valid GitHub url, you entered: ${url}`);
-        process.exit(1);
-      }
-      if (type === "repo") {
-        await scrapeRepo(db, url);
-      } else if (type === "org") {
-        await scrapeOrganization(db, url);
-      } else if (type === "user") {
-        await scrapeUserProfile(db, url, null, true);
-      } else {
-        console.error(`possible types - 'repo', 'user', 'org'`);
-        process.exit(1);
-      }
+      console.error(`possible types - 'repo', 'user', 'org'`);
+      process.exit(1);
+    }
+    if (await isServerActive(db)) {
+      console.log("Scraper is already running");
+      process.exit(0);
     }
     console.log("scraping from da queue now ");
     let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
