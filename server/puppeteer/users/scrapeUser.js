@@ -232,6 +232,22 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
     }
   })();
 
+  const orgUrlsPromise = (async () => {
+    const orgs = await page.$$(
+      ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a[data-hovercard-type ='organization']"
+    );
+    if (!orgs) {
+      return null;
+    }
+    const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
+    const queuePromises = orgsToQueue.map(async (org) => {
+      const url = await org.evaluate((el) => el.href);
+      data.orgs.push(url);
+    });
+    await Promise.all(queuePromises);
+    return data.orgs;
+  })();
+
   await Promise.all([
     readmePromise,
     contributionsPromise,
@@ -244,6 +260,7 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
     emailPromise,
     bioPromise,
     locationPromise,
+    orgUrlsPromise,
   ]);
 
   // we only care about scraping a user's organzations and repos if they are in new york
@@ -257,16 +274,11 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
       depth++;
     }
     const enqueueOrgsPromise = (async () => {
-      const orgs = await page.$$(
-        ".border-top.color-border-muted.pt-3.mt-3.clearfix.hide-sm.hide-md > a[data-hovercard-type ='organization']"
-      );
-      if (!orgs) {
+      const urls = await orgUrlsPromise;
+      if (!urls) {
         return;
       }
-      const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
-      const queuePromises = orgsToQueue.map(async (org) => {
-        const url = await org.evaluate((el) => el.href);
-        data.orgs.push(url);
+      const queuePromises = urls.map(async (url) => {
         const orgData = await db.collection("orgs").findOne({ url });
         if (orgData) {
           await updateUserOrg(orgData, db, data.username);
