@@ -25,7 +25,7 @@ export const exportRepo = async (db, url) => {
   // console.log(toExport);
   const csvString = arrayOfObjectsToCSV(toExport);
   const date = Date.now();
-  fs.writeFile(`../../data/scraped_users_${date}.csv`, csvString, async (e) => {
+  fs.writeFile(`../data/scraped_users_${date}.csv`, csvString, async (e) => {
     if (e) {
       console.error(e);
       process.exit(1);
@@ -100,7 +100,7 @@ export const exportOrg = async (db, url) => {
     );
   }
   fs.writeFile(
-    `../../data/scraped_users_${date}.csv`,
+    `../data/scraped_users_${date}.csv`,
     fullCsvString,
     async (e) => {
       if (e) {
@@ -123,7 +123,7 @@ export const exportUser = async (db, url) => {
   const csvString = arrayOfObjectsToCSV(toExport);
   const date = Date.now();
 
-  fs.writeFile(`../../data/scraped_users_${date}.csv`, csvString, async (e) => {
+  fs.writeFile(`../data/scraped_users_${date}.csv`, csvString, async (e) => {
     if (e) {
       console.error(e);
       process.exit(1);
