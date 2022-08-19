@@ -7,11 +7,11 @@
   "scripts": {
     "search-repos": "node index.js search repositories",
     "search-users": "node index.js search users",
-    "scrape": "node index.js scrape",
+    "scrape": "node startFromTerminal.js",
     "scheck": "cd utils/scrapeCheck && node checkIfScrapedTerminal.js",
     "export": "cd utils/export && node exportFromTerminal.js",
-    "server": "node index.js server",
-    "dev": "nodemon index.js server"
+    "server": "cd api && node server.js",
+    "dev": "cd api && nodemon server.js"
   },
   "author": "Boris Topalov",
   "license": "ISC",
