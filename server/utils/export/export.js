@@ -1,6 +1,6 @@
 import { exec } from "child_process";
 import arrayOfObjectsToCSV from "../arrayOfObjectsToCSV.js";
-import fs from "fs";
+import fs, { write } from "fs";
 
 export const exportRepo = async (db, url) => {
   const repo = await db.collection("repos").findOne({ url });
@@ -25,7 +25,9 @@ export const exportRepo = async (db, url) => {
   // console.log(toExport);
   const csvString = arrayOfObjectsToCSV(toExport);
   const date = Date.now();
-  fs.writeFile(`../data/scraped_users_${date}.csv`, csvString, async (e) => {
+  const writePath = `../data/scraped_users_${date}.csv`;
+
+  fs.writeFile(writePath, csvString, async (e) => {
     if (e) {
       console.error(e);
       process.exit(1);
@@ -37,6 +39,7 @@ export const exportRepo = async (db, url) => {
       updatedAt: date,
     },
   };
+
   await db.collection("users").updateMany(
     {
       $and: [
@@ -47,8 +50,8 @@ export const exportRepo = async (db, url) => {
     },
     updatedDoc
   );
-  console.log(`Wrote to ../../data/scraped_users_${date}.csv`);
-  process.exit(0);
+  console.log(`Wrote to ${writePath}`);
+  return writePath;
 };
 
 export const exportOrg = async (db, url) => {
@@ -56,7 +59,6 @@ export const exportOrg = async (db, url) => {
   const date = Date.now();
   if (!org) {
     console.error("No record(s) with that URL found");
-    process.exit(1);
   }
   const reposInOrg = org.reposInOrg;
   let fullCsvString = "";
@@ -99,18 +101,14 @@ export const exportOrg = async (db, url) => {
       updatedDoc
     );
   }
-  fs.writeFile(
-    `../data/scraped_users_${date}.csv`,
-    fullCsvString,
-    async (e) => {
-      if (e) {
-        console.error(e);
-        process.exit(1);
-      }
+  const writePath = `../data/scraped_users_${date}.csv`;
+  fs.writeFile(writePath, fullCsvString, async (e) => {
+    if (e) {
+      console.error(e);
     }
-  );
-  console.log(`Wrote to ../../data/scraped_users_${date}.csv`);
-  process.exit(0);
+  });
+  console.log(`Wrote to ${writePath}`);
+  return writePath;
 };
 
 export const exportUser = async (db, url) => {
@@ -123,10 +121,10 @@ export const exportUser = async (db, url) => {
   const csvString = arrayOfObjectsToCSV(toExport);
   const date = Date.now();
 
-  fs.writeFile(`../data/scraped_users_${date}.csv`, csvString, async (e) => {
+  const writePath = `../data/scraped_users_${date}.csv`;
+  fs.writeFile(writePath, csvString, async (e) => {
     if (e) {
       console.error(e);
-      process.exit(1);
     }
   });
 
@@ -143,6 +141,6 @@ export const exportUser = async (db, url) => {
     updatedDoc
   );
 
-  console.log(`Wrote to ../../data/scraped_users_${date}.csv`);
-  process.exit(0);
+  console.log(`Wrote to ${writePath}`);
+  return writePath;
 };
