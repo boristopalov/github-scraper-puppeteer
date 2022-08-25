@@ -1,6 +1,15 @@
-import { startScrape } from "./start.js";
+import { start } from "./start.js";
 const main = async () => {
-  startScrape();
+  let tries = 2;
+  while (tries > 0) {
+    try {
+      start();
+      return;
+    } catch (e) {
+      console.error(e);
+      tries--;
+    }
+  }
 };
 
 main();
