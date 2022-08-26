@@ -2,39 +2,28 @@ import sleep from "../../utils/sleep.js";
 import puppeteer from "puppeteer";
 
 export const scrapeUserProfileRepos = async (url) => {
-  let tries = 2;
-  while (tries > 0) {
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url);
-    try {
-      await navigateToRepos(page);
-      const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto(url);
+  await navigateToRepos(page);
+  const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
 
-      let tenStarRepoCount = 0;
+  let tenStarRepoCount = 0;
 
-      for (const repo of repos) {
-        const starElement = await repo.$(".f6.color-fg-muted.mt-2 > a");
-        if (!starElement) {
-          continue;
-        }
-        const starCount = await page.evaluate(
-          (e) => parseInt(e.innerText),
-          starElement
-        );
-        if (starCount > 10) {
-          tenStarRepoCount++;
-        }
-      }
-      return tenStarRepoCount;
-    } catch (e) {
-      console.error(e.stack);
-      console.error("Error occured for:", url);
-      tries--;
-    } finally {
-      await browser.close();
+  for (const repo of repos) {
+    const starElement = await repo.$(".f6.color-fg-muted.mt-2 > a");
+    if (!starElement) {
+      continue;
+    }
+    const starCount = await page.evaluate(
+      (e) => parseInt(e.innerText),
+      starElement
+    );
+    if (starCount > 10) {
+      tenStarRepoCount++;
     }
   }
+  return tenStarRepoCount;
   return 0;
 };
 

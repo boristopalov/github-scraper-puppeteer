@@ -57,6 +57,7 @@ export const start = (db, type, url) => {
       return;
     } catch (e) {
       console.error(e);
+      console.error(`Error happened for ${type} ${url}`);
       tries--;
     }
   }
