@@ -23,17 +23,29 @@ export const scrapeUserProfile = async (
     return null;
   }
 
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-  await page.goto(url);
-  const scrapedData = await tryScrapeUser(page, db, { sendToFront, depth });
-  const fullData = {
-    ...scrapedData,
-    ...data,
-  };
+  let tries = 2;
+  while (tries > 0) {
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+    await page.goto(url);
+    try {
+      const scrapedData = await tryScrapeUser(page, db, { sendToFront, depth });
+      const fullData = {
+        ...scrapedData,
+        ...data,
+      };
 
-  await db.collection("users").insertOne(fullData);
-  return fullData;
+      await db.collection("users").insertOne(fullData);
+      return fullData;
+    } catch (e) {
+      console.error(e.stack);
+      console.error("Error occured for:", url);
+      tries--;
+    } finally {
+      await browser.close();
+    }
+  }
+  return null;
 };
 
 const tryScrapeUser = async (page, db, { sendToFront, depth }) => {

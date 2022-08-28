@@ -16,13 +16,24 @@ export const scrapeRepo = async (
     console.log("Already scraped", url);
     return null;
   }
-
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-  await page.goto(url);
-  const data = await tryScrapeRepo(page, db, { sendToFront, depth });
-  await db.collection("repos").insertOne(data);
-  return data;
+  let tries = 2;
+  while (tries > 0) {
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+    await page.goto(url);
+    try {
+      const data = await tryScrapeRepo(page, db, { sendToFront, depth });
+      await db.collection("repos").insertOne(data);
+      return data;
+    } catch (e) {
+      console.error(e.stack);
+      console.error("Error occured for:", url);
+      tries--;
+    } finally {
+      await browser.close();
+    }
+  }
+  return null;
 };
 
 const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
