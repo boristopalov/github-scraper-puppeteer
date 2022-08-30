@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { mongoClient } from "./utils/dbConnect.js";
-import { start } from "./start.js";
+import { start } from "./index.js";
 dotenv.config({ path: "../.env" });
 
 const startFromTerminal = async () => {
