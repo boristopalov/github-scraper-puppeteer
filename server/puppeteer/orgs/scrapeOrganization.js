@@ -20,9 +20,9 @@ export const scrapeOrganization = async (
   let tries = 2;
   while (tries > 0) {
     const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url);
     try {
+      const page = await browser.newPage();
+      await page.goto(url);
       const data = await tryScrapeOrg(page, db, { sendToFront, depth });
       await db.collection("orgs").insertOne(data);
       return data;

@@ -26,9 +26,9 @@ export const scrapeUserProfile = async (
   let tries = 2;
   while (tries > 0) {
     const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url);
     try {
+      const page = await browser.newPage();
+      await page.goto(url);
       const scrapedData = await tryScrapeUser(page, db, { sendToFront, depth });
       const fullData = {
         ...scrapedData,

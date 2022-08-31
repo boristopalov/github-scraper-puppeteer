@@ -5,9 +5,9 @@ export const scrapeUserProfileRepos = async (url) => {
   let tries = 2;
   while (tries > 0) {
     const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url);
     try {
+      const page = await browser.newPage();
+      await page.goto(url);
       await navigateToRepos(page);
       const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
 

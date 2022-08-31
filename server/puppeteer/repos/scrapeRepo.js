@@ -19,9 +19,9 @@ export const scrapeRepo = async (
   let tries = 2;
   while (tries > 0) {
     const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url);
     try {
+      const page = await browser.newPage();
+      await page.goto(url);
       const data = await tryScrapeRepo(page, db, { sendToFront, depth });
       await db.collection("repos").insertOne(data);
       return data;
