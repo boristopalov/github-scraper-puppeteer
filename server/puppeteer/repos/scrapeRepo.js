@@ -30,6 +30,9 @@ export const scrapeRepo = async (
       console.error("Error occured for:", url);
       tries--;
     } finally {
+      // https://github.com/puppeteer/puppeteer/issues/298#issuecomment-771671297
+      const pages = await browser.pages();
+      await Promise.all(pages.map((page) => page.close()));
       await browser.close();
     }
   }
