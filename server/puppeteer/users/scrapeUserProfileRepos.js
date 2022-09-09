@@ -4,9 +4,13 @@ import puppeteer from "puppeteer";
 export const scrapeUserProfileRepos = async (url) => {
   let tries = 2;
   while (tries > 0) {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--incognito"],
+    });
     try {
-      const page = await browser.newPage();
+      const pages = await browser.pages();
+      const page = pages[0];
       await page.goto(url);
       await navigateToRepos(page);
       const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
@@ -33,8 +37,6 @@ export const scrapeUserProfileRepos = async (url) => {
       tries--;
     } finally {
       // https://github.com/puppeteer/puppeteer/issues/298#issuecomment-771671297
-      const pages = await browser.pages();
-      await Promise.all(pages.map((page) => page.close()));
       await browser.close();
     }
   }

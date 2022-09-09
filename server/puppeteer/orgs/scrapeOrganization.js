@@ -19,9 +19,13 @@ export const scrapeOrganization = async (
   }
   let tries = 2;
   while (tries > 0) {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--incognito"],
+    });
     try {
-      const page = await browser.newPage();
+      const pages = await browser.pages();
+      const page = pages[0];
       await page.goto(url);
       const data = await tryScrapeOrg(page, db, { sendToFront, depth });
       await db.collection("orgs").insertOne(data);
@@ -32,8 +36,6 @@ export const scrapeOrganization = async (
       tries--;
     } finally {
       // https://github.com/puppeteer/puppeteer/issues/298#issuecomment-771671297
-      const pages = await browser.pages();
-      await Promise.all(pages.map((page) => page.close()));
       await browser.close();
     }
   }
