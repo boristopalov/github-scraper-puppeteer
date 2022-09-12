@@ -17,7 +17,7 @@ const startFromTerminal = async () => {
     process.env.DB_ENV === "testing"
       ? client.db("testing")
       : client.db("scraper");
-  start(db, type, url);
+  await start(db, type, url);
 };
 
-startFromTerminal();
+await startFromTerminal();

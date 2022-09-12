@@ -47,11 +47,11 @@ const scrape = async (db, type, url) => {
   return;
 };
 
-export const start = (db, type, url) => {
+export const start = async (db, type, url) => {
   let tries = 2;
   while (tries > 0) {
     try {
-      scrape(db, type, url);
+      await scrape(db, type, url);
       return;
     } catch (e) {
       console.error(e);
