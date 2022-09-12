@@ -1,8 +1,8 @@
 import sleep from "./sleep.js";
 
 const checkForBotDetection = async (page) => {
+  let sleepMultiplier = 2;
   while (true) {
-    let sleepMultiplier = 2;
     try {
       (await page.waitForXPath('//*[contains(text(), "Whoa there!")]', {
         timeout: 2000,
