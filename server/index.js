@@ -1,8 +1,7 @@
 import { scrapeOrganization } from "./puppeteer/orgs/scrapeOrganization.js";
 import { scrapeRepo } from "./puppeteer/repos/scrapeRepo.js";
 import { scrapeUserProfile } from "./puppeteer/users/scrapeUser.js";
-import { ghSearch } from "./puppeteer/ghSearch.js";
-import { taskCounter, TASKLIMIT } from "./puppeteer/taskCounter.js";
+import { TASKLIMIT } from "./puppeteer/taskCounter.js";
 import { scrapeFromQueuedb } from "./puppeteer/queue/scrapeFromQueue.js";
 import { isScraperActive } from "./utils/isScraperActive.js";
 

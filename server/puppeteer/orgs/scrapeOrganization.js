@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
-import { readmeKeywords, generalKeywords } from "../../keywords.js";
+import { generalKeywords } from "../../keywords.js";
 import getHrefFromAnchor from "../../utils/getHrefFromAnchor.js";
 import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";

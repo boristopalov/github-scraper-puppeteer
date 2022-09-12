@@ -1,6 +1,5 @@
-import { exec } from "child_process";
 import arrayOfObjectsToCSV from "../arrayOfObjectsToCSV.js";
-import fs, { write } from "fs";
+import fs from "fs";
 
 export const exportRepo = async (db, url) => {
   const repo = await db.collection("repos").findOne({ url });

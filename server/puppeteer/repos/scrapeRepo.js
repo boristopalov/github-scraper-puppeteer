@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
-import { readmeKeywords, generalKeywords } from "../../keywords.js";
+import { readmeKeywords } from "../../keywords.js";
 import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
@@ -116,7 +116,10 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
         db,
         { sendToFront, depth }
       );
-      if (userData && userData.hasOwnProperty("githubUrl")) {
+      if (
+        userData &&
+        Object.prototype.hasOwnProperty.call(userData, "githubUrl")
+      ) {
         data.contributors.push(userData.githubUrl);
       }
     }
