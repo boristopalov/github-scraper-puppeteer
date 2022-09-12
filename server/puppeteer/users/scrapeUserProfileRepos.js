@@ -1,16 +1,19 @@
 import sleep from "../../utils/sleep.js";
 import puppeteer from "puppeteer";
+import checkForBotDetection from "../../utils/checkForBotDetection.js";
 
 export const scrapeUserProfileRepos = async (url) => {
   let tries = 2;
   while (tries > 0) {
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       args: ["--incognito"],
     });
     try {
       const pages = await browser.pages();
       const page = pages[0];
+      await checkForBotDetection(page);
+
       await page.goto(url);
       await navigateToRepos(page);
       const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
