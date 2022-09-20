@@ -6,7 +6,7 @@ export const scrapeUserProfileRepos = async (url) => {
   let tries = 2;
   while (tries > 0) {
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       args: ["--incognito"],
     });
     try {
@@ -50,6 +50,10 @@ const navigateToRepos = async (page) => {
   await page.waitForSelector("[data-tab-item='repositories']");
   const reposTabAnchor = await page.$("[data-tab-item='repositories']");
   await reposTabAnchor.click();
+  const noRepos = await page.$(".blankslate-heading");
+  if (noRepos) {
+    return;
+  }
   await page.waitForSelector(
     ".width-full > .d-flex > .d-flex > #type-options > .btn"
   );
