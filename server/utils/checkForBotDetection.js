@@ -4,9 +4,12 @@ const checkForBotDetection = async (page) => {
   let sleepMultiplier = 2;
   while (true) {
     try {
-      (await page.waitForXPath('//*[contains(text(), "Whoa there!")]', {
-        timeout: 2000,
-      })) !== null;
+      (await page.waitForXPath(
+        '//div[@class="c" and .//*[contains(text(), "Whoa there!")]]',
+        {
+          timeout: 2000,
+        }
+      )) !== null;
       console.log(
         "Abuse detection mechanism detected- waiting ",
         sleepMultiplier,
