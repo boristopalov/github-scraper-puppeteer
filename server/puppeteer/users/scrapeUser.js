@@ -27,7 +27,7 @@ export const scrapeUserProfile = async (
   while (tries > 0) {
     const browser = await puppeteer.launch({
       headless: true,
-      args: ["--incognito"],
+      args: ["--incognito", "--disable-breakpad"],
     });
     try {
       const pages = await browser.pages();
