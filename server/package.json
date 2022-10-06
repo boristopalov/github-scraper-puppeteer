@@ -7,7 +7,7 @@
   "scripts": {
     "search-repos": "node index.js search repositories",
     "search-users": "node index.js search users",
-    "scrape": "node startFromTerminal.js",
+    "scrape": "cd utils && node startFromTerminal.js",
     "scheck": "cd utils/scrapeCheck && node checkIfScrapedTerminal.js",
     "export": "cd utils/export && node exportFromTerminal.js",
     "server": "cd api && node server.js",

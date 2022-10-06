@@ -1,7 +1,6 @@
-import dotenv from "dotenv";
 import { mongoClient } from "./utils/dbConnect.js";
 import { start } from "./index.js";
-dotenv.config({ path: "../.env" });
+import { DB_ENV } from "./constants/constants.js";
 
 const startFromTerminal = async () => {
   if (process.argv.length < 4) {
@@ -13,10 +12,7 @@ const startFromTerminal = async () => {
   const url = process.argv[3];
 
   const client = await mongoClient();
-  const db =
-    process.env.DB_ENV === "testing"
-      ? client.db("testing")
-      : client.db("scraper");
+  const db = DB_ENV === "testing" ? client.db("testing") : client.db("scraper");
   await start(db, type, url);
 };
 

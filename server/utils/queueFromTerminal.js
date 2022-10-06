@@ -1,7 +1,6 @@
 import { queueTaskdb } from "./queueTask.js";
-import dotenv from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
-import { scrapeFromQueuedb } from "../puppeteer/queue/scrapeFromQueue.js";
+import { URI, DB_ENV } from "../constants/constants.js";
 
 export const queueFromTerminal = () => {
   if (process.argv.length < 4) {
@@ -16,8 +15,7 @@ export const queueFromTerminal = () => {
     console.error("Possible types are: 'repo', 'org', or 'user'");
     process.exit(1);
   }
-  dotenv.config({ path: "../.env" });
-  const uri = process.env.URI;
+  const uri = URI;
   const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -29,9 +27,7 @@ export const queueFromTerminal = () => {
       process.exit(1);
     }
     const db =
-      process.env.DB_ENV === "testing"
-        ? client.db("testing")
-        : client.db("scraper");
+      DB_ENV === "testing" ? client.db("testing") : client.db("scraper");
     let fn;
     let depth;
     if (type === "repo") {
