@@ -4,7 +4,7 @@ export const checkIfOrgScraped = async (db, url) => {
     console.log(`${url} not found in DB.`);
     return false;
   }
-  if (!org.hasOwnProperty("reposInOrg")) {
+  if (!Object.prototype.hasOwnProperty.call(org, "reposInOrg")) {
     console.log(`No repos logged for ${url}`);
     return false;
   }
@@ -27,7 +27,7 @@ export const checkIfRepoScraped = async (db, url) => {
     console.log(`${url} not found in DB.`);
     return false;
   }
-  if (!repo.hasOwnProperty("contributors")) {
+  if (!Object.prototype.hasOwnProperty.call(repo, "contributors")) {
     console.log(`No contributors logged for ${url}`);
     return false;
   }
@@ -47,7 +47,10 @@ export const checkIfUserScraped = async (db, url) => {
     console.log(`${url} not found in DB.`);
     return false;
   }
-  if (user.hasOwnProperty("queuedTasks") && user.queuedTasks > 0) {
+  if (
+    Object.prototype.hasOwnProperty.call(user, "queuedTasks") &&
+    user.queuedTasks > 0
+  ) {
     return false;
   }
   return true;
