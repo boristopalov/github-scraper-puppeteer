@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import getHrefFromAnchor from "../../utils/getHrefFromAnchor.js";
 import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
-import { generalKeywords } from "../../keywords.js";
+import { generalKeywords } from "../../constants/keywords.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
 import { scrapeUserProfileRepos } from "./scrapeUserProfileRepos.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
@@ -46,7 +46,6 @@ export const scrapeUserProfile = async (
       console.error("Error occured for:", url);
       tries--;
     } finally {
-      // https://github.com/puppeteer/puppeteer/issues/298#issuecomment-771671297
       await browser.close();
     }
   }
@@ -68,6 +67,7 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
     numPullRequestReposWithHundredStars: 0,
     numPullRequestReposWithReadmeKeywordMatch: 0,
     queuedTasks: 0,
+    queuedTasksArray: [],
     exported: false,
     contributionCount: 0,
     tenStarRepoCount: 0,
@@ -306,6 +306,7 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
           { sendToFront, depth }
         );
         data.queuedTasks++;
+        data.queuedTasksArray.push(url);
       });
       await Promise.all(queuePromises);
     })();
@@ -335,8 +336,9 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
           },
           { sendToFront, depth }
         );
+        data.queuedTasks++;
+        data.queuedTasksArray.push(url);
       });
-      data.queuedTasks++;
       await Promise.all(queuePromises);
     })();
     await Promise.all([enqueueOrgsPromise, enqueueReposPromise]);
