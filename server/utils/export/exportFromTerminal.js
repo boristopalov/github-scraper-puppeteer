@@ -1,11 +1,10 @@
 import { csvExport } from "../csvExport.js";
 import { exportRepo, exportOrg, exportUser } from "./export.js";
-import dotenv from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
+import { URI, DB_ENV } from "../../constants/constants.js";
 
 const exportFromTerminal = async () => {
-  dotenv.config({ path: "../../.env" });
-  const uri = process.env.URI;
+  const uri = URI;
   const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -16,9 +15,7 @@ const exportFromTerminal = async () => {
       return err;
     }
     const db =
-      process.env.DB_ENV === "testing"
-        ? client.db("testing")
-        : client.db("scraper");
+      DB_ENV === "testing" ? client.db("testing") : client.db("scraper");
     if (process.argv.length === 2) {
       csvExport(db);
       return;

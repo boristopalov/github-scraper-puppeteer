@@ -1,9 +1,8 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
-import dotenv from "dotenv";
-dotenv.config();
-const uri = process.env.URI;
+import { URI } from "../constants/constants.js";
 
 export const mongoClient = async () => {
+  const uri = URI;
   try {
     const client = new MongoClient(uri, {
       useNewUrlParser: true,
@@ -14,5 +13,6 @@ export const mongoClient = async () => {
     return client;
   } catch (e) {
     console.error(e);
+    throw e;
   }
 };

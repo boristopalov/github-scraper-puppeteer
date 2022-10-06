@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
-import { generalKeywords } from "../../keywords.js";
+import { generalKeywords } from "../../constants/keywords.js";
 import getHrefFromAnchor from "../../utils/getHrefFromAnchor.js";
 import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
@@ -35,7 +35,6 @@ export const scrapeOrganization = async (
       console.error("Error occured for:", url);
       tries--;
     } finally {
-      // https://github.com/puppeteer/puppeteer/issues/298#issuecomment-771671297
       await browser.close();
     }
   }

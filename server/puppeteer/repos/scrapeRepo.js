@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
-import { readmeKeywords } from "../../keywords.js";
+import { readmeKeywords } from "../../constants/keywords.js";
 import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
@@ -34,7 +34,6 @@ export const scrapeRepo = async (
       console.error("Error occured for:", url);
       tries--;
     } finally {
-      // https://github.com/puppeteer/puppeteer/issues/298#issuecomment-771671297
       await browser.close();
     }
   }
