@@ -1,5 +1,5 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
-import { URI } from "../constants/constants.js";
+import { URI } from "../constants/envVars.js";
 
 export const mongoClient = async () => {
   const uri = URI;
