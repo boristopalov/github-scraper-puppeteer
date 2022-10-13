@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TOKEN } from "../constants/constants.js";
+import { TOKEN } from "../constants/envVars.js";
 
 export async function getEvents(username) {
   const token = TOKEN;
