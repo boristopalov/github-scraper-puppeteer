@@ -1,119 +1,302 @@
-import "./App.css";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Oval } from "react-loader-spinner";
+import styles from "./styles.module.css";
 
 function App() {
-  const [profileInput, setProfileInput] = useState("");
-  const [orgInput, setOrgInput] = useState("");
-  const [repoInput, setRepoInput] = useState("");
-  const [profileDataIsLoaded, setProfileDataIsLoaded] = useState(null);
-  const [orgDataIsLoaded, setOrgDataIsLoaded] = useState(null);
-  const [repoDataIsLoaded, setRepoDataIsLoaded] = useState(null);
+  const URI = "http://localhost:8080";
+  const [url, setUrl] = useState("");
+  const [type, setType] = useState("user");
+  const [scraperRunning, setScraperRunning] = useState();
+  const [activeSection, setActiveSection] = useState("scrape");
 
   const headers = {
     "Access-Control-Allow-Origin": "*",
   };
 
-  const handleProfileChange = (event) => {
-    setProfileInput(event.target.value);
-  };
-  const handleOrgChange = (event) => {
-    setOrgInput(event.target.value);
-  };
-  const handleRepoChange = (event) => {
-    setRepoInput(event.target.value);
-  };
-
-  const downloadData = (data) => {
-    const url = window.URL.createObjectURL(new Blob([data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "data.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const scrapeProfile = async (event) => {
+  const handleCheck = async (event) => {
     event.preventDefault();
-    setProfileDataIsLoaded(false);
-    // console.log(profileInput);
     const res = await axios
-      .get(`http://localhost:8080/following/${profileInput}`, { headers })
-      .catch((error) => {
-        if (error.response.status === 404) {
-          console.log(error.response);
-          setProfileDataIsLoaded(true);
-        }
-      });
-    downloadData(res.data);
-    setProfileDataIsLoaded(true);
+      .get(`${URI}/check?url=${url}&type=${type}`, { headers })
+      .catch((error) => console.error(error));
+    console.log(res.data);
   };
 
-  const scrapeOrg = async (event) => {
-    event.preventDefault();
-    setOrgDataIsLoaded(false);
-    const res = await axios
-      .get(`http://localhost:8080/org/${orgInput}`, { headers })
-      .catch((error) => {
-        if (error.response.status === 404) {
-          console.log(error.response);
-          setProfileDataIsLoaded(true);
-        }
-      });
-    downloadData(res.data);
-    setOrgDataIsLoaded(true);
+  const getStatus = async () => {
+    try {
+      const res = await axios.get(`${URI}/status`);
+      return res.data;
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const scrapeRepo = async (event) => {
+  const statusPoll = async (interval, triesLeft, maxTries) => {
+    if (triesLeft === 0) {
+      console.error("Server is not responding!");
+      return;
+    }
+    try {
+      const { active } = await getStatus();
+      setScraperRunning(active);
+      await new Promise((resolve) => setTimeout(resolve, interval));
+      await statusPoll(5000, maxTries, maxTries);
+    } catch (error) {
+      console.error(error);
+      setScraperRunning(false);
+      await new Promise((resolve) => setTimeout(resolve, interval));
+      await statusPoll(5000, --triesLeft, maxTries);
+    }
+  };
+
+  const handleScrape = async (event) => {
     event.preventDefault();
-    setRepoDataIsLoaded(false);
-    const res = await axios
-      .get(`http://localhost:8080/repo/${repoInput}`, { headers })
-      .catch((error) => {
-        if (error.response.status === 404) {
-          console.log(error.response);
-          setProfileDataIsLoaded(true);
-        }
-      });
-    downloadData(res.data);
-    setRepoDataIsLoaded(true);
+    const sse = new EventSource(`${URI}/scrape?url=${url}&type=${type}`);
+    sse.addEventListener("message", (msg) => {
+      document.getElementById("scrapelog").innerText += msg.data + "\n";
+    });
+  };
+  const handleExport = async (event) => {
+    event.preventDefault();
+    const urlScraped = await axios.get(`${URI}/check?url=${url}&type=${type}`);
+    if (!urlScraped.data) {
+      console.log("this URL hasn't been scraped!");
+      return;
+    }
+    window.open(`${URI}/export?url=${url}&type=${type}`);
+  };
+
+  const handleStopScraper = async (event) => {
+    event.preventDefault();
+    const res = await axios.post(`${URI}/kill`);
+    console.log(res.data);
   };
 
   // useEffect(() => {
-  //   effect
-  //   return () => {
-  //     cleanup
-  //   }
-  // }, [profileDataIsLoaded, orgDataIsLoaded, repoDataIsLoaded])
+  //   (async () => await statusPoll(5000, 5, 5))();
+  // }, []);
 
   return (
-    <div className="App">
-      <div>
-        <form>
-          <input type="text" id="profileUrl" onChange={handleProfileChange} />
-          <button onClick={scrapeProfile}> Scrape Profile </button>
-        </form>
-        {profileDataIsLoaded === false ? <Oval height={40} width={40} /> : null}
+    <>
+      <div className={styles.status}>
+        <span
+          className={scraperRunning ? styles.activeDot : styles.inactiveDot}
+        ></span>
+        status:
+        {scraperRunning ? " running" : " not running"}
+        {scraperRunning && (
+          <button onClick={() => handleStopScraper()}> Stop Scraper</button>
+        )}
       </div>
+      <div className={styles.container}>
+        <div className={styles.navSection}>
+          <h2> Actions/Commands </h2>
+          <ul className={styles.navList}>
+            <li
+              onClick={() => {
+                setActiveSection("scrape");
+                setType("user");
+                setUrl("");
+              }}
+              className={activeSection === "scrape" && styles.itemActive}
+            >
+              Scrape
+            </li>
+            <li
+              onClick={() => {
+                setActiveSection("export");
+                setType("user");
+                setUrl("");
+              }}
+              className={activeSection === "export" && styles.itemActive}
+            >
+              Export User Data to CSV
+            </li>
+            <li
+              onClick={() => {
+                setActiveSection("check");
+                setType("user");
+                setUrl("");
+              }}
+              className={activeSection === "check" && styles.itemActive}
+            >
+              Check if a URL Has Been Scraped
+            </li>
+          </ul>
+        </div>
+        <div className={styles.scrollContainer}>
+          <h2> Documentation </h2>
+          {activeSection === "export" && (
+            <div id="exportDocs">
+              <p>
+                Running this action exports the contributors associated with the
+                URL given to a CSV.
+              </p>
+              <p>
+                For exporting a repo, all of the contributors to that repo get
+                exported.
+              </p>
+              <p>
+                For exporting an organization, we first get the repositories in
+                that organization, and then export all of the contributors to
+                each of those repos.
+              </p>
+              <p>
+                Type and URL can be left empty here. If they are left empty, all
+                of the users that have not been marked as exported, and are
+                available for export, are exported.
+              </p>
+            </div>
+          )}
+          {activeSection === "scrape" && (
+            <div id="scrapeDocs">
+              <p>
+                This is how you start the scraper. You shouldn't run this more
+                than once unless the scraper runs into an error and crashes and
+                you have to restart it.
+              </p>
+              <p>
+                In the top left of this page, you can see an indicator for
+                whether the scraper is running or not. If it's running, don't
+                start the scraper again. If you do, there will be more than 1
+                scraper running which will cause issues with data collection.
+              </p>
+              <p>
+                Given a URL and the type the URL is, a task for scraping the URL
+                gets added to the front of the queue.
+                <p>
+                  Since it gets added to the front of the queue, this URL will
+                  get scraped in the next batch of tasks. Each batch takes just
+                  a few seconds so this should be quick!
+                </p>
+                <p>
+                  This should be the primary way to scrape a URL. Rather than
+                  having to restart the scraper in order to scrape a specific
+                  URL, we can keep the scraper running and just add a URL to the
+                  front of the queue. This way, the workflow is uninterrupted
+                  and more efficient.
+                </p>
+              </p>
+            </div>
+          )}
+          {activeSection === "check" && (
+            <div id="checkDocs">
+              <p>
+                Checks if URL has been scraped, as well as if the contributors
+                associated with a URL have been fully scraped.
+              </p>
+            </div>
+          )}
+        </div>
+        <div className={styles.main}>
+          {activeSection === "scrape" && (
+            <div>
+              <h2>Scrape</h2>
+              <form>
+                <div className={styles.formRow}>
+                  <label for="scrapeUrl">URL</label>
+                  <input
+                    type="text"
+                    id="scrapeUrl"
+                    onChange={(e) => {
+                      setUrl(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className={styles.formRow}>
+                  <label for="scrapeType">Type</label>
+                  <select
+                    name="scrapeType"
+                    id="scrapeType"
+                    onChange={(e) => setType(e.target.value)}
+                  >
+                    <option value="user">User</option>
+                    <option value="repo">Repo</option>
+                    <option value="org">Org</option>
+                  </select>
+                </div>
+                <button onClick={handleScrape} className={styles.submitBtn}>
+                  Submit
+                </button>
+              </form>
+              <div className={styles.containerGrey}>
+                <code
+                  id="scrapelog"
+                  className={styles.scrollContainerGrey}
+                ></code>
+              </div>
+            </div>
+          )}
+          {activeSection === "export" && (
+            <div>
+              <h2>Export</h2>
+              <form>
+                <div className={styles.formRow}>
+                  <label for="exportUrl">URL</label>
+                  <input
+                    type="text"
+                    id="exportUrl"
+                    onChange={(e) => {
+                      setUrl(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className={styles.formRow}>
+                  <label for="exportType">Type</label>
+                  <select
+                    name="exportType"
+                    id="exportType"
+                    onChange={(e) => setType(e.target.value)}
+                  >
+                    <option value="user">User</option>
+                    <option value="repo">Repo</option>
+                    <option value="org">Org</option>
+                  </select>
+                </div>
+                <button onClick={handleExport} className={styles.submitBtn}>
+                  Submit
+                </button>
+              </form>
+              {/* {!orgDataIsLoaded === false ? <Oval height={40} width={40} /> : null} */}
+            </div>
+          )}
 
-      <div>
-        <form>
-          <input type="text" id="orgUrl" onChange={handleOrgChange} />
-          <button onClick={scrapeOrg}> Scrape Org </button>
-        </form>
-        {!orgDataIsLoaded === false ? <Oval height={40} width={40} /> : null}
+          {activeSection === "check" && (
+            <div>
+              <h2>Check</h2>
+              <form>
+                <div className={styles.formRow}>
+                  <label for="checkUrl">URL</label>
+                  <input
+                    type="text"
+                    id="checkUrl"
+                    onChange={(e) => {
+                      setUrl(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className={styles.formRow}>
+                  <label for="checkType">Type</label>
+                  <select
+                    name="checkType"
+                    id="checkType"
+                    onChange={(e) => setType(e.target.value)}
+                  >
+                    <option value="user">User</option>
+                    <option value="repo">Repo</option>
+                    <option value="org">Org</option>
+                  </select>
+                </div>
+                <button onClick={handleCheck} className={styles.submitBtn}>
+                  Submit
+                </button>
+              </form>
+              {/* {!repoDataIsLoaded === false ? <Oval height={40} width={40} /> : null} */}
+            </div>
+          )}
+        </div>
       </div>
-
-      <div>
-        <form>
-          <input type="text" id="orgUrl" onChange={handleRepoChange} />
-          <button onClick={scrapeRepo}> Scrape Repo </button>
-        </form>
-        {!repoDataIsLoaded === false ? <Oval height={40} width={40} /> : null}
-      </div>
-    </div>
+    </>
   );
 }
 

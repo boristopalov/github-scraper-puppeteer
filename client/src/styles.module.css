@@ -1,0 +1,100 @@
+.container {
+  display: grid;
+  grid-template-columns: 3fr 3fr 7fr;
+  margin-top: 50px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 10px;
+  left: 2em;
+}
+
+.activeDot {
+  height: 1em;
+  width: 1em;
+  background-color: green;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.inactiveDot {
+  height: 1em;
+  width: 1em;
+  background-color: red;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.navSection {
+  padding-left: 2em;
+}
+.navList {
+  list-style: none;
+  padding: 0;
+}
+
+.navList li {
+  cursor: pointer;
+  margin-bottom: 1em;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.itemActive {
+  color: #0074d9;
+}
+
+.scrollContainer {
+  padding: 0 1em;
+  overflow-y: scroll;
+  height: 600px;
+}
+
+.containerGrey {
+  background-color: #ebebeb;
+  height: 500px;
+  overflow-y: scroll;
+  width: 600px;
+  padding-left: 1em;
+  margin-top: 10px;
+}
+
+.scrollContainerGrey {
+  padding: 0 1em;
+  overflow-y: scroll;
+  height: 600px;
+}
+
+.scrollContainer p {
+  font-size: 20px;
+}
+
+.formRow {
+  margin-bottom: 10px;
+  display: flex;
+}
+
+.formRow label {
+  margin: 10px 0;
+  width: 50px;
+}
+
+.formRow input {
+  width: 300px;
+}
+
+.submitBtn {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.main {
+  padding-left: 3em;
+}
