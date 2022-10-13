@@ -5,7 +5,7 @@ export const exportRepo = async (db, url) => {
   const repo = await db.collection("repos").findOne({ url });
   if (!repo) {
     console.error("No repo with that URL found");
-    process.exit(1);
+    return null;
   }
   const contributors = repo.contributors;
   const toExport = await db
@@ -58,6 +58,7 @@ export const exportOrg = async (db, url) => {
   const date = Date.now();
   if (!org) {
     console.error("No record(s) with that URL found");
+    return null;
   }
   const reposInOrg = org.reposInOrg;
   let fullCsvString = "";
@@ -114,7 +115,7 @@ export const exportUser = async (db, url) => {
   const user = await db.collection("users").findOne({ githubUrl: url });
   if (!user) {
     console.error("No record(s) with that URL found");
-    process.exit(1);
+    return null;
   }
   const toExport = [user];
   const csvString = arrayOfObjectsToCSV(toExport);
