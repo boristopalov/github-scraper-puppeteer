@@ -3,7 +3,7 @@ import {
   checkIfRepoScraped,
   checkIfUserScraped,
 } from "./checkIfScraped.js";
-import { mongoClient } from "../dbConnect.js";
+import { mongoClient } from "../mongoClient.js";
 import { DB_ENV } from "../../constants/constants.js";
 
 const checkIfFullyScraped = async () => {
