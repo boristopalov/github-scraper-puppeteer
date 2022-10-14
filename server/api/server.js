@@ -16,6 +16,8 @@ import {
   toggleScraperFlag,
 } from "../puppeteer/stopScraperFlag.js";
 
+import { ping } from "../utils/ping.js";
+
 export const startServer = async () => {
   const app = express();
   app.use(express.json());
@@ -40,6 +42,14 @@ export const startServer = async () => {
     const msg = {
       active: status && !STOP_SCRAPER_FLAG,
       message: status ? "Scraper is running." : "Scraper is not running.",
+    };
+    res.json(msg);
+  });
+  app.get("/ping", async (_, res) => {
+    const status = await ping(db);
+    const msg = {
+      active: status,
+      message: status ? "Server is running." : "Server is not running.",
     };
     res.json(msg);
   });
