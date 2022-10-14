@@ -7,14 +7,17 @@ import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { updateOrgRepo } from "../queue/scrapeFromQueue.js";
+import { writeToClient } from "../../api/server.js";
 
 export const scrapeOrganization = async (
   db,
   url,
-  { sendToFront = false, depth = 0 } = {}
+  { sendToFront = false, depth = 0 } = {},
+  res
 ) => {
   if (await db.collection("scraped_orgs").findOne({ url })) {
     console.log("Already scraped", url);
+    writeToClient(res, `already scraped ${url}`);
     return null;
   }
   let tries = 2;
@@ -29,8 +32,10 @@ export const scrapeOrganization = async (
       await page.goto(url);
       const data = await tryScrapeOrg(page, db, { sendToFront, depth });
       await db.collection("orgs").insertOne(data);
+      writeToClient(res, `successfully scraped ${url}`);
       return data;
     } catch (e) {
+      writeToClient(res, `failed to scrape ${url}`);
       console.error(e.stack);
       console.error("Error occured for:", url);
       tries--;
