@@ -5,7 +5,7 @@ import { TASKLIMIT } from "./puppeteer/taskCounter.js";
 import { scrapeFromQueuedb } from "./puppeteer/queue/scrapeFromQueue.js";
 import { isScraperActive } from "./utils/isScraperActive.js";
 
-const scrape = async (db, type, url) => {
+const scrape = async (db, type, url, res) => {
   if (!url.toLowerCase().includes("github.com")) {
     console.error(
       `error- please enter a valid GitHub url, you entered: ${url}`
@@ -14,11 +14,20 @@ const scrape = async (db, type, url) => {
   }
   console.log(type, url);
   if (type === "org") {
-    await scrapeOrganization(db, url, { sendToFront: true, depth: 1 });
+    await scrapeOrganization(db, url, { sendToFront: true, depth: 1 }, res);
   } else if (type === "repo") {
-    await scrapeRepo(db, url, { sendToFront: true, depth: 2 });
+    await scrapeRepo(db, url, { sendToFront: true, depth: 2 }, res);
   } else if (type === "user") {
-    await scrapeUserProfile(db, url, null, { sendToFront: true, depth: 3 });
+    await scrapeUserProfile(
+      db,
+      url,
+      null,
+      {
+        sendToFront: true,
+        depth: 3,
+      },
+      res
+    );
   } else {
     console.error(`error- possible types - 'repo', 'user', 'org'`);
     return;
@@ -36,7 +45,7 @@ const scrape = async (db, type, url) => {
   while (queueSize > 0) {
     const tasks = [];
     while (qCounter < batchSize) {
-      tasks.push(scrapeFromQueuedb(db, qCounter));
+      tasks.push(scrapeFromQueuedb(db, qCounter, res));
       qCounter++;
     }
     await Promise.all(tasks);
@@ -47,11 +56,14 @@ const scrape = async (db, type, url) => {
   return;
 };
 
-export const start = async (db, type, url) => {
+export const start = async (db, type, url, res) => {
+  if (STOP_SCRAPER_FLAG) {
+    toggleScraperFlag();
+  }
   let tries = 2;
   while (tries > 0) {
     try {
-      await scrape(db, type, url);
+      await scrape(db, type, url, res);
       return;
     } catch (e) {
       console.error(e);
