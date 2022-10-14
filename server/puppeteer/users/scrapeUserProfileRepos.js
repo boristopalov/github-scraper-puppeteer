@@ -3,47 +3,35 @@ import puppeteer from "puppeteer";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 
 export const scrapeUserProfileRepos = async (url) => {
-  let tries = 2;
-  while (tries > 0) {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--incognito", "--disable-breakpad"],
-    });
-    try {
-      const pages = await browser.pages();
-      const page = pages[0];
-      await checkForBotDetection(page);
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--incognito", "--disable-breakpad"],
+  });
+  const pages = await browser.pages();
+  const page = pages[0];
+  await checkForBotDetection(page);
 
-      await page.goto(url);
-      await navigateToRepos(page);
-      const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
+  await page.goto(url);
+  await navigateToRepos(page);
+  const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
 
-      let tenStarRepoCount = 0;
+  let tenStarRepoCount = 0;
 
-      for (const repo of repos) {
-        const starElement = await repo.$(".f6.color-fg-muted.mt-2 > a");
-        if (!starElement) {
-          continue;
-        }
-        const starCount = await page.evaluate(
-          (e) => parseInt(e.innerText),
-          starElement
-        );
-        if (starCount > 10) {
-          tenStarRepoCount++;
-        }
-      }
-      return tenStarRepoCount;
-    } catch (e) {
-      console.error(e.stack);
-      console.error("Error occured for:", url);
-      tries--;
-    } finally {
-      // https://github.com/puppeteer/puppeteer/issues/298#issuecomment-771671297
-      await browser.close();
+  for (const repo of repos) {
+    const starElement = await repo.$(".f6.color-fg-muted.mt-2 > a");
+    if (!starElement) {
+      continue;
+    }
+    const starCount = await page.evaluate(
+      (e) => parseInt(e.innerText),
+      starElement
+    );
+    if (starCount > 10) {
+      tenStarRepoCount++;
     }
   }
-  return 0;
+  await browser.close();
+  return tenStarRepoCount;
 };
 
 const navigateToRepos = async (page) => {
