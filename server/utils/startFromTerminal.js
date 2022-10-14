@@ -1,6 +1,6 @@
-import { mongoClient } from "./dbConnect.js";
+import { mongoClient } from "./mongoClient.js";
 import { start } from "../index.js";
-import { DB_ENV } from "../constants/constants.js";
+import { DB_ENV } from "../constants/envVars.js";
 
 const startFromTerminal = async () => {
   if (process.argv.length < 4) {
