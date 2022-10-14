@@ -80,9 +80,6 @@ const updateRepo = async (data, db, parentId) => {
 };
 
 export const updateOrgRepo = async (data, db, parentId) => {
-  if (!data) {
-    return;
-  }
   let currentNumReposWithHundredStars = 0;
   let currentNumRepoReadmeKeywordMatch = 0;
   if (data.repoStarCount >= 100) {
@@ -114,9 +111,6 @@ export const updateOrgRepo = async (data, db, parentId) => {
 };
 
 export const updateUserRepo = async (data, db, parentId) => {
-  if (!data) {
-    return;
-  }
   let currentNumPullRequestReposWithHundredStars = 0;
   let currentNumPullRequestReposWithReadmeKeywordMatch = 0;
   if (data.repoStarCount >= 100) {
@@ -159,9 +153,6 @@ export const updateUserRepo = async (data, db, parentId) => {
 };
 
 export const updateUserOrg = async (data, db, parentId) => {
-  if (!data) {
-    return;
-  }
   let currentNumOrgReposReadmeKeywordMatch = 0;
   let currentNumOrgReposWithHundredStars = 0;
   let currentNumOrgBioKeywordMatch = 0;
