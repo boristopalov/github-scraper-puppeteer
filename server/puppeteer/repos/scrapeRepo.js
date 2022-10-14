@@ -6,14 +6,17 @@ import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
+import { writeToClient } from "../../api/server.js";
 
 export const scrapeRepo = async (
   db,
   url,
-  { sendToFront = false, depth = 0 } = {}
+  { sendToFront = false, depth = 0 } = {},
+  res
 ) => {
   if (await db.collection("repos").findOne({ url })) {
     console.log("Already scraped", url);
+    writeToClient(res, `already scraped ${url}`);
     return null;
   }
   let tries = 2;
@@ -28,8 +31,10 @@ export const scrapeRepo = async (
       await page.goto(url);
       const data = await tryScrapeRepo(page, db, { sendToFront, depth });
       await db.collection("repos").insertOne(data);
+      writeToClient(res, `successfully scraped ${url}`);
       return data;
     } catch (e) {
+      writeToClient(res, `failed to scrape ${url}`);
       console.error(e.stack);
       console.error("Error occured for:", url);
       tries--;
