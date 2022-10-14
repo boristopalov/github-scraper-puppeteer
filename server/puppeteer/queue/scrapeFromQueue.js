@@ -53,9 +53,30 @@ export const scrapeFromQueuedb = async (db, n, res) => {
   if (type === "org" && parentType === "user") {
     await updateUserOrg(data, db, parentId);
   }
-  await db.collection("queue").deleteOne({ _id: id });
+  if (type === "user" && parentType === "repo") {
+    await updateRepo(data, db, parentId);
+  }
 
   return;
+};
+
+const updateRepo = async (data, db, parentId) => {
+  const repo = await db.collection("repos").findOne({ name: parentId });
+  const queuedTasks = repo.queuedTasks || 1;
+  const queuedTasksArray = repo.queuedTasksArray || [];
+  const filteredQueuedTasksArray = queuedTasksArray.filter(
+    (e) => e !== data.githubUrl
+  );
+
+  const updatedDoc = {
+    $set: {
+      queuedTasks: queuedTasks - 1,
+      queuedTasksArray: filteredQueuedTasksArray,
+      updatedAt: Date.now(),
+    },
+  };
+
+  await db.collection("repos").updateOne({ name: parentId }, updatedDoc);
 };
 
 export const updateOrgRepo = async (data, db, parentId) => {
