@@ -11,7 +11,10 @@ import cors from "cors";
 import { mongoClient } from "../utils/mongoClient.js";
 import { fileURLToPath } from "url";
 import path from "path";
-import { toggleScraperFlag } from "../puppeteer/stopScraperFlag.js";
+import {
+  STOP_SCRAPER_FLAG,
+  toggleScraperFlag,
+} from "../puppeteer/stopScraperFlag.js";
 
 export const startServer = async () => {
   const app = express();
@@ -35,7 +38,7 @@ export const startServer = async () => {
   app.get("/status", async (_, res) => {
     const status = await isScraperActive(db);
     const msg = {
-      active: status,
+      active: status && !STOP_SCRAPER_FLAG,
       message: status ? "Scraper is running." : "Scraper is not running.",
     };
     res.json(msg);
