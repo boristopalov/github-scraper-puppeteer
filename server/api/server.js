@@ -129,7 +129,7 @@ export const startServer = async () => {
 };
 
 export const writeToClient = (res, data) => {
-  res.write("data: " + `[${new Date().toLocaleString()}]${data}\n\n`);
+  res.write("data: " + `[${new Date().toLocaleTimeString()}]${data}\n\n`);
 };
 
 startServer();
