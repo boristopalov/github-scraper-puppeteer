@@ -1,3 +1,4 @@
+import { queueTaskdb } from "../../utils/queueTask.js";
 import { scrapeOrganization } from "../orgs/scrapeOrganization.js";
 import { scrapeRepo } from "../repos/scrapeRepo.js";
 import { incrementTaskCounter, decrementTaskCounter } from "../taskCounter.js";
@@ -36,6 +37,12 @@ export const scrapeFromQueuedb = async (db, n, res) => {
     data = await scrapeUserProfile(db, ...args, inFront, res);
   }
   decrementTaskCounter();
+
+  await db.collection("queue").deleteOne({ _id: id });
+  if (!data) {
+    await queueTaskdb(db, context, task, inFront); //re-queue if scraping fails, which would result in data being null
+    return;
+  }
 
   if (type === "repo" && parentType === "org") {
     await updateOrgRepo(data, db, parentId);
