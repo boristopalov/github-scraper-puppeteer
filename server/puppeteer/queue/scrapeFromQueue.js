@@ -96,6 +96,11 @@ export const updateOrgRepo = async (data, db, parentId) => {
   }
   const numReposWithHundredStars = org.numReposWithHundredStars || 0;
   const numRepoReadmeKeywordMatch = org.numRepoReadmeKeywordMatch || 0;
+  const queuedTasks = org.queuedTasks || 1;
+  const queuedTasksArray = org.queuedTasksArray || [];
+  const filteredQueuedTasksArray = queuedTasksArray.filter(
+    (e) => e !== data.url
+  );
 
   // update the DB
   const updatedDoc = {
@@ -104,6 +109,8 @@ export const updateOrgRepo = async (data, db, parentId) => {
         currentNumRepoReadmeKeywordMatch + numRepoReadmeKeywordMatch,
       numReposWithHundredStars:
         currentNumReposWithHundredStars + numReposWithHundredStars,
+      queuedTasks: queuedTasks,
+      queuedTasksArray: filteredQueuedTasksArray,
       updatedAt: Date.now(),
     },
   };
