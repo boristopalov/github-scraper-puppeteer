@@ -54,6 +54,8 @@ const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
     numReposWithHundredStars: 0,
     numRepoReadmeKeywordMatch: 0,
     reposInOrg: [],
+    queuedTasks: 0,
+    queuedTasksArray: [],
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -122,6 +124,8 @@ const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
       },
       { sendToFront, depth }
     );
+    data.queuedTasks++;
+    data.queuedTasksArray.push(url);
   });
   await Promise.all([bioContainsKeywordsPromise, enqueueRepoPromises]);
   return data;
