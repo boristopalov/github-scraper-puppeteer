@@ -4,6 +4,10 @@ import { scrapeUserProfile } from "./puppeteer/users/scrapeUser.js";
 import { TASKLIMIT } from "./puppeteer/taskCounter.js";
 import { scrapeFromQueuedb } from "./puppeteer/queue/scrapeFromQueue.js";
 import { isScraperActive } from "./utils/isScraperActive.js";
+import {
+  STOP_SCRAPER_FLAG,
+  toggleScraperFlag,
+} from "./puppeteer/stopScraperFlag.js";
 
 const scrape = async (db, type, url, res) => {
   if (!url.toLowerCase().includes("github.com")) {
@@ -42,7 +46,7 @@ const scrape = async (db, type, url, res) => {
   let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
   let batchSize = Math.min(queueSize, TASKLIMIT);
   let qCounter = 0;
-  while (queueSize > 0) {
+  while (queueSize > 0 && !STOP_SCRAPER_FLAG) {
     const tasks = [];
     while (qCounter < batchSize) {
       tasks.push(scrapeFromQueuedb(db, qCounter, res));
