@@ -7,9 +7,12 @@
 .status {
   display: flex;
   align-items: center;
-  position: absolute;
   top: 10px;
   left: 2em;
+}
+
+.containerMain {
+  padding: 1em;
 }
 
 .activeDot {
@@ -68,6 +71,7 @@
   padding: 0 1em;
   overflow-y: scroll;
   height: 600px;
+  font-size: small;
 }
 
 .scrollContainer p {
