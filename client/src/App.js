@@ -8,6 +8,7 @@ function App() {
   const [url, setUrl] = useState("");
   const [type, setType] = useState("user");
   const [scraperRunning, setScraperRunning] = useState();
+  const [serverRunning, setServerRunning] = useState();
   const [activeSection, setActiveSection] = useState("scrape");
 
   const headers = {
@@ -22,10 +23,19 @@ function App() {
     console.log(res.data);
   };
 
-  const getStatus = async () => {
+  const getScraperStatus = async () => {
     try {
       const res = await axios.get(`${URI}/status`);
-      return res.data;
+      return res.data.active;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const getServerStatus = async () => {
+    try {
+      const res = await axios.get(`${URI}/ping`);
+      return res.data.active;
     } catch (error) {
       throw error;
     }
@@ -37,12 +47,15 @@ function App() {
       return;
     }
     try {
-      const { active } = await getStatus();
-      setScraperRunning(active);
+      const serverRunning = await getServerStatus();
+      const scraperRunning = await getScraperStatus();
+      setServerRunning(serverRunning);
+      setScraperRunning(scraperRunning);
       await new Promise((resolve) => setTimeout(resolve, interval));
       await statusPoll(5000, maxTries, maxTries);
     } catch (error) {
       console.error(error);
+      setServerRunning(false);
       setScraperRunning(false);
       await new Promise((resolve) => setTimeout(resolve, interval));
       await statusPoll(5000, --triesLeft, maxTries);
