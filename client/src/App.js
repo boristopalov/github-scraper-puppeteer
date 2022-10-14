@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Oval } from "react-loader-spinner";
 import styles from "./styles.module.css";
@@ -10,6 +10,12 @@ function App() {
   const [scraperRunning, setScraperRunning] = useState();
   const [serverRunning, setServerRunning] = useState();
   const [activeSection, setActiveSection] = useState("scrape");
+  const [sse, _setSse] = useState();
+  const sseRef = useRef(sse);
+  const setSse = (sse) => {
+    sseRef.current = sse;
+    _setSse(sse);
+  };
 
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -44,6 +50,9 @@ function App() {
   const statusPoll = async (interval, triesLeft, maxTries) => {
     if (triesLeft === 0) {
       console.error("Server is not responding!");
+      if (sse) {
+        sse.close();
+      }
       return;
     }
     try {
@@ -64,11 +73,21 @@ function App() {
 
   const handleScrape = async (event) => {
     event.preventDefault();
+    document.getElementById("scrapelog").innerText = "";
     const sse = new EventSource(`${URI}/scrape?url=${url}&type=${type}`);
+    if (!serverRunning) {
+      await statusPoll(5000, 5, 5);
+    }
     sse.addEventListener("message", (msg) => {
       document.getElementById("scrapelog").innerText += msg.data + "\n";
     });
+    sse.addEventListener("error", () => {
+      sseRef.current.close();
+      setSse(sseRef.current);
+    });
+    setSse(sse);
   };
+
   const handleExport = async (event) => {
     event.preventDefault();
     const urlScraped = await axios.get(`${URI}/check?url=${url}&type=${type}`);
