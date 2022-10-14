@@ -11,15 +11,18 @@ import { getEvents } from "../../utils/getEvents.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { updateUserOrg, updateUserRepo } from "../queue/scrapeFromQueue.js";
+import { writeToClient } from "../../api/server.js";
 
 export const scrapeUserProfile = async (
   db,
   url,
   data = null,
-  { sendToFront = false, depth = 0 } = {}
+  { sendToFront = false, depth = 0 } = {},
+  res
 ) => {
   if (await db.collection("users").findOne({ githubUrl: url })) {
     console.log("Already scraped", url);
+    writeToClient(res, `already scraped ${url}`);
     return null;
   }
 
@@ -38,10 +41,11 @@ export const scrapeUserProfile = async (
         ...scrapedData,
         ...data,
       };
-
       await db.collection("users").insertOne(fullData);
+      writeToClient(res, `successfully scraped ${url}`);
       return fullData;
     } catch (e) {
+      writeToClient(res, `failed to scrape ${url}`);
       console.error(e.stack);
       console.error("Error occured for:", url);
       tries--;
