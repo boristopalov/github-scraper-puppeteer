@@ -3,7 +3,7 @@ import { scrapeRepo } from "../repos/scrapeRepo.js";
 import { incrementTaskCounter, decrementTaskCounter } from "../taskCounter.js";
 import { scrapeUserProfile } from "../users/scrapeUser.js";
 
-export const scrapeFromQueuedb = async (db, n) => {
+export const scrapeFromQueuedb = async (db, n, res) => {
   if (!db) {
     console.error("Something went wrong- can't access the DB");
     return;
@@ -27,13 +27,13 @@ export const scrapeFromQueuedb = async (db, n) => {
   let data;
   incrementTaskCounter();
   if (fn === "scrapeOrganization") {
-    data = await scrapeOrganization(db, ...args, inFront);
+    data = await scrapeOrganization(db, ...args, inFront, res);
   }
   if (fn === "scrapeRepo") {
-    data = await scrapeRepo(db, ...args, inFront);
+    data = await scrapeRepo(db, ...args, inFront, res);
   }
   if (fn === "scrapeUserProfile") {
-    data = await scrapeUserProfile(db, ...args, inFront);
+    data = await scrapeUserProfile(db, ...args, inFront, res);
   }
   decrementTaskCounter();
 
