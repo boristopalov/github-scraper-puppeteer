@@ -53,6 +53,8 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
     isRepoReadmeKeywordMatch: false,
     topLanguage: "n/a",
     contributors: [],
+    queuedTasks: 0,
+    queuedTasksArray: [],
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -114,7 +116,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
     const contributorCard = await openUserCard(c, page);
     if (contributorCard) {
       const userData = await tryScrapeContributor(
-        repoName,
+        data,
         c,
         contributorCard,
         db,
@@ -165,7 +167,7 @@ const openUserCard = async (contributor, page) => {
 };
 
 const tryScrapeContributor = async (
-  repoName,
+  repoData,
   contributorEl,
   contributorCard,
   db,
@@ -190,6 +192,7 @@ const tryScrapeContributor = async (
     );
     const commitsNum = convertNumStringToDigits(commits);
     const obj = {};
+    const repoName = repoData.name;
     obj[repoName] = commitsNum;
     return obj;
   })();
@@ -226,6 +229,7 @@ const tryScrapeContributor = async (
     depth++;
   }
 
+  const repoName = repoData.name;
   await queueTaskdb(
     db,
     {
@@ -239,5 +243,7 @@ const tryScrapeContributor = async (
     },
     { sendToFront, depth } // if this repo was queued by the user, sendToFront will be true. Otherwise false
   );
+  repoData.queuedTasks++;
+  repoData.queuedTasksArray.push(githubUrl);
   return userData;
 };
