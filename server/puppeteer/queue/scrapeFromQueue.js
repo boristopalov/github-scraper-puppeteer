@@ -137,22 +137,22 @@ export const updateUserRepo = async (data, db, parentId) => {
   const numPullRequestReposWithReadmeKeywordMatch =
     user.numPullRequestReposWithReadmeKeywordMatch || 0;
   const queuedTasks = user.queuedTasks || 1;
-  let queuedTasksArray = user.queuedTasksArray || [];
-  if (queuedTasksArray.length > 0) {
-    queuedTasksArray = queuedTasksArray.filter((e) => e !== data.url);
-  }
+  const queuedTasksArray = user.queuedTasksArray || [];
+  const filteredQueuedTasksArray = queuedTasksArray.filter(
+    (e) => e !== data.url
+  );
 
   // update the DB
   const updatedDoc = {
     $set: {
-      queuedTasks: queuedTasks - 1,
-      queuedTasksArray: queuedTasksArray,
       numPullRequestReposWithReadmeKeywordMatch:
         currentNumPullRequestReposWithReadmeKeywordMatch +
         numPullRequestReposWithReadmeKeywordMatch,
       numPullRequestReposWithHundredStars:
         currentNumPullRequestReposWithHundredStars +
         numPullRequestReposWithHundredStars,
+      queuedTasks: queuedTasks - 1,
+      queuedTasksArray: filteredQueuedTasksArray,
       updatedAt: Date.now(),
     },
   };
@@ -177,22 +177,22 @@ export const updateUserOrg = async (data, db, parentId) => {
   const numOrgReposWithHundredStars = user.numOrgReposWithHundredStars || 0;
   const numOrgReposReadmeKeywordMatch = user.numOrgReposReadmeKeywordMatch || 0;
   const queuedTasks = user.queuedTasks || 1;
-  let queuedTasksArray = user.queuedTasksArray || [];
-  if (queuedTasksArray.length > 0) {
-    queuedTasksArray = queuedTasksArray.filter((e) => e !== data.url);
-  }
+  const queuedTasksArray = user.queuedTasksArray || [];
+  const filteredQueuedTasksArray = queuedTasksArray.filter(
+    (e) => e !== data.url
+  );
 
   // update the DB
   const updatedDoc = {
     $set: {
-      queuedTasks: queuedTasks - 1,
-      queuedTasksArray: queuedTasksArray,
       numOrgReposReadmeKeywordMatch:
         currentNumOrgReposReadmeKeywordMatch + numOrgReposReadmeKeywordMatch,
       numOrgReposWithHundredStars:
         currentNumOrgReposWithHundredStars + numOrgReposWithHundredStars,
       numOrgBioKeywordMatch:
         currentNumOrgBioKeywordMatch + numOrgBioKeywordMatch,
+      queuedTasks: queuedTasks - 1,
+      queuedTasksArray: filteredQueuedTasksArray,
       updatedAt: Date.now(),
     },
   };
