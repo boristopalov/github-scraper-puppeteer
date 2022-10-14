@@ -83,23 +83,42 @@ function App() {
     event.preventDefault();
     const res = await axios.post(`${URI}/kill`);
     console.log(res.data);
+    if (sse) {
+      sse.close();
+    }
   };
 
-  // useEffect(() => {
-  //   (async () => await statusPoll(5000, 5, 5))();
-  // }, []);
+  useEffect(() => {
+    (async () => await statusPoll(5000, 5, 5))();
+  }, []);
 
   return (
-    <>
-      <div className={styles.status}>
-        <span
-          className={scraperRunning ? styles.activeDot : styles.inactiveDot}
-        ></span>
-        status:
-        {scraperRunning ? " running" : " not running"}
-        {scraperRunning && (
-          <button onClick={() => handleStopScraper()}> Stop Scraper</button>
-        )}
+    <div className={styles.containerMain}>
+      <div>
+        <div className={styles.status}>
+          <span
+            className={serverRunning ? styles.activeDot : styles.inactiveDot}
+          ></span>
+          Server Status:
+          {serverRunning ? " running" : " not running"}
+        </div>
+        <div className={styles.status}>
+          <span
+            className={scraperRunning ? styles.activeDot : styles.inactiveDot}
+          ></span>
+          Scraper Status:
+          {scraperRunning ? " running" : " not running"}
+        </div>
+        <div>
+          {!serverRunning && (
+            <button onClick={() => statusPoll(5000, 5, 5)}>
+              Check Server Status
+            </button>
+          )}
+          {scraperRunning && (
+            <button onClick={handleStopScraper}> Stop Scraper</button>
+          )}
+        </div>
       </div>
       <div className={styles.container}>
         <div className={styles.navSection}>
@@ -232,12 +251,6 @@ function App() {
                   Submit
                 </button>
               </form>
-              <div className={styles.containerGrey}>
-                <code
-                  id="scrapelog"
-                  className={styles.scrollContainerGrey}
-                ></code>
-              </div>
             </div>
           )}
           {activeSection === "export" && (
@@ -307,9 +320,12 @@ function App() {
               {/* {!repoDataIsLoaded === false ? <Oval height={40} width={40} /> : null} */}
             </div>
           )}
+          <div className={styles.containerGrey}>
+            <code id="scrapelog" className={styles.scrollContainerGrey}></code>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
