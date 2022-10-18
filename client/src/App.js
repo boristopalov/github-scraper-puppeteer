@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Oval } from "react-loader-spinner";
 import styles from "./styles.module.css";
+import Spinner from "./components/Spinner";
 
 function App() {
   const URI = "http://localhost:8080";
@@ -133,12 +133,13 @@ function App() {
         </div>
         <div>
           {!serverRunning && (
-            <button onClick={() => statusPoll(5000, 5, 5)}>
-              Check Server Status
+              {serverLoading ? <Spinner /> : "Check Server Status"}
             </button>
           )}
           {scraperRunning && (
-            <button onClick={handleStopScraper}> Stop Scraper</button>
+            <button onClick={handleStopScraper} className={styles.btnPrimary}>
+              {loading ? <Spinner /> : "Stop Scraper"}
+            </button>
           )}
         </div>
       </div>
@@ -269,8 +270,8 @@ function App() {
                     <option value="org">Org</option>
                   </select>
                 </div>
-                <button onClick={handleScrape} className={styles.submitBtn}>
-                  Submit
+                <button onClick={handleScrape} className={styles.btnPrimary}>
+                  {loading ? <Spinner /> : "Scrape"}
                 </button>
               </form>
             </div>
@@ -301,8 +302,8 @@ function App() {
                     <option value="org">Org</option>
                   </select>
                 </div>
-                <button onClick={handleExport} className={styles.submitBtn}>
-                  Submit
+                <button onClick={handleExport} className={styles.btnPrimary}>
+                  {loading ? <Spinner /> : "Export"}
                 </button>
               </form>
               {/* {!orgDataIsLoaded === false ? <Oval height={40} width={40} /> : null} */}
@@ -335,8 +336,8 @@ function App() {
                     <option value="org">Org</option>
                   </select>
                 </div>
-                <button onClick={handleCheck} className={styles.submitBtn}>
-                  Submit
+                <button onClick={handleCheck} className={styles.btnPrimary}>
+                  {loading ? <Spinner /> : "Check if Scraped"}
                 </button>
               </form>
               {/* {!repoDataIsLoaded === false ? <Oval height={40} width={40} /> : null} */}
