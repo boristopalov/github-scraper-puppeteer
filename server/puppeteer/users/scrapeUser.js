@@ -20,7 +20,7 @@ export const scrapeUserProfile = async (
   { sendToFront = false, depth = 0 } = {},
   res
 ) => {
-  if (await db.collection("users").findOne({ githubUrl: url })) {
+  if (await db.collection("users").findOne({ url })) {
     console.log("Already scraped", url);
     writeToClient(res, `already scraped ${url}`);
     return null;
@@ -59,12 +59,12 @@ export const scrapeUserProfile = async (
 const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
   const data = {
     name: "n/a",
+    url: "n/a",
     email: "n/a",
     username: "n/a",
     location: "n/a",
     isInNewYork: false,
     bio: "n/a",
-    githubUrl: "n/a",
     bioMatchesKeywords: false,
     repoCommits: [],
     orgs: [],
@@ -105,7 +105,7 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
     );
     const username = await usernameElement.evaluate((el) => el.innerText);
     data.username = username;
-    data.githubUrl = `https://github.com/${username}`;
+    data.url = `https://github.com/${username}`;
     return username;
   })();
 
