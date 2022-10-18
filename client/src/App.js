@@ -26,10 +26,7 @@ function App() {
 
   const handleCheck = async (event) => {
     event.preventDefault();
-    const res = await axios
-      .get(`${URI}/check?url=${url}&type=${type}`, { headers })
-      .catch((error) => console.error(error));
-    console.log(res.data);
+    await checkIfUrlScraped(url, type);
   };
 
   const checkIfUrlScraped = async (urlToCheck, type) => {
