@@ -15,7 +15,7 @@ export const exportRepo = async (db, url) => {
         $and: [
           { queuedTasks: 0 },
           { exported: false },
-          { githubUrl: { $in: contributors } },
+          { url: { $in: contributors } },
         ],
       },
       { _id: 0, repoCommits: 0, queuedTasks: 0, exported: 0, createdAt: 0 }
@@ -44,7 +44,7 @@ export const exportRepo = async (db, url) => {
       $and: [
         { queuedTasks: 0 },
         { exported: false },
-        { githubUrl: { $in: contributors } },
+        { url: { $in: contributors } },
       ],
     },
     updatedDoc
@@ -76,7 +76,7 @@ export const exportOrg = async (db, url) => {
           $and: [
             { queuedTasks: 0 },
             { exported: false },
-            { githubUrl: { $in: contributors } },
+            { url: { $in: contributors } },
           ],
         },
         { _id: 0, repoCommits: 0, queuedTasks: 0, exported: 0, createdAt: 0 }
@@ -95,7 +95,7 @@ export const exportOrg = async (db, url) => {
         $and: [
           { queuedTasks: 0 },
           { exported: false },
-          { githubUrl: { $in: contributors } },
+          { url: { $in: contributors } },
         ],
       },
       updatedDoc
@@ -112,7 +112,7 @@ export const exportOrg = async (db, url) => {
 };
 
 export const exportUser = async (db, url) => {
-  const user = await db.collection("users").findOne({ githubUrl: url });
+  const user = await db.collection("users").findOne({ url });
   if (!user) {
     console.error("No record(s) with that URL found");
     return null;
@@ -136,7 +136,7 @@ export const exportUser = async (db, url) => {
   };
   await db.collection("users").updateOne(
     {
-      $and: [{ queuedTasks: 0 }, { exported: false }, { githubUrl: url }],
+      $and: [{ queuedTasks: 0 }, { exported: false }, { url: url }],
     },
     updatedDoc
   );
