@@ -32,13 +32,35 @@ function App() {
     console.log(res.data);
   };
 
-  const getScraperStatus = async () => {
-    try {
-      const res = await axios.get(`${URI}/status`);
-      return res.data.active;
-    } catch (error) {
-      throw error;
+  const checkIfUrlScraped = async (urlToCheck, type) => {
+    setLoading(true);
+    const res = await axios.get(`${URI}/check?url=${urlToCheck}&type=${type}`, {
+      headers,
+    });
+    if (!res) {
+      setLoading(false);
+      return undefined;
     }
+    const { scraped, tasks, url } = res.data;
+    setLoading(false);
+
+    const textEl = document.getElementById("checkUrlText");
+    if (!tasks) {
+      textEl.innerText = `${url} was not found in the database.`;
+      return false;
+    }
+    if (!scraped) {
+      textEl.innerText = `${url} has ${tasks.length} queued tasks left.`;
+      const tasksHtml = document.getElementById("tasksList");
+      tasks.forEach((el) => {
+        tasksHtml.innerHTML += <li>{el}</li>;
+      });
+      return false;
+    }
+    textEl.innerText = `${url} has been fully scraped.`;
+    return true;
+  };
+
   };
 
   const getServerStatus = async () => {
