@@ -18,10 +18,17 @@ export const exportRepo = async (db, url) => {
           { url: { $in: contributors } },
         ],
       },
-      { _id: 0, repoCommits: 0, queuedTasks: 0, exported: 0, createdAt: 0 }
+      {
+        projection: {
+          _id: 0,
+          repoCommits: 0,
+          queuedTasks: 0,
+          exported: 0,
+          createdAt: 0,
+        },
+      }
     )
     .toArray();
-  // console.log(toExport);
   const csvString = arrayOfObjectsToCSV(toExport);
   const date = Date.now();
   const writePath = `../data/scraped_users_${date}.csv`;
@@ -79,7 +86,15 @@ export const exportOrg = async (db, url) => {
             { url: { $in: contributors } },
           ],
         },
-        { _id: 0, repoCommits: 0, queuedTasks: 0, exported: 0, createdAt: 0 }
+        {
+          projection: {
+            _id: 0,
+            repoCommits: 0,
+            queuedTasks: 0,
+            exported: 0,
+            createdAt: 0,
+          },
+        }
       )
       .toArray();
     const repoCsvString = arrayOfObjectsToCSV(toExport);
