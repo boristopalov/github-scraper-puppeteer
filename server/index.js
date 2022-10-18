@@ -10,6 +10,12 @@ import {
 } from "./puppeteer/stopScraperFlag.js";
 
 const scrape = async (db, type, url, res) => {
+  const scraperRunning = await isScraperActive(db);
+
+  if (url === "" && !scraperRunning) {
+    await scrapeFromQueueLoop(db, res);
+    return;
+  }
   if (!url.toLowerCase().includes("github.com")) {
     console.error(
       `error- please enter a valid GitHub url, you entered: ${url}`
@@ -36,7 +42,7 @@ const scrape = async (db, type, url, res) => {
     console.error(`error- possible types - 'repo', 'user', 'org'`);
     return;
   }
-  if (await isScraperActive(db)) {
+  if (scraperRunning) {
     console.log(
       "Scraper is already running and should be scraping from the queue."
     );
@@ -46,6 +52,10 @@ const scrape = async (db, type, url, res) => {
     startScraperFlag();
   }
   console.log("scraping from da queue now ");
+  await scrapeFromQueueLoop(db, res);
+};
+
+const scrapeFromQueueLoop = async (db, res) => {
   let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
   let batchSize = Math.min(queueSize, TASKLIMIT);
   let qCounter = 0;
