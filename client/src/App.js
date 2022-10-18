@@ -11,6 +11,9 @@ function App() {
   const [serverRunning, setServerRunning] = useState();
   const [activeSection, setActiveSection] = useState("scrape");
   const [sse, _setSse] = useState();
+  const [serverLoading, setServerLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const sseRef = useRef(sse);
   const setSse = (sse) => {
     sseRef.current = sse;
