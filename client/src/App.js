@@ -145,11 +145,12 @@ function App() {
 
   const handleStopScraper = async (event) => {
     event.preventDefault();
-    const res = await axios.post(`${URI}/kill`);
-    console.log(res.data);
+    setLoading(true);
+    await axios.post(`${URI}/kill`);
     if (sse) {
       sse.close();
     }
+    setLoading(false);
   };
 
   useEffect(() => {
