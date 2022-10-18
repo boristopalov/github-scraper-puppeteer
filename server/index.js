@@ -6,7 +6,7 @@ import { scrapeFromQueuedb } from "./puppeteer/queue/scrapeFromQueue.js";
 import { isScraperActive } from "./utils/isScraperActive.js";
 import {
   STOP_SCRAPER_FLAG,
-  toggleScraperFlag,
+  startScraperFlag,
 } from "./puppeteer/stopScraperFlag.js";
 
 const scrape = async (db, type, url, res) => {
@@ -42,6 +42,9 @@ const scrape = async (db, type, url, res) => {
     );
     return;
   }
+  if (STOP_SCRAPER_FLAG) {
+    startScraperFlag();
+  }
   console.log("scraping from da queue now ");
   let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
   let batchSize = Math.min(queueSize, TASKLIMIT);
@@ -61,9 +64,6 @@ const scrape = async (db, type, url, res) => {
 };
 
 export const start = async (db, type, url, res) => {
-  if (STOP_SCRAPER_FLAG) {
-    toggleScraperFlag();
-  }
   let tries = 2;
   while (tries > 0) {
     try {
