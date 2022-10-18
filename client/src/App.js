@@ -416,11 +416,14 @@ function App() {
               </div>
             </div>
           )}
+          {scraperRunning && (
+            <div className={styles.containerGrey}>
+              <code
+                id="scrapelog"
+                className={styles.scrollContainerGrey}
+              ></code>
             </div>
           )}
-          <div className={styles.containerGrey}>
-            <code id="scrapelog" className={styles.scrollContainerGrey}></code>
-          </div>
         </div>
       </div>
     </div>
