@@ -6,7 +6,7 @@ import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
-import { writeToClient } from "../../api/server.js";
+import { writeToClient } from "../../index.js";
 
 export const scrapeRepo = async (
   db,

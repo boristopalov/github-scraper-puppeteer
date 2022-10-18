@@ -7,7 +7,7 @@ import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { updateOrgRepo } from "../queue/scrapeFromQueue.js";
-import { writeToClient } from "../../api/server.js";
+import { writeToClient } from "../../index.js";
 
 export const scrapeOrganization = async (
   db,

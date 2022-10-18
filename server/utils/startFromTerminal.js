@@ -1,5 +1,5 @@
 import { mongoClient } from "./mongoClient.js";
-import { start } from "../index.js";
+import { start } from "../puppeteer/startScraper.js";
 import { DB_ENV } from "../constants/envVars.js";
 
 const startFromTerminal = async () => {

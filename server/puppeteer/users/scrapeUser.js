@@ -11,7 +11,7 @@ import { getEvents } from "../../utils/getEvents.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { updateUserOrg, updateUserRepo } from "../queue/scrapeFromQueue.js";
-import { writeToClient } from "../../api/server.js";
+import { writeToClient } from "../../index.js";
 
 export const scrapeUserProfile = async (
   db,
