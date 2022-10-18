@@ -29,8 +29,8 @@ export const checkIfRepoScraped = async (db, url) => {
   ) {
     return { url, scraped: false, tasks: repo.queuedTasksArray };
   }
-  for (const { githubUrl } of repo.contributors) {
-    const userScraped = await checkIfUserScraped(db, githubUrl);
+  for (const url of repo.contributors) {
+    const userScraped = await checkIfUserScraped(db, url);
     if (!userScraped.scraped) {
       return userScraped;
     }
@@ -40,7 +40,7 @@ export const checkIfRepoScraped = async (db, url) => {
 };
 
 export const checkIfUserScraped = async (db, url) => {
-  const user = await db.collection("users").findOne({ githubUrl: url });
+  const user = await db.collection("users").findOne({ url });
   if (!user) {
     return { url, scraped: false, tasks: null };
   }
