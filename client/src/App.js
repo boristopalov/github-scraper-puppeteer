@@ -137,12 +137,10 @@ function App() {
 
   const handleExport = async (event) => {
     event.preventDefault();
-    const urlScraped = await axios.get(`${URI}/check?url=${url}&type=${type}`);
-    if (!urlScraped.data) {
-      console.log("this URL hasn't been scraped!");
-      return;
+    const urlScraped = await checkIfUrlScraped(url, type);
+    if (urlScraped) {
+      window.open(`${URI}/export?url=${url}&type=${type}`);
     }
-    window.open(`${URI}/export?url=${url}&type=${type}`);
   };
 
   const handleStopScraper = async (event) => {
