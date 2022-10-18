@@ -1,7 +1,8 @@
-.container {
+.containerBody {
   display: grid;
   grid-template-columns: 3fr 3fr 7fr;
   margin-top: 50px;
+  border-top: 1px solid #404040;
 }
 
 .status {
@@ -35,6 +36,7 @@
 
 .navSection {
   padding-left: 2em;
+  border-right: 1px solid #404040;
 }
 .navList {
   list-style: none;
@@ -48,18 +50,18 @@
   font-weight: 500;
 }
 
-.itemActive {
-  color: #0074d9;
-}
-
 .scrollContainer {
   padding: 0 1em;
   overflow-y: scroll;
-  height: 600px;
+  height: 100vh;
+  border-right: 1px solid #404040;
 }
 
 .containerGrey {
-  background-color: #ebebeb;
+  background-color: #404040;
+  color: white;
+  border: none;
+  border-radius: 5px;
   height: 500px;
   overflow-y: scroll;
   width: 600px;
@@ -99,6 +101,41 @@
   cursor: pointer;
 }
 
+.btnPrimary {
+  background-color: #7e57c2;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin: 1em 0px;
+}
+
+.btnPrimary:hover {
+  background-color: #6d49ab;
+  transition: 0.25s;
+}
+
+.textDisabled {
+  color: grey;
+}
+
+.textDisabled:hover {
+  color: white;
+}
+.textActive {
+  color: white;
+}
+
+.textContainer {
+  background-color: #404040;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
 .main {
   padding-left: 3em;
 }
+
+/* border: 1px solid #404040 */
