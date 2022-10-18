@@ -58,6 +58,12 @@ function App() {
     return true;
   };
 
+  const getScraperStatusPoll = async () => {
+    const res = await axios.get(`${URI}/status`);
+    if (!res) {
+      return undefined;
+    }
+    return res.data.active;
   };
 
   const getServerStatus = async () => {
@@ -67,6 +73,9 @@ function App() {
     } catch (error) {
       throw error;
     }
+  const getServerStatusPoll = async () => {
+    const res = await axios.get(`${URI}/ping`);
+    return res.data.active;
   };
 
   const statusPoll = async (interval, triesLeft, maxTries) => {
@@ -78,8 +87,8 @@ function App() {
       return;
     }
     try {
-      const serverRunning = await getServerStatus();
-      const scraperRunning = await getScraperStatus();
+      const serverRunning = await getServerStatusPoll();
+      const scraperRunning = await getScraperStatusPoll();
       setServerRunning(serverRunning);
       setScraperRunning(scraperRunning);
       await new Promise((resolve) => setTimeout(resolve, interval));
