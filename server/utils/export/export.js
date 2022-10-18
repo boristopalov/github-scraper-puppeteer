@@ -36,7 +36,7 @@ export const exportRepo = async (db, url) => {
   fs.writeFile(writePath, csvString, async (e) => {
     if (e) {
       console.error(e);
-      process.exit(1);
+      return null;
     }
   });
   const updatedDoc = {
