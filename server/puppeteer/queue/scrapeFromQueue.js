@@ -65,7 +65,7 @@ const updateRepo = async (data, db, parentId) => {
   const queuedTasks = repo.queuedTasks || 1;
   const queuedTasksArray = repo.queuedTasksArray || [];
   const filteredQueuedTasksArray = queuedTasksArray.filter(
-    (e) => e !== data.githubUrl
+    (e) => e !== data.url
   );
 
   const updatedDoc = {
