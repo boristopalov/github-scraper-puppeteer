@@ -1,88 +1,168 @@
-import { scrapeOrganization } from "./puppeteer/orgs/scrapeOrganization.js";
-import { scrapeRepo } from "./puppeteer/repos/scrapeRepo.js";
-import { scrapeUserProfile } from "./puppeteer/users/scrapeUser.js";
-import { TASKLIMIT } from "./puppeteer/taskCounter.js";
-import { scrapeFromQueuedb } from "./puppeteer/queue/scrapeFromQueue.js";
-import { isScraperActive } from "./utils/isScraperActive.js";
+import express from "express";
 import {
-  STOP_SCRAPER_FLAG,
-  startScraperFlag,
-} from "./puppeteer/stopScraperFlag.js";
+  checkIfOrgScraped,
+  checkIfRepoScraped,
+  checkIfUserScraped,
+} from "./utils/scrapeCheck/checkIfScraped.js";
+import { exportUser, exportOrg, exportRepo } from "./utils/export/export.js";
+import { isScraperActive } from "./utils/isScraperActive.js";
+import { start } from "./puppeteer/startScraper.js";
+import cors from "cors";
+import { mongoClient } from "./utils/mongoClient.js";
+import { fileURLToPath } from "url";
+import path from "path";
+import { stopScraperFlag } from "./puppeteer/stopScraperFlag.js";
+import { ping } from "./utils/ping.js";
+import { queueTaskdb } from "./utils/queueTask.js";
 
-const scrape = async (db, type, url, res) => {
-  const scraperRunning = await isScraperActive(db);
+export const startServer = async () => {
+  const app = express();
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(
+    cors({
+      origin: "http://localhost:3000",
+    })
+  );
 
-  if (url === "" && !scraperRunning) {
-    await scrapeFromQueueLoop(db, res);
-    return;
-  }
-  if (!url.toLowerCase().includes("github.com")) {
-    console.error(
-      `error- please enter a valid GitHub url, you entered: ${url}`
-    );
-    return;
-  }
-  console.log(type, url);
-  if (type === "org") {
-    await scrapeOrganization(db, url, { sendToFront: true, depth: 1 }, res);
-  } else if (type === "repo") {
-    await scrapeRepo(db, url, { sendToFront: true, depth: 2 }, res);
-  } else if (type === "user") {
-    await scrapeUserProfile(
-      db,
-      url,
-      null,
-      {
-        sendToFront: true,
-        depth: 3,
-      },
-      res
-    );
-  } else {
-    console.error(`error- possible types - 'repo', 'user', 'org'`);
-    return;
-  }
-  if (scraperRunning) {
-    console.log(
-      "Scraper is already running and should be scraping from the queue."
-    );
-    return;
-  }
-  if (STOP_SCRAPER_FLAG) {
-    startScraperFlag();
-  }
-  console.log("scraping from da queue now ");
-  await scrapeFromQueueLoop(db, res);
-};
+  const client = await mongoClient();
+  const db =
+    process.env.DB_ENV === "testing"
+      ? client.db("testing")
+      : client.db("scraper");
 
-const scrapeFromQueueLoop = async (db, res) => {
-  let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
-  let batchSize = Math.min(queueSize, TASKLIMIT);
-  let qCounter = 0;
-  while (queueSize > 0 && !STOP_SCRAPER_FLAG) {
-    const tasks = [];
-    while (qCounter < batchSize) {
-      tasks.push(scrapeFromQueuedb(db, qCounter, res));
-      qCounter++;
+  app.get("/", (_, res) => {
+    res.send("hello");
+  });
+  app.get("/status", async (_, res) => {
+    const status = await isScraperActive(db);
+    const msg = {
+      active: status,
+      message: status ? "Scraper is running." : "Scraper is not running.",
+    };
+    res.json(msg);
+  });
+  app.get("/ping", async (_, res) => {
+    const status = await ping(db);
+    const msg = {
+      active: status,
+      message: status ? "Server is running." : "Server is not running.",
+    };
+    res.json(msg);
+  });
+  app.get("/check", async (req, res) => {
+    const { type, url } = req.query;
+    let isScraped;
+    if (type === "org") {
+      isScraped = await checkIfOrgScraped(db, url);
+    } else if (type === "repo") {
+      isScraped = await checkIfRepoScraped(db, url);
+    } else if (type === "user") {
+      isScraped = await checkIfUserScraped(db, url);
+    } else {
+      res.send("only possible types are 'org', 'repo', and 'user'");
+      return null;
     }
-    await Promise.all(tasks);
-    qCounter -= batchSize;
-    queueSize = await db.collection("queue").countDocuments();
-    batchSize = Math.min(queueSize, TASKLIMIT);
-  }
-  return;
-};
+    res.send(isScraped);
+  });
 
-export const start = async (db, type, url, res) => {
-  let tries = 2;
-  while (tries > 0) {
-    try {
-      await scrape(db, type, url, res);
+  app.get("/scrape", async (req, res) => {
+    const { type, url } = req.query;
+
+    // set headers and send them to the client
+    // this establishes an SSE connection with the client
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+    res.on("close", res.end);
+
+    res.write("data: starting scraper...\n\n");
+    await start(db, type, url, res);
+  });
+
+  app.post("/kill", async (_, res) => {
+    stopScraperFlag();
+    res.send("stopping scraper...");
+  });
+
+  app.post("/enqueue", async (req, res) => {
+    const { type, url } = req.body;
+    if (url === "") {
+      res.send(`[${new Date().toLocaleTimeString()}]url cannot be empty`);
       return;
+    }
+    if (await db.collection(`${type}s`).findOne({ url })) {
+      res.send(`[${new Date().toLocaleTimeString()}]already scraped ${url}`);
+      return;
+    }
+    let fn;
+    let depth;
+    if (type === "org") {
+      fn = "scrapeOrganization";
+      depth = 1;
+    }
+    if (type === "repo") {
+      fn = "scrapeRepo";
+      depth = 2;
+    }
+    if (type === "user") {
+      fn = "scrapeUserProfile";
+      depth = 3;
+    }
+    await queueTaskdb(
+      db,
+      { type, parentId: null, parentType: null },
+      { fn, args: [url] },
+      { sendToFront: true, depth }
+    );
+
+    res.send(
+      `[${new Date().toLocaleTimeString()}]added ${url} to the front of the queue`
+    );
+  });
+
+  app.get("/export", async (req, res) => {
+    const { type, url } = req.query;
+    try {
+      let fileName;
+      if (type === "org") {
+        fileName = await exportOrg(db, url);
+      } else if (type === "repo") {
+        fileName = await exportRepo(db, url);
+      } else if (type === "user") {
+        fileName = await exportUser(db, url);
+      } else {
+        res.send("only possible types are 'org', 'repo', and 'user'");
+        return;
+      }
+      if (!fileName) {
+        res.send(null);
+        return;
+      }
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const exportPath = path.resolve(__dirname + `/../data/${fileName}`);
+      res.download(exportPath);
     } catch (e) {
       console.error(e);
-      console.error(`Error happened for ${type} ${url}`);
-      tries--;
+      res.send(null);
     }
-  }
+
+    app.get("/download", async (req, res) => {
+      const downloadPath = req.query.path;
+      res.download(downloadPath);
+    });
+  });
+
+  app.listen(8080, () => {
+    console.log("listening on port", 8080);
+  });
 };
+
+export const writeToClient = (res, data) => {
+  res.write("data: " + `[${new Date().toLocaleTimeString()}]${data}\n\n`);
+};
+
+startServer();
