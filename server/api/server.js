@@ -13,6 +13,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import { stopScraperFlag } from "../puppeteer/stopScraperFlag.js";
 import { ping } from "../utils/ping.js";
+import { queueTaskdb } from "../utils/queueTask.js";
 
 export const startServer = async () => {
   const app = express();
@@ -84,6 +85,42 @@ export const startServer = async () => {
   app.post("/kill", async (_, res) => {
     stopScraperFlag();
     res.send("stopping scraper...");
+  });
+
+  app.post("/enqueue", async (req, res) => {
+    const { type, url } = req.body;
+    if (url === "") {
+      res.send(`[${new Date().toLocaleTimeString()}]url cannot be empty`);
+      return;
+    }
+    if (await db.collection(`${type}s`).findOne({ url })) {
+      res.send(`[${new Date().toLocaleTimeString()}]already scraped ${url}`);
+      return;
+    }
+    let fn;
+    let depth;
+    if (type === "org") {
+      fn = "scrapeOrganization";
+      depth = 1;
+    }
+    if (type === "repo") {
+      fn = "scrapeRepo";
+      depth = 2;
+    }
+    if (type === "user") {
+      fn = "scrapeUserProfile";
+      depth = 3;
+    }
+    await queueTaskdb(
+      db,
+      { type, parentId: null, parentType: null },
+      { fn, args: [url] },
+      { sendToFront: true, depth }
+    );
+
+    res.send(
+      `[${new Date().toLocaleTimeString()}]added ${url} to the front of the queue`
+    );
   });
 
   app.get("/export", async (req, res) => {
