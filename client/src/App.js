@@ -110,19 +110,26 @@ function App() {
 
   const handleScrape = async (event) => {
     event.preventDefault();
-    document.getElementById("scrapelog").innerText = "";
-    const sse = new EventSource(`${URI}/scrape?url=${url}&type=${type}`);
     if (!serverRunning) {
-      await statusPoll(5000, 5, 5);
+      setServerRunning(await getServerStatus());
     }
-    sse.addEventListener("message", (msg) => {
+    if (sse) {
+      console.log(sse);
+      const res = await enqueueTask(url, type);
+      document.getElementById("scrapelog").innerText += res.data + "\n";
+      return;
+    }
+    const _sse = new EventSource(`${URI}/scrape?url=${url}&type=${type}`);
+    setSse(_sse);
+    sseRef.current.addEventListener("message", (msg) => {
       document.getElementById("scrapelog").innerText += msg.data + "\n";
     });
-    sse.addEventListener("error", () => {
+    sseRef.current.addEventListener("error", () => {
+      setScraperRunning(false);
       sseRef.current.close();
-      setSse(sseRef.current);
     });
-    setSse(sse);
+    setScraperRunning(true);
+  };
   };
 
   const handleExport = async (event) => {
