@@ -29,7 +29,7 @@ export default function arrayOfObjectsToCSV(arr) {
       e.location.replaceAll(",", ""),
       e.isInNewYork,
       e.bio.replaceAll("\n", "").replaceAll(",", ";"),
-      e.githubUrl,
+      e.url,
       e.bioMatchesKeywords,
       e.numPullRequestReposWithHundredStars,
       e.numPullRequestReposWithReadmeKeywordMatch,
