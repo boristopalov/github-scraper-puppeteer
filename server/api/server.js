@@ -11,7 +11,7 @@ import cors from "cors";
 import { mongoClient } from "../utils/mongoClient.js";
 import { fileURLToPath } from "url";
 import path from "path";
-import { toggleScraperFlag } from "../puppeteer/stopScraperFlag.js";
+import { stopScraperFlag } from "../puppeteer/stopScraperFlag.js";
 import { ping } from "../utils/ping.js";
 
 export const startServer = async () => {
@@ -82,7 +82,7 @@ export const startServer = async () => {
   });
 
   app.post("/kill", async (_, res) => {
-    toggleScraperFlag();
+    stopScraperFlag();
     res.send("stopping scraper...");
   });
 
