@@ -197,7 +197,7 @@ function App() {
       </div>
       <div className={styles.containerBody}>
         <div className={styles.navSection}>
-          <h2 className> Actions/Commands </h2>
+          <h2> Actions/Commands </h2>
           <ul className={styles.navList}>
             <li
               onClick={() => {
