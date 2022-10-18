@@ -67,12 +67,18 @@ function App() {
   };
 
   const getServerStatus = async () => {
-    try {
-      const res = await axios.get(`${URI}/ping`);
-      return res.data.active;
-    } catch (error) {
-      throw error;
+    setServerLoading(true);
+    const res = await axios.get(`${URI}/ping`).catch((e) => {
+      console.error(e);
+      setServerLoading(false);
+    });
+    setServerLoading(false);
+    if (!res) {
+      return undefined;
     }
+    return res.data.active;
+  };
+
   const getServerStatusPoll = async () => {
     const res = await axios.get(`${URI}/ping`);
     return res.data.active;
