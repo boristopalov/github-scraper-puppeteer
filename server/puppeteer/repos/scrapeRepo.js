@@ -122,11 +122,8 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
         db,
         { sendToFront, depth }
       );
-      if (
-        userData &&
-        Object.prototype.hasOwnProperty.call(userData, "githubUrl")
-      ) {
-        data.contributors.push(userData.githubUrl);
+      if (userData && Object.prototype.hasOwnProperty.call(userData, "url")) {
+        data.contributors.push(userData.url);
       }
     }
   }
@@ -204,11 +201,11 @@ const tryScrapeContributor = async (
   }
   const repoCommits = await commitsPromise;
   const commitsArray = [repoCommits];
-  const githubUrl = `https://github.com/${username}`;
+  const url = `https://github.com/${username}`;
 
   const userData = {
     username,
-    githubUrl,
+    url,
     repoCommits: commitsArray,
   };
 
@@ -219,7 +216,7 @@ const tryScrapeContributor = async (
     return userData;
   }
 
-  if (await db.collection("queue").findOne({ "task.args.0": githubUrl })) {
+  if (await db.collection("queue").findOne({ "task.args.0": url })) {
     return userData;
   }
   if (!sendToFront || depth > 3) {
@@ -239,11 +236,11 @@ const tryScrapeContributor = async (
     },
     {
       fn: "scrapeUserProfile",
-      args: [githubUrl, userData],
+      args: [url, userData],
     },
     { sendToFront, depth } // if this repo was queued by the user, sendToFront will be true. Otherwise false
   );
   repoData.queuedTasks++;
-  repoData.queuedTasksArray.push(githubUrl);
+  repoData.queuedTasksArray.push(url);
   return userData;
 };
