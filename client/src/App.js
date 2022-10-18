@@ -176,6 +176,15 @@ function App() {
         </div>
         <div>
           {!serverRunning && (
+            <button
+              onClick={async () => {
+                const serverActive = await getServerStatus();
+                if (serverActive) {
+                  await statusPoll(5000, 5, 5);
+                }
+              }}
+              className={styles.btnPrimary}
+            >
               {serverLoading ? <Spinner /> : "Check Server Status"}
             </button>
           )}
