@@ -116,7 +116,7 @@ function App() {
 
   return (
     <div className={styles.containerMain}>
-      <div>
+      <div className={styles.header}>
         <div className={styles.status}>
           <span
             className={serverRunning ? styles.activeDot : styles.inactiveDot}
@@ -143,9 +143,9 @@ function App() {
           )}
         </div>
       </div>
-      <div className={styles.container}>
+      <div className={styles.containerBody}>
         <div className={styles.navSection}>
-          <h2> Actions/Commands </h2>
+          <h2 className> Actions/Commands </h2>
           <ul className={styles.navList}>
             <li
               onClick={() => {
@@ -153,7 +153,11 @@ function App() {
                 setType("user");
                 setUrl("");
               }}
-              className={activeSection === "scrape" && styles.itemActive}
+              className={
+                activeSection === "scrape"
+                  ? styles.textActive
+                  : styles.textDisabled
+              }
             >
               Scrape
             </li>
@@ -163,7 +167,11 @@ function App() {
                 setType("user");
                 setUrl("");
               }}
-              className={activeSection === "export" && styles.itemActive}
+              className={
+                activeSection === "export"
+                  ? styles.textActive
+                  : styles.textDisabled
+              }
             >
               Export User Data to CSV
             </li>
@@ -173,7 +181,11 @@ function App() {
                 setType("user");
                 setUrl("");
               }}
-              className={activeSection === "check" && styles.itemActive}
+              className={
+                activeSection === "check"
+                  ? styles.textActive
+                  : styles.textDisabled
+              }
             >
               Check if a URL Has Been Scraped
             </li>
@@ -251,6 +263,7 @@ function App() {
                 <div className={styles.formRow}>
                   <label for="scrapeUrl">URL</label>
                   <input
+                    className={styles.textContainer}
                     type="text"
                     id="scrapeUrl"
                     onChange={(e) => {
@@ -261,6 +274,7 @@ function App() {
                 <div className={styles.formRow}>
                   <label for="scrapeType">Type</label>
                   <select
+                    className={styles.textContainer}
                     name="scrapeType"
                     id="scrapeType"
                     onChange={(e) => setType(e.target.value)}
@@ -283,6 +297,7 @@ function App() {
                 <div className={styles.formRow}>
                   <label for="exportUrl">URL</label>
                   <input
+                    className={styles.textContainer}
                     type="text"
                     id="exportUrl"
                     onChange={(e) => {
@@ -293,6 +308,7 @@ function App() {
                 <div className={styles.formRow}>
                   <label for="exportType">Type</label>
                   <select
+                    className={styles.textContainer}
                     name="exportType"
                     id="exportType"
                     onChange={(e) => setType(e.target.value)}
@@ -306,10 +322,11 @@ function App() {
                   {loading ? <Spinner /> : "Export"}
                 </button>
               </form>
-              {/* {!orgDataIsLoaded === false ? <Oval height={40} width={40} /> : null} */}
+              <div id="checkUrlText">
+                <ol id="tasksList"></ol>
+              </div>
             </div>
           )}
-
           {activeSection === "check" && (
             <div>
               <h2>Check</h2>
@@ -317,6 +334,7 @@ function App() {
                 <div className={styles.formRow}>
                   <label for="checkUrl">URL</label>
                   <input
+                    className={styles.textContainer}
                     type="text"
                     id="checkUrl"
                     onChange={(e) => {
@@ -327,6 +345,7 @@ function App() {
                 <div className={styles.formRow}>
                   <label for="checkType">Type</label>
                   <select
+                    className={styles.textContainer}
                     name="checkType"
                     id="checkType"
                     onChange={(e) => setType(e.target.value)}
