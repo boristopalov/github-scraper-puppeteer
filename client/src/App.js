@@ -130,6 +130,9 @@ function App() {
     });
     setScraperRunning(true);
   };
+
+  const enqueueTask = async (url, type) => {
+    return await axios.post(`${URI}/enqueue`, { url, type });
   };
 
   const handleExport = async (event) => {
