@@ -411,7 +411,11 @@ function App() {
                   {loading ? <Spinner /> : "Check if Scraped"}
                 </button>
               </form>
-              {/* {!repoDataIsLoaded === false ? <Oval height={40} width={40} /> : null} */}
+              <div id="checkUrlText">
+                <ol id="tasksList"></ol>
+              </div>
+            </div>
+          )}
             </div>
           )}
           <div className={styles.containerGrey}>
