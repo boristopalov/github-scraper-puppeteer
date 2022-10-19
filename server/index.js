@@ -93,7 +93,10 @@ export const startServer = async () => {
       res.send(`[${new Date().toLocaleTimeString()}]url cannot be empty`);
       return;
     }
-    if (await db.collection(`${type}s`).findOne({ url })) {
+    if (
+      (await db.collection(`${type}s`).findOne({ url })) ||
+      (await db.collection(`queue`).findOne({ "task.args.0": url }))
+    ) {
       res.send(`[${new Date().toLocaleTimeString()}]already scraped ${url}`);
       return;
     }
