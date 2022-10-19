@@ -113,8 +113,7 @@ function App() {
     if (!serverRunning) {
       setServerRunning(await getServerStatus());
     }
-    if (sse) {
-      console.log(sse);
+    if (scraperRunning) {
       const res = await enqueueTask(url, type);
       document.getElementById("scrapelog").innerText += res.data + "\n";
       return;
