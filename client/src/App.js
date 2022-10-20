@@ -146,8 +146,8 @@ function App() {
     event.preventDefault();
     setLoading(true);
     await axios.post(`${URI}/kill`);
-    if (sse) {
-      sse.close();
+    if (sseRef.current) {
+      sseRef.current.close();
     }
     setLoading(false);
   };
