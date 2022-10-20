@@ -21,7 +21,14 @@ export const startServer = async () => {
   app.use(express.urlencoded({ extended: true }));
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: [
+        "http://localhost:3000",
+        "http://54.197.13.104:3000",
+        "http://54.197.13.104",
+        "http://scraper.comm.tools",
+        "http://scraper.comm.tools:3000",
+        "http://scraper.comm.tools/",
+      ],
     })
   );
 
