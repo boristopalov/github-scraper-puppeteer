@@ -136,10 +136,8 @@ function App() {
 
   const handleExport = async (event) => {
     event.preventDefault();
-    const urlScraped = await checkIfUrlScraped(url, type);
-    if (urlScraped) {
-      window.open(`${URI}/export?url=${url}&type=${type}`);
-    }
+    await checkIfUrlScraped(url, type);
+    window.open(`${URI}/export?url=${url}&type=${type}`);
   };
 
   const handleStopScraper = async (event) => {
