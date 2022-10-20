@@ -5,6 +5,7 @@ import {
   checkIfUserScraped,
 } from "./utils/scrapeCheck/checkIfScraped.js";
 import { exportUser, exportOrg, exportRepo } from "./utils/export/export.js";
+import { exportAllScrapedUsers } from "./utils/export/exportAllScrapedUsers.js";
 import { isScraperActive } from "./utils/isScraperActive.js";
 import { start } from "./puppeteer/startScraper.js";
 import cors from "cors";
@@ -137,7 +138,9 @@ export const startServer = async () => {
     const { type, url } = req.query;
     try {
       let fileName;
-      if (type === "org") {
+      if (url === "") {
+        fileName = await exportAllScrapedUsers(db);
+      } else if (type === "org") {
         fileName = await exportOrg(db, url);
       } else if (type === "repo") {
         fileName = await exportRepo(db, url);

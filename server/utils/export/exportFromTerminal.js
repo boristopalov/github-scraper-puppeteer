@@ -1,4 +1,4 @@
-import { csvExport } from "../csvExport.js";
+import { exportAllScrapedUsers } from "./exportAllScrapedUsers";
 import { exportRepo, exportOrg, exportUser } from "./export.js";
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { URI, DB_ENV } from "../../constants/constants.js";
@@ -17,7 +17,7 @@ const exportFromTerminal = async () => {
     const db =
       DB_ENV === "testing" ? client.db("testing") : client.db("scraper");
     if (process.argv.length === 2) {
-      csvExport(db);
+      exportAllScrapedUsers(db);
       return;
     } else if (process.argv.length < 4) {
       console.error("Usage: yarn export ['repo' | 'org' | 'user'] [URL]");
