@@ -157,4 +157,4 @@ One of the parameters for the scraper is the task limit, which is essentially ho
     1. This way, you can just navigate to http://scraper.comm.tools
 15. Next, run `npm run build` to create an optimized /build folder 
 16. We want to serve this folder to users. To do that we can install serve, which serves static sites. To do this, run `npm install -g serve` 
-17. Finally, run `serve -s build’.  You should now be able to access the website at `http://scraper.comm.tools`!
+17. Finally, run `serve -s build`.  You should now be able to access the website at http://scraper.comm.tools!
