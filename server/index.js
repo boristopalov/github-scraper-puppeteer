@@ -6,13 +6,15 @@ import {
 } from "./utils/scrapeCheck/checkIfScraped.js";
 import { exportUser, exportOrg, exportRepo } from "./utils/export/export.js";
 import { exportAllScrapedUsers } from "./utils/export/exportAllScrapedUsers.js";
-import { isScraperActive } from "./utils/isScraperActive.js";
 import { start } from "./puppeteer/startScraper.js";
 import cors from "cors";
 import { mongoClient } from "./utils/mongoClient.js";
 import { fileURLToPath } from "url";
 import path from "path";
-import { stopScraperFlag } from "./puppeteer/stopScraperFlag.js";
+import {
+  SCRAPER_ACTIVE_FLAG,
+  stopScraperFlag,
+} from "./puppeteer/scraperStatus.js";
 import { ping } from "./utils/ping.js";
 import { queueTaskdb } from "./utils/queueTask.js";
 
@@ -43,10 +45,11 @@ export const startServer = async () => {
     res.send("hello");
   });
   app.get("/status", async (_, res) => {
-    const status = await isScraperActive(db);
     const msg = {
-      active: status,
-      message: status ? "Scraper is running." : "Scraper is not running.",
+      active: SCRAPER_ACTIVE_FLAG,
+      message: SCRAPER_ACTIVE_FLAG
+        ? "Scraper is running."
+        : "Scraper is not running.",
     };
     res.json(msg);
   });
