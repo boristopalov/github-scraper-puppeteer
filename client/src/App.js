@@ -118,6 +118,7 @@ function App() {
       document.getElementById("scrapelog").innerText += res.data + "\n";
       return;
     }
+    setScraperRunning(true);
     const _sse = new EventSource(`${URI}/scrape?url=${url}&type=${type}`);
     setSse(_sse);
     sseRef.current.addEventListener("message", (msg) => {
@@ -127,7 +128,6 @@ function App() {
       setScraperRunning(false);
       sseRef.current.close();
     });
-    setScraperRunning(true);
   };
 
   const enqueueTask = async (url, type) => {
