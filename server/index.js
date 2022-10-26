@@ -6,7 +6,7 @@ import {
 } from "./utils/scrapeCheck/checkIfScraped.js";
 import { exportUser, exportOrg, exportRepo } from "./utils/export/export.js";
 import { exportAllScrapedUsers } from "./utils/export/exportAllScrapedUsers.js";
-import { start } from "./puppeteer/startScraper.js";
+import { scrape } from "./puppeteer/startScraper.js";
 import cors from "cors";
 import { mongoClient } from "./utils/mongoClient.js";
 import { fileURLToPath } from "url";
@@ -90,7 +90,7 @@ export const startServer = async () => {
     res.on("close", res.end);
 
     res.write("data: starting scraper...\n\n");
-    await start(db, type, url, res);
+    await scrape(db, type, url, res);
   });
 
   app.post("/kill", async (_, res) => {
