@@ -1,5 +1,5 @@
 import { mongoClient } from "./mongoClient.js";
-import { start } from "../puppeteer/startScraper.js";
+import { scrape } from "../puppeteer/startScraper.js";
 import { DB_ENV } from "../constants/envVars.js";
 
 const startFromTerminal = async () => {
@@ -13,7 +13,7 @@ const startFromTerminal = async () => {
 
   const client = await mongoClient();
   const db = DB_ENV === "testing" ? client.db("testing") : client.db("scraper");
-  await start(db, type, url);
+  await scrape(db, type, url);
 };
 
 await startFromTerminal();
