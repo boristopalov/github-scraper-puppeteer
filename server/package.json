@@ -10,7 +10,7 @@
     "scrape": "cd utils && node startFromTerminal.js",
     "scheck": "cd utils/scrapeCheck && node checkIfScrapedTerminal.js",
     "export": "cd utils/export && node exportFromTerminal.js",
-    "server": "cd api && node server.js",
+    "server": "node index.js",
     "dev": "nodemon index.js"
   },
   "author": "Boris Topalov",
