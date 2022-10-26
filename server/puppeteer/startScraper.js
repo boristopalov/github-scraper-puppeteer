@@ -5,7 +5,7 @@ import { TASKLIMIT } from "./taskCounter.js";
 import { scrapeFromQueuedb } from "./queue/scrapeFromQueue.js";
 import { SCRAPER_ACTIVE_FLAG, startScraperFlag } from "./scraperStatus.js";
 
-const scrape = async (db, type, url, res) => {
+export const scrape = async (db, type, url, res) => {
   if (url === "" && !SCRAPER_ACTIVE_FLAG) {
     startScraperFlag();
     await scrapeFromQueueLoop(db, res);
@@ -64,18 +64,4 @@ const scrapeFromQueueLoop = async (db, res) => {
     batchSize = Math.min(queueSize, TASKLIMIT);
   }
   return;
-};
-
-export const start = async (db, type, url, res) => {
-  let tries = 2;
-  while (tries > 0) {
-    try {
-      await scrape(db, type, url, res);
-      return;
-    } catch (e) {
-      console.error(e);
-      console.error(`Error happened for ${type} ${url}`);
-      tries--;
-    }
-  }
 };
