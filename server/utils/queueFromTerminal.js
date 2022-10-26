@@ -26,8 +26,7 @@ export const queueFromTerminal = () => {
       console.error(err);
       process.exit(1);
     }
-    const db =
-      DB_ENV === "testing" ? client.db("testing") : client.db("scraper");
+    const db = client.db(DB_ENV);
     let fn;
     let depth;
     if (type === "repo") {

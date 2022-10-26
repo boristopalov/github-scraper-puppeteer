@@ -17,6 +17,7 @@ import {
 } from "./puppeteer/scraperStatus.js";
 import { ping } from "./utils/ping.js";
 import { queueTaskdb } from "./utils/queueTask.js";
+import { DB_ENV } from "./constants/envVars.js";
 
 export const startServer = async () => {
   const app = express();
@@ -36,10 +37,7 @@ export const startServer = async () => {
   );
 
   const client = await mongoClient();
-  const db =
-    process.env.DB_ENV === "testing"
-      ? client.db("testing")
-      : client.db("scraper");
+  const db = client.db(DB_ENV);
 
   app.get("/", (_, res) => {
     res.send("hello");

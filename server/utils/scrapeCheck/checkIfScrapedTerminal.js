@@ -14,7 +14,7 @@ const checkIfFullyScraped = async () => {
     process.exit(1);
   }
   const client = await mongoClient();
-  const db = DB_ENV === "testing" ? client.db("testing") : client.db("scraper");
+  const db = client.db(DB_ENV);
   const type = process.argv[2];
   const url = process.argv[3];
   if (type === "org") {

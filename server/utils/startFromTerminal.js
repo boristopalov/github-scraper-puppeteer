@@ -12,7 +12,7 @@ const startFromTerminal = async () => {
   const url = process.argv[3];
 
   const client = await mongoClient();
-  const db = DB_ENV === "testing" ? client.db("testing") : client.db("scraper");
+  const db = DB_ENV === client.db(DB_ENV);
   await scrape(db, type, url);
 };
 
