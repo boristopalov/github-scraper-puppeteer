@@ -14,6 +14,7 @@ import path from "path";
 import {
   SCRAPER_ACTIVE_FLAG,
   stopScraperFlag,
+  startScraperFlag,
 } from "./puppeteer/scraperStatus.js";
 import { ping } from "./utils/ping.js";
 import { queueTaskdb } from "./utils/queueTask.js";
@@ -86,6 +87,16 @@ export const startServer = async () => {
     res.setHeader("Connection", "keep-alive");
     res.flushHeaders();
     res.on("close", res.end);
+
+    if (SCRAPER_ACTIVE_FLAG) {
+      res.write(
+        "Scraper is already running and should be scraping from the queue.\n\n"
+      );
+      return;
+    }
+
+    res.write("data: scraper started...\n\n");
+    startScraperFlag();
 
     if (url === "") {
       await scrapeFromQueueLoop(db, res);
