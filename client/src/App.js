@@ -206,7 +206,7 @@ function App() {
                   : styles.textDisabled
               }
             >
-              Scrape
+              Scrape/Enqueue
             </li>
             <li
               onClick={() => {
@@ -241,16 +241,20 @@ function App() {
         <div className={styles.scrollContainer}>
           <h2> Documentation </h2>
           {activeSection === "export" && (
-            <div id="exportDocs">
+            <div id="exportDocs" className={styles.docsText}>
               <p>
                 Exports the contributors associated with the given URL to a CSV.
               </p>
               <p>
-                For exporting a repo, all of the fully scraped contributors to
+                When exporting a user, just that one single user will get
+                exported.
+              </p>
+              <p>
+                When exporting a repo, all of the fully scraped contributors to
                 that repo get exported.
               </p>
               <p>
-                For exporting an organization, we first get the repositories in
+                When exporting an organization, we first get the repositories in
                 that organization, and then export all of the fully scraped
                 contributors for each of those repos.
               </p>
@@ -262,28 +266,46 @@ function App() {
             </div>
           )}
           {activeSection === "scrape" && (
-            <div id="scrapeDocs">
-              <p>This is how you start the scraper.</p>
+            <div id="scrapeDocs" className={styles.docsText}>
               <p>
-                You can only have one instance of the scraper running at once.
-                If the scraper is already running, trying to run it again will
-                only scrape the given URL, and then quit. The original scraper
-                will continue to run tasks from the queue.
+                This is how you start the scraper. Just input a URL and make the
+                sure type of the URL is correct (is it a GitHub repo,
+                organization, or user?), click the 'Scrape' button, and the
+                scraper should start running if it is not already. Note that the
+                Scrape button is hidden if the server is not running (you can
+                see the status in the top-right corner of this page).
               </p>
               <p>
-                If the scraper is running, a button labeled “Stop Scraper” will
+                If the scraper is already running, clicking 'Scrape' will
+                instead queue up the URL you inputted, and send it to the front
+                of the queue. In practice, it should take anywhere between a few
+                seconds to a few minutes for the URL you queued up to actually
+                get scraped, depending on how long it takes to finish scraping
+                the URLs being scraped at the time you clicked 'Scrape'.
+              </p>
+              <p>
+                Once you start the scraper, a log to keep track of who gets
+                scraped will show up on the right-hand side of the screen below
+                the space for URL/Type input. This will update on its own while
+                the scraper is running. When the scraper is not running, the log
+                is cleared and hides because it's shy. The log will stay empty
+                until the next time you run the scraper.
+              </p>
+              <p>
+                If the scraper is running, a button labeled 'Stop Scraper' will
                 appear in the top right.
               </p>
               <p>
-                When running the scraper, inputting a URL to scrape is optional
-                — if you do not provide one, then the scraper will immediately
-                begin running tasks from the task queue. If the scraper is
-                already running and you do not input a URL, nothing will happen.
+                When initially starting the scraper, inputting a URL to scrape
+                is optional — if you do not provide one, then the scraper will
+                immediately begin running tasks from the task queue. If the
+                scraper is already running and you do not input a URL, you will
+                see a message that a URL is required.
               </p>
             </div>
           )}
           {activeSection === "check" && (
-            <div id="checkDocs">
+            <div id="checkDocs" className={styles.docsText}>
               <p>Checks if URL has been fully scraped.</p>
               <p>
                 Checking if a user has been scraped has only 1 step: 1. Checking
@@ -293,20 +315,26 @@ function App() {
               </p>
               <p>
                 Checking if a repository has been scraped has involves 2 steps:
+              </p>
+              <p>
                 1. Checking if there are any queued tasks for this repository 1.
                 If yes, then this repository has not been fully scraped and we
                 can end the check at this step. If there are no queued tasks, we
-                can continue to the step 2. 2. Check if every contributor to the
-                repository has been fully scraped. 1. If any contributors have
-                g.t. 0 queued tasks, then this repository has not been fully
-                scraped.
+                can continue to the step 2.
               </p>
               <p>
-                Checking if an organization has been scraped is as follows: 1.
-                Checking if there are any queued tasks for this organization 1.
-                If yes, then this organization has not been fully scraped. If
-                there are no queued tasks, we can continue to the step 2. 2.
-                Check if every repository in the organization has been fully
+                2. Check if every contributor to the repository has been fully
+                scraped. 1. If any contributors have g.t. 0 queued tasks, then
+                this repository has not been fully scraped.
+              </p>
+              <p>Checking if an organization has been scraped is as follows:</p>
+              <p>
+                1. Checking if there are any queued tasks for this organization
+                1. If yes, then this organization has not been fully scraped. If
+                there are no queued tasks, we can continue to the step 2.{" "}
+              </p>
+              <p>
+                2. Check if every repository in the organization has been fully
                 scraped. We just showed above that there are 2 steps to checking
                 if a repository has been scraped: 1. Check if there are any
                 queued tasks for the repository 2. Check if every contributor to
