@@ -15,6 +15,7 @@ export const scrapeOrganization = async (
   { sendToFront = false, depth = 0 } = {},
   res
 ) => {
+  url = url.toLowerCase();
   if (await db.collection("orgs").findOne({ url })) {
     console.log("Already scraped", url);
     writeToClient(res, `already scraped ${url}`);
@@ -49,7 +50,7 @@ export const scrapeOrganization = async (
 const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
   const data = {
     name: "n/a",
-    url: page.url(),
+    url: page.url().toLowerCase(),
     bioKeywordMatch: false,
     numReposWithHundredStars: 0,
     numRepoReadmeKeywordMatch: 0,
@@ -189,7 +190,7 @@ const getOrgRepoUrls = async (page) => {
       repo,
       ".d-flex.flex-justify-between > div > a"
     );
-    repoUrls.push(repoUrl);
+    repoUrls.push(repoUrl.toLowerCase());
   }
   return repoUrls;
 };
