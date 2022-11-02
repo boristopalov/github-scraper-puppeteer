@@ -6,12 +6,13 @@ import { scrapeFromQueuedb } from "./queue/scrapeFromQueue.js";
 import { SCRAPER_ACTIVE_FLAG, stopScraperFlag } from "./scraperStatus.js";
 
 export const scrape = async (db, type, url, res) => {
+  url = url.toLowerCase();
+  if (!url.includes("github.com")) {
     console.error(
       `error- please enter a valid GitHub url, you entered: ${url}`
     );
     return;
   }
-  console.log(type, url);
   if (type === "org") {
     await scrapeOrganization(db, url, { sendToFront: true, depth: 1 }, res);
   } else if (type === "repo") {
