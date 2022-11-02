@@ -110,21 +110,22 @@ const updateOrgRepo = async (data, db, parentId) => {
   }
 };
 
-  // update the DB
+const updateUserRepo = async (data, db, parentId) => {
   const updatedDoc = {
     $set: {
-      numPullRequestReposWithReadmeKeywordMatch:
-        currentNumPullRequestReposWithReadmeKeywordMatch +
-        numPullRequestReposWithReadmeKeywordMatch,
-      numPullRequestReposWithHundredStars:
-        currentNumPullRequestReposWithHundredStars +
-        numPullRequestReposWithHundredStars,
-      queuedTasks: queuedTasks - 1,
-      queuedTasksArray: filteredQueuedTasksArray,
       updatedAt: Date.now(),
     },
+    $pull: {
+      queuedTasks: data.url,
+    },
+    $inc: {
+      numPullRequestReposWithReadmeKeywordMatch: data.isRepoReadmeKeywordMatch
+        ? 1
+        : 0,
+      numPullRequestReposWithHundredStars: data.repoStarCount >= 100 ? 1 : 0,
+    },
   };
-  await db.collection("users").updateOne({ username: parentId }, updatedDoc);
+  await db.collection("users").updateOne({ url: parentId }, updatedDoc);
 };
 
 export const updateUserOrg = async (data, db, parentId) => {
