@@ -53,8 +53,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
     isRepoReadmeKeywordMatch: false,
     topLanguage: "n/a",
     contributors: [],
-    queuedTasks: 0,
-    queuedTasksArray: [],
+    queuedTasks: [],
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -240,7 +239,6 @@ const tryScrapeContributor = async (
     },
     { sendToFront, depth } // if this repo was queued by the user, sendToFront will be true. Otherwise false
   );
-  repoData.queuedTasks++;
-  repoData.queuedTasksArray.push(url);
+  repoData.queuedTasks.push(url);
   return userData;
 };

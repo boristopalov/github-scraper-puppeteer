@@ -54,8 +54,7 @@ const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
     numReposWithHundredStars: 0,
     numRepoReadmeKeywordMatch: 0,
     reposInOrg: [],
-    queuedTasks: 0,
-    queuedTasksArray: [],
+    queuedTasks: [],
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
