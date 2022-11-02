@@ -6,8 +6,8 @@ import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
-import { updateOrgRepo } from "../queue/scrapeFromQueue.js";
 import { writeToClient } from "../../index.js";
+import { stripBackslash } from "../../utils/stripBackslash.js";
 
 export const scrapeOrganization = async (
   db,
@@ -53,6 +53,7 @@ const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
     bioKeywordMatch: false,
     numReposWithHundredStars: 0,
     numRepoReadmeKeywordMatch: 0,
+    members: [],
     reposInOrg: [],
     queuedTasks: [],
     createdAt: Date.now(),
@@ -127,6 +128,21 @@ const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
     data.queuedTasksArray.push(url);
   });
   await Promise.all([bioContainsKeywordsPromise, enqueueRepoPromises]);
+
+  const membersPromise = async () => {
+    const arr = stripBackslash(data.url).split("/");
+    const orgUrlName = arr[arr.length - 1];
+    const membersUrl = `https://github.com/orgs/${orgUrlName}/people`;
+    await page.goto(membersUrl);
+    await page.waitForSelector(".py-3.css-truncate.pl-3.flex-auto > span");
+    const members = await page.$$(".py-3.css-truncate.pl-3.flex-auto > span");
+    for (const user of members) {
+      const username = await user.evaluate((el) => el.textContent);
+      const userUrl = `https://github.com/${username.toLowerCase()}`;
+      data.members.push(userUrl);
+    }
+  };
+  await membersPromise();
   return data;
 };
 
