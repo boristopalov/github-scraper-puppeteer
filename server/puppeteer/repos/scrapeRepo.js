@@ -208,16 +208,30 @@ const tryScrapeContributor = async (
     repoCommits: commitsArray,
   };
 
-  if (await db.collection("users").findOne({ username })) {
-    console.log(`Already scraped ${username}`);
-    const updatedDoc = { $addToSet: { repoCommits: repoCommits } };
-    await db.collection("users").updateOne({ username }, updatedDoc);
+  const user = await db.collection("users").findOne({ url });
+  if (user) {
+    const updatedDoc = {
+      $set: {
+        updatedAt: Date.now(),
+      },
+      $addToSet: {
+        repoCommits: repoCommits,
+      },
+      $inc: {
+        numPullRequestReposWithHundredStars:
+          repoData.repoStarCount >= 100 ? 1 : 0,
+        numPullRequestReposWithReadmeKeywordMatch:
+          repoData.isRepoReadmeKeywordMatch ? 1 : 0,
+      },
+    };
+    await db.collection("users").updateOne({ url }, updatedDoc);
     return userData;
   }
 
   if (await db.collection("queue").findOne({ "task.args.0": url })) {
     return userData;
   }
+
   if (!sendToFront || depth > 3) {
     sendToFront = false;
     depth = 0;
