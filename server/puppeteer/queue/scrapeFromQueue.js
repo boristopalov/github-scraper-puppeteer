@@ -71,68 +71,44 @@ const updateRepo = async (data, db, parentId) => {
   await db.collection("repos").updateOne({ url: parentId }, updatedDoc);
 };
 
-export const updateOrgRepo = async (data, db, parentId) => {
-  let currentNumReposWithHundredStars = 0;
-  let currentNumRepoReadmeKeywordMatch = 0;
-  if (data.repoStarCount >= 100) {
-    currentNumReposWithHundredStars++;
-  }
-  if (data.isRepoReadmeKeywordMatch) {
-    currentNumRepoReadmeKeywordMatch++;
-  }
-
-  const org = await db.collection("orgs").findOne({ name: parentId });
-  if (!org) {
-    console.log("Unable to find parent with ID", parentId);
-    return;
-  }
-  const numReposWithHundredStars = org.numReposWithHundredStars || 0;
-  const numRepoReadmeKeywordMatch = org.numRepoReadmeKeywordMatch || 0;
-  const queuedTasks = org.queuedTasks || 1;
-  const queuedTasksArray = org.queuedTasksArray || [];
-  const filteredQueuedTasksArray = queuedTasksArray.filter(
-    (e) => e !== data.url
-  );
-
-  // update the DB
+const updateOrgRepo = async (data, db, parentId) => {
   const updatedDoc = {
     $set: {
-      numRepoReadmeKeywordMatch:
-        currentNumRepoReadmeKeywordMatch + numRepoReadmeKeywordMatch,
-      numReposWithHundredStars:
-        currentNumReposWithHundredStars + numReposWithHundredStars,
-      queuedTasks: queuedTasks,
-      queuedTasksArray: filteredQueuedTasksArray,
       updatedAt: Date.now(),
     },
+    $pull: {
+      queuedTasks: data.url,
+    },
+    $inc: {
+      numReposWithHundredStars: data.repoStarCount >= 100 ? 1 : 0,
+      numRepoReadmeKeywordMatch: data.isRepoReadmeKeywordMatch ? 1 : 0,
+    },
   };
-  await db.collection("orgs").updateOne({ name: parentId }, updatedDoc);
-};
-
-export const updateUserRepo = async (data, db, parentId) => {
-  let currentNumPullRequestReposWithHundredStars = 0;
-  let currentNumPullRequestReposWithReadmeKeywordMatch = 0;
-  if (data.repoStarCount >= 100) {
-    currentNumPullRequestReposWithHundredStars++;
-  }
-  if (data.isRepoReadmeKeywordMatch) {
-    currentNumPullRequestReposWithReadmeKeywordMatch++;
-  }
-
-  const user = await db.collection("users").findOne({ username: parentId });
-  if (!user) {
-    console.log("Unable to find parent with ID", parentId);
+  const { value: orgData } = await db
+    .collection("orgs")
+    .findOneAndUpdate({ url: parentId }, updatedDoc, {
+      returnDocument: "after",
+      projection: {
+        url: 1,
+        numReposWithHundredStars: 1,
+        numRepoReadmeKeywordMatch: 1,
+        bioKeywordMatch: 1,
+        members: 1,
+        queuedTasks: 1,
+      },
+    });
+  if (orgData.queuedTasks.length > 0) {
+    // only update user if this org has no queued tasks left (i.e. all the repos have been scraped. otherwise we count more than once)
     return;
   }
-  const numPullRequestReposWithHundredStars =
-    user.numPullRequestReposWithHundredStars || 0;
-  const numPullRequestReposWithReadmeKeywordMatch =
-    user.numPullRequestReposWithReadmeKeywordMatch || 0;
-  const queuedTasks = user.queuedTasks || 1;
-  const queuedTasksArray = user.queuedTasksArray || [];
-  const filteredQueuedTasksArray = queuedTasksArray.filter(
-    (e) => e !== data.url
-  );
+  const scrapedMembers = await db
+    .collection("users")
+    .find({ url: { $in: orgData.members } })
+    .toArray();
+  for (const { url } of scrapedMembers) {
+    await updateUserOrg(orgData, db, url);
+  }
+};
 
   // update the DB
   const updatedDoc = {
