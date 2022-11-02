@@ -118,12 +118,6 @@ const updateUserRepo = async (data, db, parentId) => {
     $pull: {
       queuedTasks: data.url,
     },
-    $inc: {
-      numPullRequestReposWithReadmeKeywordMatch: data.isRepoReadmeKeywordMatch
-        ? 1
-        : 0,
-      numPullRequestReposWithHundredStars: data.repoStarCount >= 100 ? 1 : 0,
-    },
   };
   await db.collection("users").updateOne({ url: parentId }, updatedDoc);
 };
