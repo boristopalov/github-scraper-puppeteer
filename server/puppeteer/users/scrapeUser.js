@@ -19,6 +19,7 @@ export const scrapeUserProfile = async (
   { sendToFront = false, depth = 0 } = {},
   res
 ) => {
+  url = url.toLowerCase();
   if (await db.collection("users").findOne({ url })) {
     console.log("Already scraped", url);
     writeToClient(res, `already scraped ${url}`);
@@ -58,7 +59,7 @@ export const scrapeUserProfile = async (
 const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
   const data = {
     name: "n/a",
-    url: "n/a",
+    url: page.url().toLowerCase(),
     email: "n/a",
     username: "n/a",
     location: "n/a",
@@ -87,7 +88,7 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
 
   await checkForBotDetection(page);
 
-  data.tenStarRepoCount = await scrapeUserProfileRepos(page.url());
+  data.tenStarRepoCount = await scrapeUserProfileRepos(data.url);
 
   const namePromise = (async () => {
     const nameElement = await waitForAndSelect(page, "span[itemprop='name']");
@@ -103,7 +104,6 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
     );
     const username = await usernameElement.evaluate((el) => el.innerText);
     data.username = username;
-    data.url = `https://github.com/${username}`;
     return username;
   })();
 
