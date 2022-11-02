@@ -110,9 +110,7 @@ function App() {
 
   const handleScrape = async (event) => {
     event.preventDefault();
-    if (!serverRunning) {
-      setServerRunning(await getServerStatus());
-    }
+
     if (scraperRunning) {
       const res = await enqueueTask(url, type);
       document.getElementById("scrapelog").innerText += res.data + "\n";
@@ -349,9 +347,11 @@ function App() {
                     <option value="org">Org</option>
                   </select>
                 </div>
-                <button onClick={handleScrape} className={styles.btnPrimary}>
-                  {loading ? <Spinner /> : "Scrape"}
-                </button>
+                {serverRunning && (
+                  <button onClick={handleScrape} className={styles.btnPrimary}>
+                    {loading ? <Spinner /> : "Scrape"}
+                  </button>
+                )}
               </form>
             </div>
           )}
@@ -383,9 +383,11 @@ function App() {
                     <option value="org">Org</option>
                   </select>
                 </div>
-                <button onClick={handleExport} className={styles.btnPrimary}>
-                  {loading ? <Spinner /> : "Export"}
-                </button>
+                {serverRunning && (
+                  <button onClick={handleExport} className={styles.btnPrimary}>
+                    {loading ? <Spinner /> : "Export"}
+                  </button>
+                )}
               </form>
               <div id="checkUrlText">
                 <ol id="tasksList"></ol>
@@ -420,9 +422,11 @@ function App() {
                     <option value="org">Org</option>
                   </select>
                 </div>
-                <button onClick={handleCheck} className={styles.btnPrimary}>
-                  {loading ? <Spinner /> : "Check if Scraped"}
-                </button>
+                {serverRunning && (
+                  <button onClick={handleCheck} className={styles.btnPrimary}>
+                    {loading ? <Spinner /> : "Check if Scraped"}
+                  </button>
+                )}
               </form>
               <div id="checkUrlText">
                 <ol id="tasksList"></ol>
