@@ -6,7 +6,7 @@ import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
 import { scrapeUserProfileRepos } from "./scrapeUserProfileRepos.js";
 import checkForBotDetection from "../../utils/checkForBotDetection.js";
 import searchEventsForEmail from "../../utils/searchEventsForEmail.js";
-import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests.js";
+import searchEventsForContributions from "../../utils/searchEventsForContributions.js";
 import { getEvents } from "../../utils/getEvents.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
@@ -68,8 +68,8 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
     bioMatchesKeywords: false,
     repoCommits: [],
     orgs: [],
-    numPullRequestReposWithHundredStars: 0,
-    numPullRequestReposWithReadmeKeywordMatch: 0,
+    numContributedReposWithHundredStars: 0,
+    numContributedReposWithReadmeKeywordMatch: 0,
     queuedTasks: [],
     exported: false,
     contributionCount: 0,
@@ -322,17 +322,17 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
 
     const enqueueReposPromise = (async () => {
       const events = await getEvents(data.username);
-      const pullRequestRepoUrls = searchEventsForPullRequests(events);
+      const pullRequestRepoUrls = searchEventsForContributions(events);
       await Promise.all(
         pullRequestRepoUrls.map(async (url) => {
           url = url.toLowerCase();
           const repoData = await db.collection("repos").findOne({ url });
           if (repoData) {
             if (repoData.repoStarCount >= 100) {
-              data.numPullRequestReposWithHundredStars++;
+              data.numContributedReposWithHundredStars++;
             }
             if (repoData.isRepoReadmeKeywordMatch) {
-              data.numPullRequestReposWithReadmeKeywordMatch++;
+              data.numContributedReposWithReadmeKeywordMatch++;
             }
             return;
           }

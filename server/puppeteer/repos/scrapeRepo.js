@@ -216,9 +216,9 @@ const tryScrapeContributor = async (
         repoCommits: repoCommits,
       },
       $inc: {
-        numPullRequestReposWithHundredStars:
+        numContributedReposWithHundredStars:
           repoData.repoStarCount >= 100 ? 1 : 0,
-        numPullRequestReposWithReadmeKeywordMatch:
+        numContributedReposWithReadmeKeywordMatch:
           repoData.isRepoReadmeKeywordMatch ? 1 : 0,
       },
     };
