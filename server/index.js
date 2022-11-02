@@ -77,7 +77,8 @@ export const startServer = async () => {
   });
 
   app.get("/scrape", async (req, res) => {
-    const { type, url } = req.query;
+    let { type, url } = req.query;
+    url = url.toLowerCase();
 
     // set headers and send them to the client
     // this establishes an SSE connection with the client
