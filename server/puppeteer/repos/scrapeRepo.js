@@ -120,7 +120,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
         db,
         { sendToFront, depth }
       );
-      if (userData && Object.prototype.hasOwnProperty.call(userData, "url")) {
+      if (userData) {
         data.contributors.push(userData.url);
       }
     }
