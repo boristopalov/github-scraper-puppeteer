@@ -138,4 +138,8 @@
   padding-left: 3em;
 }
 
+.docsText > p {
+  font-size: medium;
+}
+
 /* border: 1px solid #404040 */
