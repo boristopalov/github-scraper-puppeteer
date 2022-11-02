@@ -13,7 +13,7 @@ export const exportRepo = async (db, url) => {
     .find(
       {
         $and: [
-          { queuedTasks: 0 },
+          { queuedTasks: { $size: 0 } },
           { exported: false },
           { url: { $in: contributors } },
         ],
@@ -49,7 +49,7 @@ export const exportRepo = async (db, url) => {
   await db.collection("users").updateMany(
     {
       $and: [
-        { queuedTasks: 0 },
+        { queuedTasks: { $size: 0 } },
         { exported: false },
         { url: { $in: contributors } },
       ],
@@ -81,7 +81,7 @@ export const exportOrg = async (db, url) => {
       .find(
         {
           $and: [
-            { queuedTasks: 0 },
+            { queuedTasks: { $size: 0 } },
             { exported: false },
             { url: { $in: contributors } },
           ],
@@ -108,7 +108,7 @@ export const exportOrg = async (db, url) => {
     await db.collection("users").updateMany(
       {
         $and: [
-          { queuedTasks: 0 },
+          { queuedTasks: { $size: 0 } },
           { exported: false },
           { url: { $in: contributors } },
         ],
@@ -151,7 +151,7 @@ export const exportUser = async (db, url) => {
   };
   await db.collection("users").updateOne(
     {
-      $and: [{ queuedTasks: 0 }, { exported: false }, { url: url }],
+      $and: [{ queuedTasks: { $size: 0 } }, { exported: false }, { url: url }],
     },
     updatedDoc
   );
