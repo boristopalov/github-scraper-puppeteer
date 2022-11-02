@@ -123,6 +123,9 @@ const updateUserRepo = async (data, db, parentId) => {
 };
 
 const updateUserOrg = async (data, db, parentId) => {
+  if (data.queuedTasks.length > 0) {
+    return;
+  }
   const updatedDoc = {
     $set: {
       updatedAt: Date.now(),
