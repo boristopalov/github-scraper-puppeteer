@@ -3,11 +3,8 @@ export const checkIfOrgScraped = async (db, url) => {
   if (!org) {
     return { url, scraped: false, tasks: null };
   }
-  if (
-    Object.prototype.hasOwnProperty.call(org, "queuedTasksArray") &&
-    org.queuedTasksArray.length > 0
-  ) {
-    return { url, scraped: false, tasks: org.queuedTasksArray };
+  if (org.queuedTasks.length > 0) {
+    return { url, scraped: false, tasks: org.queuedTasks };
   }
   for (const repoUrl of org.reposInOrg) {
     const repoScraped = await checkIfRepoScraped(db, repoUrl);
@@ -23,11 +20,8 @@ export const checkIfRepoScraped = async (db, url) => {
   if (!repo) {
     return { url, scraped: false, tasks: null };
   }
-  if (
-    Object.prototype.hasOwnProperty.call(repo, "queuedTasksArray") &&
-    repo.queuedTasksArray.length > 0
-  ) {
-    return { url, scraped: false, tasks: repo.queuedTasksArray };
+  if (repo.queuedTasks.length > 0) {
+    return { url, scraped: false, tasks: repo.queuedTasks };
   }
   for (const url of repo.contributors) {
     const userScraped = await checkIfUserScraped(db, url);
@@ -35,7 +29,6 @@ export const checkIfRepoScraped = async (db, url) => {
       return userScraped;
     }
   }
-  console.log(`${url} has finished scraping.`);
   return { url, scraped: true, tasks: [] };
 };
 
@@ -44,11 +37,8 @@ export const checkIfUserScraped = async (db, url) => {
   if (!user) {
     return { url, scraped: false, tasks: null };
   }
-  if (
-    Object.prototype.hasOwnProperty.call(user, "queuedTasksArray") &&
-    user.queuedTasksArray.length > 0
-  ) {
-    return { url, scraped: false, tasks: user.queuedTasksArray };
+  if (user.queuedTasks.length > 0) {
+    return { url, scraped: false, tasks: user.queuedTasks };
   }
   return { url, scraped: true, tasks: [] };
 };
