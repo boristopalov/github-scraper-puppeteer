@@ -128,42 +128,19 @@ const updateUserRepo = async (data, db, parentId) => {
   await db.collection("users").updateOne({ url: parentId }, updatedDoc);
 };
 
-export const updateUserOrg = async (data, db, parentId) => {
-  let currentNumOrgReposReadmeKeywordMatch = 0;
-  let currentNumOrgReposWithHundredStars = 0;
-  let currentNumOrgBioKeywordMatch = 0;
-  if (data.bioKeywordMatch) {
-    currentNumOrgBioKeywordMatch++;
-  }
-  currentNumOrgReposReadmeKeywordMatch += data.numRepoReadmeKeywordMatch;
-  currentNumOrgReposWithHundredStars += data.numReposWithHundredStars;
-  const user = await db.collection("users").findOne({ username: parentId });
-  if (!user) {
-    console.log("Unable to find parent with ID", parentId);
-    return;
-  }
-  const numOrgBioKeywordMatch = user.numOrgBioKeywordMatch || 0;
-  const numOrgReposWithHundredStars = user.numOrgReposWithHundredStars || 0;
-  const numOrgReposReadmeKeywordMatch = user.numOrgReposReadmeKeywordMatch || 0;
-  const queuedTasks = user.queuedTasks || 1;
-  const queuedTasksArray = user.queuedTasksArray || [];
-  const filteredQueuedTasksArray = queuedTasksArray.filter(
-    (e) => e !== data.url
-  );
-
-  // update the DB
+const updateUserOrg = async (data, db, parentId) => {
   const updatedDoc = {
     $set: {
-      numOrgReposReadmeKeywordMatch:
-        currentNumOrgReposReadmeKeywordMatch + numOrgReposReadmeKeywordMatch,
-      numOrgReposWithHundredStars:
-        currentNumOrgReposWithHundredStars + numOrgReposWithHundredStars,
-      numOrgBioKeywordMatch:
-        currentNumOrgBioKeywordMatch + numOrgBioKeywordMatch,
-      queuedTasks: queuedTasks - 1,
-      queuedTasksArray: filteredQueuedTasksArray,
       updatedAt: Date.now(),
     },
+    $pull: {
+      queuedTasks: data.url,
+    },
+    $inc: {
+      numOrgBioKeywordMatch: data.bioKeywordMatch ? 1 : 0,
+      numOrgReposReadmeKeywordMatch: data.numRepoReadmeKeywordMatch,
+      numOrgReposWithHundredStars: data.numReposWithHundredStars,
+    },
   };
-  await db.collection("users").updateOne({ username: parentId }, updatedDoc);
+  await db.collection("users").updateOne({ url: parentId }, updatedDoc);
 };
