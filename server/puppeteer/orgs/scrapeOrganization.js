@@ -68,10 +68,9 @@ const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
     ".d-flex.flex-wrap.flex-items-start.flex-md-items-center.my-3"
   );
 
-  const namePromise = (async () => {
+  (async () => {
     const name = await header.$eval(".flex-1 > h1", (e) => e.innerText);
     data.name = name;
-    return name;
   })();
 
   const bioPromise = (async () => {
@@ -96,38 +95,44 @@ const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
   }
   data.reposInOrg = repoUrls;
 
-  const enqueueRepoPromises = repoUrls.map(async (url) => {
-    const orgName = await namePromise;
-    const repoData = await db.collection("repos").findOne({ url });
-    if (repoData) {
-      await updateOrgRepo(repoData, db, data.name);
-      return data;
-    }
-    if (await db.collection("queue").findOne({ "task.args.0": url })) {
-      return data;
-    }
-    if (!sendToFront || depth > 3) {
-      sendToFront = false;
-      depth = 0;
-    } else {
-      depth++;
-    }
-    await queueTaskdb(
-      db,
-      {
-        type: "repo",
-        parentType: "org",
-        parentId: orgName,
-      },
-      {
-        fn: "scrapeRepo",
-        args: [url],
-      },
-      { sendToFront, depth }
-    );
-    data.queuedTasks++;
-    data.queuedTasksArray.push(url);
-  });
+  const enqueueRepoPromises = await Promise.all(
+    repoUrls.map(async (url) => {
+      const repoData = await db.collection("repos").findOne({ url });
+      if (repoData) {
+        if (repoData.repoStarCount >= 100) {
+          data.numReposWithHundredStars++;
+        }
+        if (repoData.isRepoReadmeKeywordMatch) {
+          data.numRepoReadmeKeywordMatch++;
+        }
+        return data;
+      }
+      if (await db.collection("queue").findOne({ "task.args.0": url })) {
+        console.log(`${url} is already in the queue!`);
+        return data;
+      }
+      if (!sendToFront || depth > 3) {
+        sendToFront = false;
+        depth = 0;
+      } else {
+        depth++;
+      }
+      await queueTaskdb(
+        db,
+        {
+          type: "repo",
+          parentType: "org",
+          parentId: data.url,
+        },
+        {
+          fn: "scrapeRepo",
+          args: [url],
+        },
+        { sendToFront, depth }
+      );
+      data.queuedTasks.push(url);
+    })
+  );
   await Promise.all([bioContainsKeywordsPromise, enqueueRepoPromises]);
 
   const membersPromise = async () => {
