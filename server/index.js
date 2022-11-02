@@ -97,16 +97,20 @@ export const startServer = async () => {
   });
 
   app.post("/enqueue", async (req, res) => {
-    const { type, url } = req.body;
+    let { type, url } = req.body;
+    url = url.toLowerCase();
     if (url === "") {
       res.send(`[${new Date().toLocaleTimeString()}]url cannot be empty`);
       return;
     }
-    if (
-      (await db.collection(`${type}s`).findOne({ url })) ||
-      (await db.collection(`queue`).findOne({ "task.args.0": url }))
-    ) {
+    if (await db.collection(`${type}s`).findOne({ url })) {
       res.send(`[${new Date().toLocaleTimeString()}]already scraped ${url}`);
+      return;
+    }
+    if (await db.collection(`queue`).findOne({ "task.args.0": url })) {
+      res.send(
+        `[${new Date().toLocaleTimeString()}]${url} is already in the queue`
+      );
       return;
     }
     let fn;
