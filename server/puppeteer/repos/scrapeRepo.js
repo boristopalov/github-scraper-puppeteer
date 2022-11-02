@@ -83,7 +83,6 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
       "[data-target='readme-toc.content'] > article"
     );
     if (!readmeElement) {
-      data.isRepoReadmeKeywordMatch = "n/a";
       return;
     }
     const readmeText = await readmeElement.evaluate((el) => el.innerText);
