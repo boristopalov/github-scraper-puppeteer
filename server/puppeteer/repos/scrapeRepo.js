@@ -14,6 +14,7 @@ export const scrapeRepo = async (
   { sendToFront = false, depth = 0 } = {},
   res
 ) => {
+  url = url.toLowerCase();
   if (await db.collection("repos").findOne({ url })) {
     console.log("Already scraped", url);
     writeToClient(res, `already scraped ${url}`);
@@ -46,9 +47,11 @@ export const scrapeRepo = async (
 };
 
 const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
+  const url = page.url().toLowerCase();
+
   const data = {
     name: "n/a",
-    url: "n/a",
+    url: url,
     repoStarCount: 0,
     isRepoReadmeKeywordMatch: false,
     topLanguage: "n/a",
@@ -60,9 +63,6 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
   await checkForBotDetection(page);
   await sleep(1000);
   await page.setViewport({ width: 1440, height: 796 });
-
-  const url = page.url();
-  data.url = url;
 
   const splitUrl = url.split("/");
   const repoName = splitUrl[splitUrl.length - 1];
@@ -188,8 +188,7 @@ const tryScrapeContributor = async (
     );
     const commitsNum = convertNumStringToDigits(commits);
     const obj = {};
-    const repoName = repoData.name;
-    obj[repoName] = commitsNum;
+    obj[repoData.url] = commitsNum;
     return obj;
   })();
 
@@ -200,7 +199,7 @@ const tryScrapeContributor = async (
   }
   const repoCommits = await commitsPromise;
   const commitsArray = [repoCommits];
-  const url = `https://github.com/${username}`;
+  const url = `https://github.com/${username}`.toLowerCase();
 
   const userData = {
     username,
@@ -239,13 +238,12 @@ const tryScrapeContributor = async (
     depth++;
   }
 
-  const repoName = repoData.name;
   await queueTaskdb(
     db,
     {
       type: "user",
-      parentType: "repo", // for logging purposes
-      parentId: repoName, // for logging purposes -- no need to updated the database here but still nice to be able to see what is queueing up this task
+      parentType: "repo",
+      parentId: repoData.url,
     },
     {
       fn: "scrapeUserProfile",
