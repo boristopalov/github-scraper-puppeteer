@@ -3,15 +3,9 @@ import { scrapeRepo } from "./repos/scrapeRepo.js";
 import { scrapeUserProfile } from "./users/scrapeUser.js";
 import { TASKLIMIT } from "./taskCounter.js";
 import { scrapeFromQueuedb } from "./queue/scrapeFromQueue.js";
-import { SCRAPER_ACTIVE_FLAG, startScraperFlag } from "./scraperStatus.js";
+import { SCRAPER_ACTIVE_FLAG, stopScraperFlag } from "./scraperStatus.js";
 
 export const scrape = async (db, type, url, res) => {
-  if (url === "" && !SCRAPER_ACTIVE_FLAG) {
-    startScraperFlag();
-    await scrapeFromQueueLoop(db, res);
-    return;
-  }
-  if (!url.toLowerCase().includes("github.com")) {
     console.error(
       `error- please enter a valid GitHub url, you entered: ${url}`
     );
@@ -37,18 +31,11 @@ export const scrape = async (db, type, url, res) => {
     console.error(`error- possible types - 'repo', 'user', 'org'`);
     return;
   }
-  if (SCRAPER_ACTIVE_FLAG) {
-    console.log(
-      "Scraper is already running and should be scraping from the queue."
-    );
-    return;
-  }
-  startScraperFlag(); // SCRAPER_ACTIVE_FLAG gets set to true once we start scraping from the queue
   console.log("scraping from da queue now ");
   await scrapeFromQueueLoop(db, res);
 };
 
-const scrapeFromQueueLoop = async (db, res) => {
+export const scrapeFromQueueLoop = async (db, res) => {
   let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
   let batchSize = Math.min(queueSize, TASKLIMIT);
   let qCounter = 0;
@@ -63,5 +50,6 @@ const scrapeFromQueueLoop = async (db, res) => {
     queueSize = await db.collection("queue").countDocuments();
     batchSize = Math.min(queueSize, TASKLIMIT);
   }
+  stopScraperFlag();
   return;
 };
