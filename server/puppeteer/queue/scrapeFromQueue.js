@@ -19,8 +19,7 @@ export const scrapeFromQueuedb = async (db, n, res) => {
     .toArray(); // grabs the nth record
   const record = recordPromise[0];
   const id = record._id;
-  const { context, task } = record;
-  const inFront = record.inFront || { sendToFront: false, depth: 0 };
+  const { context, task, inFront } = record;
   const { type, parentType, parentId } = context;
   const { fn, args } = task;
   console.log(`scraping ${args[0]}`);
