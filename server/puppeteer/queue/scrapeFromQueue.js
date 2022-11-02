@@ -60,22 +60,15 @@ export const scrapeFromQueuedb = async (db, n, res) => {
 };
 
 const updateRepo = async (data, db, parentId) => {
-  const repo = await db.collection("repos").findOne({ name: parentId });
-  const queuedTasks = repo.queuedTasks || 1;
-  const queuedTasksArray = repo.queuedTasksArray || [];
-  const filteredQueuedTasksArray = queuedTasksArray.filter(
-    (e) => e !== data.url
-  );
-
   const updatedDoc = {
     $set: {
-      queuedTasks: queuedTasks - 1,
-      queuedTasksArray: filteredQueuedTasksArray,
       updatedAt: Date.now(),
     },
+    $pull: {
+      queuedTasks: data.url,
+    },
   };
-
-  await db.collection("repos").updateOne({ name: parentId }, updatedDoc);
+  await db.collection("repos").updateOne({ url: parentId }, updatedDoc);
 };
 
 export const updateOrgRepo = async (data, db, parentId) => {
