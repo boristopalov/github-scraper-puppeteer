@@ -10,7 +10,6 @@ import searchEventsForPullRequests from "../../utils/searchEventsForPullRequests
 import { getEvents } from "../../utils/getEvents.js";
 import { queueTaskdb } from "../../utils/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
-import { updateUserOrg, updateUserRepo } from "../queue/scrapeFromQueue.js";
 import { writeToClient } from "../../index.js";
 
 export const scrapeUserProfile = async (
@@ -286,63 +285,75 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
       if (!urls) {
         return;
       }
-      const queuePromises = urls.map(async (url) => {
-        const orgData = await db.collection("orgs").findOne({ url });
-        if (orgData) {
-          await updateUserOrg(orgData, db, data.username);
-          return;
-        }
-        if (await db.collection("queue").findOne({ "task.args.0": url })) {
-          return;
-        }
-        await queueTaskdb(
-          db,
-          {
-            type: "org",
-            parentType: "user",
-            parentId: data.username,
-          },
-          {
-            fn: "scrapeOrganization",
-            args: [url],
-          },
-          { sendToFront, depth }
-        );
-        data.queuedTasks++;
-        data.queuedTasksArray.push(url);
-      });
-      await Promise.all(queuePromises);
+      await Promise.all(
+        urls.map(async (url) => {
+          const orgData = await db.collection("orgs").findOne({ url });
+          if (orgData && orgData.queuedTasks.length == 0) {
+            if (orgData.bioKeywordMatch) {
+              data.numOrgBioKeywordMatch++;
+            }
+            data.numOrgReposWithHundredStars +=
+              orgData.numReposWithHundredStars;
+            data.numOrgReposReadmeKeywordMatch +=
+              orgData.numRepoReadmeKeywordMatch;
+            return;
+          }
+          if (await db.collection("queue").findOne({ "task.args.0": url })) {
+            return;
+          }
+          await queueTaskdb(
+            db,
+            {
+              type: "org",
+              parentType: "user",
+              parentId: data.url,
+            },
+            {
+              fn: "scrapeOrganization",
+              args: [url],
+            },
+            { sendToFront, depth }
+          );
+          data.queuedTasks.push(url);
+        })
+      );
     })();
 
     const enqueueReposPromise = (async () => {
       const events = await getEvents(data.username);
       const pullRequestRepoUrls = searchEventsForPullRequests(events);
-      const queuePromises = pullRequestRepoUrls.map(async (url) => {
-        const repoData = await db.collection("repos").findOne({ url });
-        if (repoData) {
-          await updateUserRepo(repoData, db, data.username);
-          return;
-        }
-        if (await db.collection("queue").findOne({ "task.args.0": url })) {
-          return;
-        }
-        await queueTaskdb(
-          db,
-          {
-            type: "repo",
-            parentType: "user",
-            parentId: data.username,
-          },
-          {
-            fn: "scrapeRepo",
-            args: [url],
-          },
-          { sendToFront, depth }
-        );
-        data.queuedTasks++;
-        data.queuedTasksArray.push(url);
-      });
-      await Promise.all(queuePromises);
+      await Promise.all(
+        pullRequestRepoUrls.map(async (url) => {
+          url = url.toLowerCase();
+          const repoData = await db.collection("repos").findOne({ url });
+          if (repoData) {
+            if (repoData.repoStarCount >= 100) {
+              data.numPullRequestReposWithHundredStars++;
+            }
+            if (repoData.isRepoReadmeKeywordMatch) {
+              data.numPullRequestReposWithReadmeKeywordMatch++;
+            }
+            return;
+          }
+          if (await db.collection("queue").findOne({ "task.args.0": url })) {
+            return;
+          }
+          await queueTaskdb(
+            db,
+            {
+              type: "repo",
+              parentType: "user",
+              parentId: data.url,
+            },
+            {
+              fn: "scrapeRepo",
+              args: [url],
+            },
+            { sendToFront, depth }
+          );
+          data.queuedTasks.push(url);
+        })
+      );
     })();
     await Promise.all([enqueueOrgsPromise, enqueueReposPromise]);
   }
