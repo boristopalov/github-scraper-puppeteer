@@ -247,11 +247,12 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
       return null;
     }
     const orgsToQueue = orgs.slice(0, 5); // only scrape 5 orgs at most
-    const queuePromises = orgsToQueue.map(async (org) => {
-      const url = await org.evaluate((el) => el.href);
-      data.orgs.push(url);
-    });
-    await Promise.all(queuePromises);
+    await Promise.all(
+      orgsToQueue.map(async (org) => {
+        const url = await org.evaluate((el) => el.href);
+        data.orgs.push(url.toLowerCase());
+      })
+    );
     return data.orgs;
   })();
 
