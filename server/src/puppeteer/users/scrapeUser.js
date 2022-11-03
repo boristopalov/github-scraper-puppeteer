@@ -322,7 +322,10 @@ const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
 
     const enqueueReposPromise = (async () => {
       const events = await getEvents(data.username);
-      const pullRequestRepoUrls = searchEventsForContributions(events);
+      const pullRequestRepoUrls = searchEventsForContributions(
+        events,
+        data.username
+      );
       await Promise.all(
         pullRequestRepoUrls.map(async (url) => {
           url = url.toLowerCase();
