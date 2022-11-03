@@ -5,13 +5,13 @@
   "main": "./index.js",
   "type": "module",
   "scripts": {
-    "search-repos": "cd puppeteer && node startScraper.js search repositories",
-    "search-users": "node startScraper.js search users",
-    "scrape": "cd utils && node startFromTerminal.js",
-    "scheck": "cd utils/scrapeCheck && node checkIfScrapedTerminal.js",
-    "export": "cd utils/export && node exportFromTerminal.js",
-    "server": "node index.js",
-    "dev": "nodemon index.js"
+    "search-repos": "cd src/puppeteer && node startScraper.js search repositories",
+    "search-users": "node src/startScraper.js search users",
+    "scrape": "node src/utils/startFromTerminal.js",
+    "scheck": "node src/utils/scrapeCheck/checkIfScrapedTerminal.js",
+    "export": "node src/utils/export/exportFromTerminal.js",
+    "server": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "author": "Boris Topalov",
   "license": "ISC",

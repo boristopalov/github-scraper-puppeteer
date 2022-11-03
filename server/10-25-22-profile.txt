@@ -1,0 +1,1444 @@
+Statistical profiling result from isolate-0x110008000-67217-v8.log, (14791 ticks, 36 unaccounted, 0 excluded).
+
+ [Shared libraries]:
+   ticks  total  nonlib   name
+    201    1.4%          /usr/lib/system/libsystem_malloc.dylib
+     41    0.3%          /usr/lib/system/libsystem_pthread.dylib
+     36    0.2%          /usr/lib/system/libsystem_c.dylib
+     23    0.2%          /usr/lib/libc++.1.dylib
+      8    0.1%          /usr/lib/system/libsystem_kernel.dylib
+      7    0.0%          /usr/lib/system/libsystem_platform.dylib
+      6    0.0%          /usr/lib/libc++abi.dylib
+      4    0.0%          /usr/lib/system/libdyld.dylib
+
+ [JavaScript]:
+   ticks  total  nonlib   name
+     73    0.5%    0.5%  LazyCompile: *_isValidUTF8 /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/validation.js:53:22
+     23    0.2%    0.2%  LazyCompile: *debugLevel file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Debug.js:70:16
+     22    0.1%    0.2%  LazyCompile: *onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+     13    0.1%    0.1%  LazyCompile: *_mask /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/buffer-util.js:41:15
+     11    0.1%    0.1%  LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+     11    0.1%    0.1%  LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+     10    0.1%    0.1%  LazyCompile: *getInfo /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:166:10
+     10    0.1%    0.1%  LazyCompile: *Readable.read node:internal/streams/readable:402:35
+      9    0.1%    0.1%  LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+      8    0.1%    0.1%  LazyCompile: *get node:internal/streams/duplex:102:8
+      5    0.0%    0.0%  LazyCompile: *socketOnData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1271:22
+      5    0.0%    0.0%  LazyCompile: *onwrite node:internal/streams/writable:426:17
+      5    0.0%    0.0%  LazyCompile: *onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+      5    0.0%    0.0%  LazyCompile: *getPayloadLength16 /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:319:21
+      5    0.0%    0.0%  LazyCompile: *getData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:410:10
+      5    0.0%    0.0%  LazyCompile: *emit file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/EventEmitter.js:80:9
+      4    0.0%    0.0%  LazyCompile: *send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:309:9
+      4    0.0%    0.0%  LazyCompile: *resolve node:path:1091:10
+      4    0.0%    0.0%  LazyCompile: *nextTick node:internal/process/task_queues:104:18
+      4    0.0%    0.0%  LazyCompile: *maybeReadMore_ node:internal/streams/readable:632:24
+      4    0.0%    0.0%  LazyCompile: *matchKnownFields node:_http_incoming:234:26
+      4    0.0%    0.0%  LazyCompile: *emit node:events:475:44
+      4    0.0%    0.0%  LazyCompile: *_write node:internal/streams/writable:284:16
+      4    0.0%    0.0%  LazyCompile: *_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:78:9
+      4    0.0%    0.0%  LazyCompile: *_ExecutionContext_evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:159:116
+      3    0.0%    0.0%  RegExp: ^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$
+      3    0.0%    0.0%  LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+      3    0.0%    0.0%  LazyCompile: *maybeReadMore node:internal/streams/readable:625:23
+      3    0.0%    0.0%  LazyCompile: *frame /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/sender.js:68:15
+      3    0.0%    0.0%  LazyCompile: *_unrefTimer node:net:437:52
+      3    0.0%    0.0%  LazyCompile: *__classPrivateFieldGet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:22:80
+      3    0.0%    0.0%  LazyCompile: *HTTPRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPRequest.js:56:16
+      3    0.0%    0.0%  LazyCompile: *FastBuffer node:internal/buffer:958:14
+      3    0.0%    0.0%  Function: ^get node:net:608:16
+      3    0.0%    0.0%  Function: ^_addListener node:events:555:22
+      2    0.0%    0.0%  RegExp: ^((?:(?:[0-9a-fA-F]{1,4}):){7}(?:(?:[0-9a-fA-F]{1,4})|:)|(?:(?:[0-9a-fA-F]{1,4}):){6}(?:((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|:(?:[0-9a-fA-F]{1,4})|:)|(?:(?:[0-9a-fA-F]{1,4}):){5}(?::((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|(:(?:[0-9a-fA-F]{1,4})){1,2}|:)|(?:(?:[0-9a-fA-F]{1,4}):){4}(?:(:(?:[0-9a-fA-F]{1,4})){0,1}:((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|(:(?:[0-9a-fA-F]{1,4})){1,3}|:)|(?:(?:[0-9a-fA-F]{1,4}):){3}(?:(:(?:[0-9a-fA-F]{1,4})){0,2}:((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|(:(?:[0-9a-fA-F]{1,4})){1,4}|:)|(?:(?:[0-9a-fA-F]{1,4}):){2}(?:(:(?:[0-9a-fA-F]{1,4})){0,3}:((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|(:(?:[0-9a-fA-F]{1,4})){1,5}|:)|(?:(?:[0-9a-fA-F]{1,4}):){1}(?:(:(?:[0-9a-fA-F]{1,4})){0,4}:((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|(:(?:[0-9a-fA-F]{1,4})){1,6}|:)|(?::((?::(?:[0-9a-fA-F]{1,4})){0,5}:((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])|(?::(?:[0-9a-fA-F]{1,4})){1,7}|:)))(%[0-9a-zA-Z-.:]{1,})?$
+      2    0.0%    0.0%  LazyCompile: *processPromiseRejections node:internal/process/promises:211:34
+      2    0.0%    0.0%  LazyCompile: *getStderr node:internal/bootstrap/switches/is_main_thread:156:19
+      2    0.0%    0.0%  LazyCompile: *get node:net:1761:6
+      2    0.0%    0.0%  LazyCompile: *get node:internal/bootstrap/pre_execution:416:8
+      2    0.0%    0.0%  LazyCompile: *afterWriteTick node:internal/streams/writable:483:24
+      2    0.0%    0.0%  LazyCompile: *adjustOffset node:buffer:1101:22
+      2    0.0%    0.0%  LazyCompile: *__classPrivateFieldGet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPResponse.js:7:80
+      2    0.0%    0.0%  LazyCompile: *__classPrivateFieldGet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:7:80
+      2    0.0%    0.0%  LazyCompile: *Socket._read node:net:624:34
+      2    0.0%    0.0%  LazyCompile: *Long /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/long.js:59:18
+      2    0.0%    0.0%  LazyCompile: *HTTPResponse file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPResponse.js:25:16
+      2    0.0%    0.0%  LazyCompile: *<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+      2    0.0%    0.0%  Function: ^writevGeneric node:internal/stream_base_commons:122:23
+      2    0.0%    0.0%  Function: ^writeOrBuffer node:internal/streams/writable:366:23
+      2    0.0%    0.0%  Function: ^update /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/topology_description.js:131:11
+      2    0.0%    0.0%  Function: ^readableAddChunk node:internal/streams/readable:242:26
+      2    0.0%    0.0%  Function: ^processIncomingData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:84:29
+      2    0.0%    0.0%  Function: ^matchHeader node:_http_outgoing:524:21
+      2    0.0%    0.0%  Function: ^get node:internal/bootstrap/pre_execution:428:8
+      2    0.0%    0.0%  Function: ^convertArgument file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:230:35
+      2    0.0%    0.0%  Function: ^byteLength node:buffer:731:20
+      2    0.0%    0.0%  Function: ^_rawSend file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:109:13
+      2    0.0%    0.0%  Function: ^_NetworkManager_onResponseReceived file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:338:84
+      2    0.0%    0.0%  Function: ^ServerDescription /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server_description.js:35:16
+      1    0.0%    0.0%  RegExp: ^\$ref$|^\$id$|^\$db$
+      1    0.0%    0.0%  RegExp: ^[\^_`a-zA-Z\-0-9!#$%&'*+.|~]+$
+      1    0.0%    0.0%  RegExp: (^|\\|\/)((\.|%2e)(\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))(\\|\/|$)
+      1    0.0%    0.0%  LazyCompile: *writeUInt16BE node:internal/buffer:839:23
+      1    0.0%    0.0%  LazyCompile: *subarray node:buffer:1118:46
+      1    0.0%    0.0%  LazyCompile: *startLoop /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:129:12
+      1    0.0%    0.0%  LazyCompile: *serializeInto /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/serializer.js:553:23
+      1    0.0%    0.0%  LazyCompile: *responseExtraInfo file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkEventManager.js:84:22
+      1    0.0%    0.0%  LazyCompile: *remove node:internal/linkedlist:16:16
+      1    0.0%    0.0%  LazyCompile: *realpathSync node:fs:2426:22
+      1    0.0%    0.0%  LazyCompile: *pushAsyncContext node:internal/async_hooks:538:26
+      1    0.0%    0.0%  LazyCompile: *now /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/utils.js:571:13
+      1    0.0%    0.0%  LazyCompile: *getQueryHandlerAndSelector file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/QueryHandler.js:185:43
+      1    0.0%    0.0%  LazyCompile: *getEncodingOps node:buffer:681:24
+      1    0.0%    0.0%  LazyCompile: *fromStringFast node:buffer:415:24
+      1    0.0%    0.0%  LazyCompile: *convertArgument file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:230:35
+      1    0.0%    0.0%  LazyCompile: *__classPrivateFieldSet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPResponse.js:1:80
+      1    0.0%    0.0%  LazyCompile: *__classPrivateFieldSet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPRequest.js:1:80
+      1    0.0%    0.0%  LazyCompile: *__classPrivateFieldGet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/JSHandle.js:22:80
+      1    0.0%    0.0%  LazyCompile: *__classPrivateFieldGet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPRequest.js:7:80
+      1    0.0%    0.0%  LazyCompile: *_NetworkManager_onResponseReceivedExtraInfo file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:354:102
+      1    0.0%    0.0%  LazyCompile: *_NetworkManager_onLoadingFinished file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:389:82
+      1    0.0%    0.0%  LazyCompile: *_NetworkManager_emitLoadingFinished file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:399:86
+      1    0.0%    0.0%  LazyCompile: *Socket.read node:net:667:33
+      1    0.0%    0.0%  LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      1    0.0%    0.0%  LazyCompile: *Long.isLong /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/long.js:236:28
+      1    0.0%    0.0%  LazyCompile: *C node:internal/deps/cjs-module-lexer/dist/lexer:1:1152
+      1    0.0%    0.0%  LazyCompile: *<anonymous> node:buffer:351:36
+      1    0.0%    0.0%  Function: ^writeCommand /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:40:17
+      1    0.0%    0.0%  Function: ^valueFromRemoteObject file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/util.js:51:38
+      1    0.0%    0.0%  Function: ^validateString node:internal/validators:118:24
+      1    0.0%    0.0%  Function: ^updateServers /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/topology.js:489:23
+      1    0.0%    0.0%  Function: ^takeQueuedRedirectInfo file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkEventManager.js:99:27
+      1    0.0%    0.0%  Function: ^tagsStrictEqual /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server_description.js:152:25
+      1    0.0%    0.0%  Function: ^startLoop /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:129:12
+      1    0.0%    0.0%  Function: ^socketOnData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1271:22
+      1    0.0%    0.0%  Function: ^slice node:buffer:1126:40
+      1    0.0%    0.0%  Function: ^send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:66:9
+      1    0.0%    0.0%  Function: ^send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:309:9
+      1    0.0%    0.0%  Function: ^send /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:439:7
+      1    0.0%    0.0%  Function: ^send /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/response.js:107:25
+      1    0.0%    0.0%  Function: ^rmkidsSync /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/rimraf/rimraf.js:333:20
+      1    0.0%    0.0%  Function: ^rmdirSync /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/rimraf/rimraf.js:317:19
+      1    0.0%    0.0%  Function: ^removeListener node:events:689:28
+      1    0.0%    0.0%  Function: ^remove node:internal/linkedlist:16:16
+      1    0.0%    0.0%  Function: ^readUInt32LE node:internal/buffer:215:22
+      1    0.0%    0.0%  Function: ^readUInt16BE node:internal/buffer:327:22
+      1    0.0%    0.0%  Function: ^readPreferenceServerSelector /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server_selection.js:188:38
+      1    0.0%    0.0%  Function: ^process_params /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/router/index.js:333:47
+      1    0.0%    0.0%  Function: ^processPromiseRejections node:internal/process/promises:211:34
+      1    0.0%    0.0%  Function: ^percolateDown node:internal/priority_queue:49:16
+      1    0.0%    0.0%  Function: ^parse /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/commands.js:426:10
+      1    0.0%    0.0%  Function: ^pages file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Browser.js:360:16
+      1    0.0%    0.0%  Function: ^onwrite node:internal/streams/writable:426:17
+      1    0.0%    0.0%  Function: ^ondata node:internal/readline/interface:247:18
+      1    0.0%    0.0%  Function: ^onParserExecuteCommon node:_http_server:694:31
+      1    0.0%    0.0%  Function: ^onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+      1    0.0%    0.0%  Function: ^ok node:assert:409:12
+      1    0.0%    0.0%  Function: ^normalizeParseOptions /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/qs/lib/parse.js:203:59
+      1    0.0%    0.0%  Function: ^noop node:internal/util/debuglog:47:14
+      1    0.0%    0.0%  Function: ^maybePromise /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/utils.js:345:22
+      1    0.0%    0.0%  Function: ^isObjectLike /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/utils.js:95:22
+      1    0.0%    0.0%  Function: ^hrtime node:internal/process/per_thread:79:16
+      1    0.0%    0.0%  Function: ^haveLength /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:369:13
+      1    0.0%    0.0%  Function: ^getStderr node:internal/bootstrap/switches/is_main_thread:156:19
+      1    0.0%    0.0%  Function: ^getRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkEventManager.js:125:15
+      1    0.0%    0.0%  Function: ^getObserverType node:internal/perf/observe:120:25
+      1    0.0%    0.0%  Function: ^get node:internal/streams/writable:776:8
+      1    0.0%    0.0%  Function: ^get node:events:264:16
+      1    0.0%    0.0%  Function: ^get data /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:163:11
+      1    0.0%    0.0%  Function: ^get /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:22:74
+      1    0.0%    0.0%  Function: ^from node:buffer:298:28
+      1    0.0%    0.0%  Function: ^frame /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/sender.js:68:15
+      1    0.0%    0.0%  Function: ^executeWithServerSelection /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/execute_operation.js:85:36
+      1    0.0%    0.0%  Function: ^evaluateHandle file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:155:25
+      1    0.0%    0.0%  Function: ^equals /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server_description.js:95:11
+      1    0.0%    0.0%  Function: ^emit node:events:475:44
+      1    0.0%    0.0%  Function: ^dispose file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/JSHandle.js:166:18
+      1    0.0%    0.0%  Function: ^deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      1    0.0%    0.0%  Function: ^debug /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/debug/src/common.js:66:17
+      1    0.0%    0.0%  Function: ^createWriteWrap node:internal/stream_base_commons:109:25
+      1    0.0%    0.0%  Function: ^createDebug /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/debug/src/common.js:60:22
+      1    0.0%    0.0%  Function: ^cors /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/cors/lib/index.js:159:16
+      1    0.0%    0.0%  Function: ^connectionListenerInternal node:_http_server:446:36
+      1    0.0%    0.0%  Function: ^concat node:buffer:538:32
+      1    0.0%    0.0%  Function: ^computeQuadArea file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ElementHandle.js:824:25
+      1    0.0%    0.0%  Function: ^command /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server.js:152:12
+      1    0.0%    0.0%  Function: ^clearBuffer node:internal/streams/writable:530:21
+      1    0.0%    0.0%  Function: ^checkLifecycle file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/LifecycleWatcher.js:193:28
+      1    0.0%    0.0%  Function: ^checkInt node:internal/buffer:58:18
+      1    0.0%    0.0%  Function: ^append /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/utils.js:813:11
+      1    0.0%    0.0%  Function: ^afterWriteDispatched node:internal/stream_base_commons:155:30
+      1    0.0%    0.0%  Function: ^afterConnect node:net:1149:22
+      1    0.0%    0.0%  Function: ^_storeHeader node:_http_outgoing:374:22
+      1    0.0%    0.0%  Function: ^_onLifecycleEvent file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Frame.js:758:22
+      1    0.0%    0.0%  Function: ^_destroy node:_http_incoming:176:55
+      1    0.0%    0.0%  Function: ^_copyActual node:buffer:245:21
+      1    0.0%    0.0%  Function: ^__classPrivateFieldSet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/BrowserRunner.js:16:80
+      1    0.0%    0.0%  Function: ^__classPrivateFieldSet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/SecurityDetails.js:16:80
+      1    0.0%    0.0%  Function: ^__classPrivateFieldGet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/LifecycleWatcher.js:22:80
+      1    0.0%    0.0%  Function: ^__classPrivateFieldGet file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/LazyArg.js:22:80
+      1    0.0%    0.0%  Function: ^_NetworkManager_onRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:272:66
+      1    0.0%    0.0%  Function: ^_LifecycleWatcher_onResponse file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/LifecycleWatcher.js:141:72
+      1    0.0%    0.0%  Function: ^_ExecutionContext_evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:159:116
+      1    0.0%    0.0%  Function: ^WritableState node:internal/streams/writable:77:23
+      1    0.0%    0.0%  Function: ^Writable.write node:internal/streams/writable:334:36
+      1    0.0%    0.0%  Function: ^Writable.uncork node:internal/streams/writable:342:37
+      1    0.0%    0.0%  Function: ^WaitTask file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/WaitTask.js:34:16
+      1    0.0%    0.0%  Function: ^TopologyDescription /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/topology_description.js:29:16
+      1    0.0%    0.0%  Function: ^TimersList node:internal/timers:241:20
+      1    0.0%    0.0%  Function: ^Readable.resume node:internal/streams/readable:986:37
+      1    0.0%    0.0%  Function: ^Readable.read node:internal/streams/readable:402:35
+      1    0.0%    0.0%  Function: ^Readable.on node:internal/streams/readable:897:33
+      1    0.0%    0.0%  Function: ^Long.compare /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/long.js:291:39
+      1    0.0%    0.0%  Function: ^Hash node:internal/crypto/hash:58:14
+      1    0.0%    0.0%  Function: ^HTTPRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPRequest.js:56:16
+      1    0.0%    0.0%  Function: ^ElementHandle file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ElementHandle.js:74:16
+      1    0.0%    0.0%  Function: ^CustomError file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Errors.js:20:16
+      1    0.0%    0.0%  Function: ^ChildProcess.spawn node:internal/child_process:347:40
+      1    0.0%    0.0%  Function: ^Binary.value /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/binary.js:154:39
+      1    0.0%    0.0%  Function: ^BinMsg /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/commands.js:394:16
+      1    0.0%    0.0%  Function: ^Axios.<computed> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/axios/lib/core/Axios.js:128:37
+      1    0.0%    0.0%  Function: ^<anonymous> node:internal/validators:236:42
+      1    0.0%    0.0%  Function: ^<anonymous> node:buffer:351:36
+      1    0.0%    0.0%  Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/puppeteer/users/scrapeUser.js:94:24
+      1    0.0%    0.0%  Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ChromeTargetManager.js:80:68
+      1    0.0%    0.0%  Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/monitor.js:318:109
+      1    0.0%    0.0%  Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/execute_operation.js:16:48
+      1    0.0%    0.0%  Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:60:44
+
+ [C++]:
+   ticks  total  nonlib   name
+  10031   67.8%   69.3%  T _posix_spawnattr_setflags
+   2096   14.2%   14.5%  t std::__1::__hash_table<std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::__unordered_map_hasher<unsigned int, std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::hash<unsigned int>, std::__1::equal_to<unsigned int>, true>, std::__1::__unordered_map_equal<unsigned int, std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::equal_to<unsigned int>, std::__1::hash<unsigned int>, true>, std::__1::allocator<std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*> > >::__rehash(unsigned long)
+    217    1.5%    1.5%  T _mach_timebase_info_trap
+    185    1.3%    1.3%  t _Builtins_LoadIC
+     80    0.5%    0.6%  T _mach_port_insert_member
+     78    0.5%    0.5%  T _sigprocmask
+     51    0.3%    0.4%  t _Builtins_BaselineOutOfLinePrologue
+     50    0.3%    0.3%  t _Builtins_CallFunction_ReceiverIsNotNullOrUndefined
+     49    0.3%    0.3%  T ___bsdthread_terminate
+     41    0.3%    0.3%  t _Builtins_CallFunction_ReceiverIsAny
+     38    0.3%    0.3%  t _Builtins_CallFunction_ReceiverIsNullOrUndefined
+     36    0.2%    0.2%  T _chmod
+     34    0.2%    0.2%  t _Builtins_LoadIC_Megamorphic
+     30    0.2%    0.2%  t _Builtins_StoreIC
+     29    0.2%    0.2%  t _Builtins_ToBooleanForBaselineJump
+     29    0.2%    0.2%  t _Builtins_Call_ReceiverIsAny
+     26    0.2%    0.2%  t _Builtins_KeyedLoadIC_Megamorphic
+     19    0.1%    0.1%  t _Builtins_KeyedLoadIC
+     19    0.1%    0.1%  t _Builtins_Call_ReceiverIsNullOrUndefined
+     19    0.1%    0.1%  T _os_unfair_recursive_lock_lock_with_options
+     18    0.1%    0.1%  T _bn_mul_mont
+     17    0.1%    0.1%  t _Builtins_WeakCollectionSet
+     17    0.1%    0.1%  t _Builtins_StringEqual
+     17    0.1%    0.1%  t _Builtins_LoadICBaseline
+     16    0.1%    0.1%  t _Builtins_Call_ReceiverIsNotNullOrUndefined
+     15    0.1%    0.1%  t _Builtins_StrictEqual_Baseline
+     15    0.1%    0.1%  t _Builtins_KeyedStoreIC_Megamorphic
+     15    0.1%    0.1%  t _Builtins_Call_ReceiverIsNotNullOrUndefined_Baseline_Compact
+     14    0.1%    0.1%  t _Builtins_GetProperty
+     14    0.1%    0.1%  T __kernelrpc_mach_port_move_member_trap
+     12    0.1%    0.1%  t _Builtins_WeakMapLookupHashIndex
+     12    0.1%    0.1%  t _Builtins_FindOrderedHashMapEntry
+     12    0.1%    0.1%  t _Builtins_CreateTypedArray
+     11    0.1%    0.1%  t _Builtins_CreateShallowObjectLiteral
+     11    0.1%    0.1%  t _Builtins_BaselineLeaveFrame
+     11    0.1%    0.1%  T node::HandleWrap::Close(v8::FunctionCallbackInfo<v8::Value> const&)
+     10    0.1%    0.1%  t __os_nospin_lock_unlock_slow
+     10    0.1%    0.1%  t _Builtins_TypedArrayPrototypeLength
+     10    0.1%    0.1%  t _Builtins_SetDataProperties
+     10    0.1%    0.1%  t _Builtins_KeyedStoreIC
+     10    0.1%    0.1%  T node::AsyncWrap::EmitTraceEventBefore()
+      9    0.1%    0.1%  t _uv__io_poll
+      9    0.1%    0.1%  t _Builtins_StoreFastElementIC_Standard
+      9    0.1%    0.1%  t _Builtins_LoadIC_NoFeedback
+      8    0.1%    0.1%  t _Builtins_LoadICTrampoline_Megamorphic
+      8    0.1%    0.1%  t _Builtins_Call_ReceiverIsNullOrUndefined_Baseline_Compact
+      8    0.1%    0.1%  T node::InternalCallbackScope::InternalCallbackScope(node::Environment*, v8::Local<v8::Object>, node::async_context const&, int)
+      8    0.1%    0.1%  T __kernelrpc_mach_port_get_refs
+      7    0.0%    0.0%  t std::__1::basic_ostream<char, std::__1::char_traits<char> >& std::__1::__put_character_sequence<char, std::__1::char_traits<char> >(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, char const*, unsigned long)
+      7    0.0%    0.0%  t checkDataItem(DataHeader const*, signed char (*)(void*, char const*, char const*, UDataInfo const*), void*, char const*, char const*, UErrorCode*, UErrorCode*)
+      7    0.0%    0.0%  t ___pfz_setup
+      7    0.0%    0.0%  t _Builtins_LoadICTrampoline
+      7    0.0%    0.0%  t _Builtins_KeyedLoadIC_PolymorphicName
+      6    0.0%    0.0%  t _Builtins_WeakMapPrototypeHas
+      6    0.0%    0.0%  t _Builtins_RecordWriteEmitRememberedSetSaveFP
+      6    0.0%    0.0%  t _Builtins_KeyedLoadICTrampoline_Megamorphic
+      6    0.0%    0.0%  t _Builtins_InterpreterEntryTrampoline
+      6    0.0%    0.0%  t _Builtins_CompileLazy
+      6    0.0%    0.0%  T _mach_port_insert_right
+      5    0.0%    0.0%  t __os_once_gate_wait
+      5    0.0%    0.0%  t __os_nospin_lock_lock_slow
+      5    0.0%    0.0%  t _Builtins_GreaterThan_Baseline
+      5    0.0%    0.0%  t _Builtins_CallApiCallback
+      5    0.0%    0.0%  t _Builtins_Add_Baseline
+      4    0.0%    0.0%  t std::__1::__hash_table<unsigned long, std::__1::hash<unsigned long>, std::__1::equal_to<unsigned long>, std::__1::allocator<unsigned long> >::remove(std::__1::__hash_const_iterator<std::__1::__hash_node<unsigned long, void*>*>)
+      4    0.0%    0.0%  t _uv__hrtime
+      4    0.0%    0.0%  t __bn_sqr8x_mont
+      4    0.0%    0.0%  t _Builtins_ToString
+      4    0.0%    0.0%  t _Builtins_StringToLowerCaseIntl
+      4    0.0%    0.0%  t _Builtins_StringAdd_CheckNone
+      4    0.0%    0.0%  t _Builtins_ResolvePromise
+      4    0.0%    0.0%  t _Builtins_LoadGlobalIC
+      4    0.0%    0.0%  t _Builtins_FunctionPrototypeCall
+      4    0.0%    0.0%  t _Builtins_FastNewFunctionContextFunction
+      4    0.0%    0.0%  t _Builtins_EphemeronKeyBarrierSaveFP
+      4    0.0%    0.0%  t _Builtins_ConstructFunction
+      4    0.0%    0.0%  t _Builtins_Construct
+      4    0.0%    0.0%  t _Builtins_ArrayPrototypePush
+      4    0.0%    0.0%  t _Builtins_ArrayPrototypeJoin
+      4    0.0%    0.0%  T node::Emit(node::Environment*, double, node::AsyncHooks::Fields, v8::Local<v8::Function>)
+      4    0.0%    0.0%  T _res_getTableItemByKey_70
+      4    0.0%    0.0%  T _connect$NOCANCEL
+      3    0.0%    0.0%  t std::__1::ostreambuf_iterator<char, std::__1::char_traits<char> > std::__1::__pad_and_output<char, std::__1::char_traits<char> >(std::__1::ostreambuf_iterator<char, std::__1::char_traits<char> >, char const*, char const*, char const*, std::__1::ios_base&, char)
+      3    0.0%    0.0%  t std::__1::__hash_table<unsigned long long, std::__1::hash<unsigned long long>, std::__1::equal_to<unsigned long long>, std::__1::allocator<unsigned long long> >::~__hash_table()
+      3    0.0%    0.0%  t node::Environment::StartProfilerIdleNotifier()::$_5::__invoke(uv_check_s*)
+      3    0.0%    0.0%  t _uv__stream_io
+      3    0.0%    0.0%  t _uv__metrics_update_idle_time
+      3    0.0%    0.0%  t _construct_stub_create_deopt_addr
+      3    0.0%    0.0%  t __pthread_mutex_lock_init_slow
+      3    0.0%    0.0%  t _Builtins_StoreICBaseline
+      3    0.0%    0.0%  t _Builtins_RunMicrotasks
+      3    0.0%    0.0%  t _Builtins_ObjectAssign
+      3    0.0%    0.0%  t _Builtins_MapPrototypeGet
+      3    0.0%    0.0%  t _Builtins_MapPrototypeDelete
+      3    0.0%    0.0%  t _Builtins_KeyedStoreICBaseline
+      3    0.0%    0.0%  t _Builtins_JSEntry
+      3    0.0%    0.0%  t _Builtins_GreaterThanOrEqual_Baseline
+      3    0.0%    0.0%  t _Builtins_CloneFastJSArray
+      3    0.0%    0.0%  t _Builtins_AsyncFunctionEnter
+      3    0.0%    0.0%  t _Builtins_ArraySingleArgumentConstructor_HoleySmi_DisableAllocationSites
+      3    0.0%    0.0%  t _Builtins_ArrayIteratorPrototypeNext
+      3    0.0%    0.0%  t _Builtins_ArrayIsArray
+      3    0.0%    0.0%  T node::AsyncWrap::MakeCallback(v8::Local<v8::Function>, int, v8::Local<v8::Value>*)
+      3    0.0%    0.0%  T node::AsyncWrap::EmitTraceEventAfter(node::AsyncWrap::ProviderType, double)
+      3    0.0%    0.0%  T _uv_guess_handle
+      3    0.0%    0.0%  T _task_restartable_ranges_register
+      3    0.0%    0.0%  T _ssl3_read_bytes
+      2    0.0%    0.0%  t void std::__1::__tree_balance_after_insert<std::__1::__tree_node_base<void*>*>(std::__1::__tree_node_base<void*>*, std::__1::__tree_node_base<void*>*)
+      2    0.0%    0.0%  t std::__1::__hash_table<int, std::__1::hash<int>, std::__1::equal_to<int>, std::__1::allocator<int> >::__rehash(unsigned long)
+      2    0.0%    0.0%  t node::TraceEventScope::TraceEventScope(char const*, char const*, void*)
+      2    0.0%    0.0%  t node::ArrayBufferViewContents<unsigned char, 64ul>::Read(v8::Local<v8::ArrayBufferView>)
+      2    0.0%    0.0%  t _uv__metrics_set_provider_entry_time
+      2    0.0%    0.0%  t _uv___stream_fd
+      2    0.0%    0.0%  t _Builtins_WeakMapPrototypeSet
+      2    0.0%    0.0%  t _Builtins_ToNumeric_Baseline
+      2    0.0%    0.0%  t _Builtins_SuspendGeneratorBaseline
+      2    0.0%    0.0%  t _Builtins_StrictEqual_WithFeedback
+      2    0.0%    0.0%  t _Builtins_StoreFastElementIC_GrowNoTransitionHandleCOW
+      2    0.0%    0.0%  t _Builtins_ResumeGeneratorHandler
+      2    0.0%    0.0%  t _Builtins_RegExpPrototypeTest
+      2    0.0%    0.0%  t _Builtins_PromisePrototypeThen
+      2    0.0%    0.0%  t _Builtins_ObjectIs
+      2    0.0%    0.0%  t _Builtins_LessThan_Baseline
+      2    0.0%    0.0%  t _Builtins_KeyedLoadICBaseline
+      2    0.0%    0.0%  t _Builtins_JSEntryTrampoline
+      2    0.0%    0.0%  t _Builtins_Increment_Baseline
+      2    0.0%    0.0%  t _Builtins_FulfillPromise
+      2    0.0%    0.0%  t _Builtins_FastNewStrictArguments
+      2    0.0%    0.0%  t _Builtins_FastNewObject
+      2    0.0%    0.0%  t _Builtins_CreateShallowArrayLiteral
+      2    0.0%    0.0%  t _Builtins_Construct_Baseline
+      2    0.0%    0.0%  t _Builtins_CallWithArrayLike
+      2    0.0%    0.0%  t _Builtins_CallVarargs
+      2    0.0%    0.0%  t _Builtins_CEntry_Return1_DontSaveFPRegs_ArgvOnStack_NoBuiltinExit
+      2    0.0%    0.0%  t _Builtins_CEntry_Return1_DontSaveFPRegs_ArgvOnStack_BuiltinExit
+      2    0.0%    0.0%  t _Builtins_BitwiseOr_Baseline
+      2    0.0%    0.0%  t _Builtins_BitwiseAnd_Baseline
+      2    0.0%    0.0%  t _Builtins_AsyncFunctionAwaitUncaught
+      2    0.0%    0.0%  t _Builtins_ArrayPrototypeValues
+      2    0.0%    0.0%  T node::NodeArrayBufferAllocator::Allocate(unsigned long)
+      2    0.0%    0.0%  T node::InternalMakeCallback(node::Environment*, v8::Local<v8::Object>, v8::Local<v8::Object>, v8::Local<v8::Function>, int, v8::Local<v8::Value>*, node::async_context)
+      2    0.0%    0.0%  T node::InternalCallbackScope::Close()
+      2    0.0%    0.0%  T node::Environment::RunAndClearNativeImmediates(bool)
+      2    0.0%    0.0%  T _task_set_special_port
+      2    0.0%    0.0%  T _setpriority
+      2    0.0%    0.0%  T _res_countArrayItems_70
+      2    0.0%    0.0%  T _posix_spawn
+      2    0.0%    0.0%  T _bn_mul_mont_fixed_top
+      2    0.0%    0.0%  T _BN_mod_sub_quick
+      2    0.0%    0.0%  T _BIO_ctrl
+      1    0.0%    0.0%  t void node::cares_wrap::(anonymous namespace)::Query<node::cares_wrap::QueryWrap<node::cares_wrap::TxtTraits> >(v8::FunctionCallbackInfo<v8::Value> const&)
+      1    0.0%    0.0%  t void node::cares_wrap::(anonymous namespace)::Query<node::cares_wrap::QueryWrap<node::cares_wrap::SrvTraits> >(v8::FunctionCallbackInfo<v8::Value> const&)
+      1    0.0%    0.0%  t ures_appendResPath(UResourceBundle*, char const*, int, UErrorCode*)
+      1    0.0%    0.0%  t std::__1::vector<v8::Local<v8::Object>, std::__1::allocator<v8::Local<v8::Object> > >::__append(unsigned long)
+      1    0.0%    0.0%  t std::__1::__shared_ptr_pointer<char*, std::__1::default_delete<char []>, std::__1::allocator<char> >::__on_zero_shared_weak()
+      1    0.0%    0.0%  t std::__1::__hash_iterator<std::__1::__hash_node<void*, void*>*> std::__1::__hash_table<void*, std::__1::hash<void*>, std::__1::equal_to<void*>, std::__1::allocator<void*> >::find<void*>(void* const&)
+      1    0.0%    0.0%  t _uhash_find(UHashtable const*, UElement, int)
+      1    0.0%    0.0%  t _ssl3_read_internal
+      1    0.0%    0.0%  t _findIndex(char const* const*, char const*)
+      1    0.0%    0.0%  t _fe51_mul
+      1    0.0%    0.0%  t _evp_EncryptDecryptUpdate
+      1    0.0%    0.0%  t _ctr_XOR
+      1    0.0%    0.0%  t _ctr_BCC_block
+      1    0.0%    0.0%  t _asn1_d2i_ex_primitive
+      1    0.0%    0.0%  t _ameth_cmp_BSEARCH_CMP_FN
+      1    0.0%    0.0%  t _aes_init_key
+      1    0.0%    0.0%  t _aes_gcm_ctrl
+      1    0.0%    0.0%  t _aes_gcm_cipher
+      1    0.0%    0.0%  t __pthread_strtoul
+      1    0.0%    0.0%  t __ecp_nistz256_mul_mont
+      1    0.0%    0.0%  t _Builtins_WeakMapGet
+      1    0.0%    0.0%  t _Builtins_TypedArrayPrototypeSet
+      1    0.0%    0.0%  t _Builtins_TypedArrayPrototypeByteLength
+      1    0.0%    0.0%  t _Builtins_TypedArrayConstructor
+      1    0.0%    0.0%  t _Builtins_ToBoolean
+      1    0.0%    0.0%  t _Builtins_ThrowReferenceErrorIfHoleHandler
+      1    0.0%    0.0%  t _Builtins_TestInstanceOfHandler
+      1    0.0%    0.0%  t _Builtins_TestEqualStrictHandler
+      1    0.0%    0.0%  t _Builtins_SwitchOnGeneratorStateHandler
+      1    0.0%    0.0%  t _Builtins_Subtract_Baseline
+      1    0.0%    0.0%  t _Builtins_SubString
+      1    0.0%    0.0%  t _Builtins_StringSubstring
+      1    0.0%    0.0%  t _Builtins_StringPrototypeMatch
+      1    0.0%    0.0%  t _Builtins_StringPrototypeIndexOf
+      1    0.0%    0.0%  t _Builtins_StringAddConvertRight
+      1    0.0%    0.0%  t _Builtins_StarHandler
+      1    0.0%    0.0%  t _Builtins_SetPrototypeHas
+      1    0.0%    0.0%  t _Builtins_SetPrototypeClear
+      1    0.0%    0.0%  t _Builtins_SetPropertyInLiteral
+      1    0.0%    0.0%  t _Builtins_SetConstructor
+      1    0.0%    0.0%  t _Builtins_ResumeGeneratorTrampoline
+      1    0.0%    0.0%  t _Builtins_RegExpPrototypeTestFast
+      1    0.0%    0.0%  t _Builtins_RegExpPrototypeExec
+      1    0.0%    0.0%  t _Builtins_RegExpMatchFast
+      1    0.0%    0.0%  t _Builtins_PromiseFulfillReactionJob
+      1    0.0%    0.0%  t _Builtins_PromiseCapabilityDefaultResolve
+      1    0.0%    0.0%  t _Builtins_PromiseAll
+      1    0.0%    0.0%  t _Builtins_PerformPromiseThen
+      1    0.0%    0.0%  t _Builtins_ObjectPrototypeHasOwnProperty
+      1    0.0%    0.0%  t _Builtins_ObjectKeys
+      1    0.0%    0.0%  t _Builtins_ObjectEntries
+      1    0.0%    0.0%  t _Builtins_ObjectCreate
+      1    0.0%    0.0%  t _Builtins_NumberPrototypeToString
+      1    0.0%    0.0%  t _Builtins_NumberConstructor
+      1    0.0%    0.0%  t _Builtins_NewRestArgumentsElements
+      1    0.0%    0.0%  t _Builtins_NewPromiseCapability
+      1    0.0%    0.0%  t _Builtins_Negate_Baseline
+      1    0.0%    0.0%  t _Builtins_Multiply_Baseline
+      1    0.0%    0.0%  t _Builtins_MathTrunc
+      1    0.0%    0.0%  t _Builtins_MapIteratorPrototypeNext
+      1    0.0%    0.0%  t _Builtins_LessThanOrEqual_Baseline
+      1    0.0%    0.0%  t _Builtins_LdarHandler
+      1    0.0%    0.0%  t _Builtins_LdaUndefinedHandler
+      1    0.0%    0.0%  t _Builtins_LdaNamedPropertyHandler
+      1    0.0%    0.0%  t _Builtins_KeyedStoreICTrampoline
+      1    0.0%    0.0%  t _Builtins_JumpIfToBooleanTrueHandler
+      1    0.0%    0.0%  t _Builtins_JumpIfToBooleanFalseHandler
+      1    0.0%    0.0%  t _Builtins_JumpHandler
+      1    0.0%    0.0%  t _Builtins_JsonParse
+      1    0.0%    0.0%  t _Builtins_JSConstructStubGeneric
+      1    0.0%    0.0%  t _Builtins_JSBuiltinsConstructStub
+      1    0.0%    0.0%  t _Builtins_InterpreterPushArgsThenConstruct
+      1    0.0%    0.0%  t _Builtins_HandleApiCall
+      1    0.0%    0.0%  t _Builtins_GlobalIsNaN
+      1    0.0%    0.0%  t _Builtins_GetPropertyWithReceiver
+      1    0.0%    0.0%  t _Builtins_FunctionPrototypeHasInstance
+      1    0.0%    0.0%  t _Builtins_ForInPrepare
+      1    0.0%    0.0%  t _Builtins_FastNewSloppyArguments
+      1    0.0%    0.0%  t _Builtins_FastNewRestArguments
+      1    0.0%    0.0%  t _Builtins_FastNewClosure
+      1    0.0%    0.0%  t _Builtins_FastFunctionPrototypeBind
+      1    0.0%    0.0%  t _Builtins_DeleteProperty
+      1    0.0%    0.0%  t _Builtins_Decrement_Baseline
+      1    0.0%    0.0%  t _Builtins_CreateEmptyObjectLiteralHandler
+      1    0.0%    0.0%  t _Builtins_CopyDataProperties
+      1    0.0%    0.0%  t _Builtins_ConstructVarargs
+      1    0.0%    0.0%  t _Builtins_ConstructHandler
+      1    0.0%    0.0%  t _Builtins_CloneObjectIC
+      1    0.0%    0.0%  t _Builtins_CallBoundFunction
+      1    0.0%    0.0%  t _Builtins_AsyncFunctionResolve
+      1    0.0%    0.0%  t _Builtins_AsyncFunctionAwaitResolveClosure
+      1    0.0%    0.0%  t _Builtins_ArrayPrototypeUnshift
+      1    0.0%    0.0%  t _Builtins_ArrayPrototypeFindIndex
+      1    0.0%    0.0%  t _Builtins_ArrayForEach
+      1    0.0%    0.0%  t _Builtins_ArrayFilter
+      1    0.0%    0.0%  t _Builtins_ArrayEvery
+      1    0.0%    0.0%  t _Builtins_AddHandler
+      1    0.0%    0.0%  t (anonymous namespace)::init_resb_result(UResourceDataEntry*, unsigned int, char const*, int, UResourceDataEntry*, char const*, int, UResourceBundle*, UErrorCode*)
+      1    0.0%    0.0%  T node::NodeArrayBufferAllocator::Reallocate(void*, unsigned long, unsigned long)
+      1    0.0%    0.0%  T node::Environment::RunTimers(uv_timer_s*)
+      1    0.0%    0.0%  T node::Environment::RunAndClearInterrupts()
+      1    0.0%    0.0%  T node::Environment::CheckImmediate(uv_check_s*)
+      1    0.0%    0.0%  T icu_70::UnicodeString::doAppend(icu_70::UnicodeString const&, int, int)
+      1    0.0%    0.0%  T icu_70::UnicodeString::UnicodeString(char const*, int, icu_70::UnicodeString::EInvariant)
+      1    0.0%    0.0%  T icu_70::SimpleTimeZone::decodeStartRule(UErrorCode&)
+      1    0.0%    0.0%  T icu_70::DateTimePatternGenerator::createInstance(icu_70::Locale const&, UErrorCode&)
+      1    0.0%    0.0%  T _uv_update_time
+      1    0.0%    0.0%  T _uv_timer_stop
+      1    0.0%    0.0%  T _uv_run
+      1    0.0%    0.0%  T _uv_idle_stop
+      1    0.0%    0.0%  T _ustr_hashUCharsN_70
+      1    0.0%    0.0%  T _ures_hasNext_70
+      1    0.0%    0.0%  T _umtx_unlock_70
+      1    0.0%    0.0%  T _tls13_hkdf_expand
+      1    0.0%    0.0%  T _tls13_enc
+      1    0.0%    0.0%  T _thread_self_trap
+      1    0.0%    0.0%  T _task_get_exception_ports
+      1    0.0%    0.0%  T _ssl3_get_record
+      1    0.0%    0.0%  T _res_getTableItemByIndex_70
+      1    0.0%    0.0%  T _posix_spawnattr_getmacpolicyinfo_np
+      1    0.0%    0.0%  T _os_unfair_lock_lock_with_options
+      1    0.0%    0.0%  T _int_bn_mod_inverse
+      1    0.0%    0.0%  T _ecp_nistz256_gather_w7
+      1    0.0%    0.0%  T _bn_div_words
+      1    0.0%    0.0%  T _bn_correct_top
+      1    0.0%    0.0%  T _aes_v8_ctr32_encrypt_blocks
+      1    0.0%    0.0%  T __simple_dprintf
+      1    0.0%    0.0%  T __os_semaphore_create
+      1    0.0%    0.0%  T __kernelrpc_mach_port_insert_right_trap
+      1    0.0%    0.0%  T __armv7_tick
+      1    0.0%    0.0%  T ___libplatform_init
+      1    0.0%    0.0%  T _X509v3_addr_validate_path
+      1    0.0%    0.0%  T _X25519
+      1    0.0%    0.0%  T _SSL_get_shutdown
+      1    0.0%    0.0%  T _OPENSSL_sk_num
+      1    0.0%    0.0%  T _OPENSSL_cleanse
+      1    0.0%    0.0%  T _OBJ_bsearch_
+      1    0.0%    0.0%  T _EVP_DecryptFinal_ex
+      1    0.0%    0.0%  T _ERR_set_mark
+      1    0.0%    0.0%  T _ERR_get_state
+      1    0.0%    0.0%  T _CRYPTO_free
+      1    0.0%    0.0%  T _CRYPTO_THREAD_write_lock
+
+ [Summary]:
+   ticks  total  nonlib   name
+    465    3.1%    3.2%  JavaScript
+  13964   94.4%   96.5%  C++
+    361    2.4%    2.5%  GC
+    326    2.2%          Shared libraries
+     36    0.2%          Unaccounted
+
+ [C++ entry points]:
+   ticks    cpp   total   name
+   1765   55.3%   11.9%  t std::__1::__hash_table<std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::__unordered_map_hasher<unsigned int, std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::hash<unsigned int>, std::__1::equal_to<unsigned int>, true>, std::__1::__unordered_map_equal<unsigned int, std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::equal_to<unsigned int>, std::__1::hash<unsigned int>, true>, std::__1::allocator<std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*> > >::__rehash(unsigned long)
+    168    5.3%    1.1%  t _Builtins_LoadIC
+     69    2.2%    0.5%  t _Builtins_WeakMapPrototypeSet
+     58    1.8%    0.4%  t _Builtins_CallApiCallback
+     51    1.6%    0.3%  T _sigprocmask
+     47    1.5%    0.3%  t _Builtins_CallFunction_ReceiverIsNotNullOrUndefined
+     46    1.4%    0.3%  t _Builtins_BaselineOutOfLinePrologue
+     44    1.4%    0.3%  t _Builtins_KeyedStoreIC_Megamorphic
+     38    1.2%    0.3%  t _Builtins_CallFunction_ReceiverIsAny
+     35    1.1%    0.2%  t _Builtins_CallFunction_ReceiverIsNullOrUndefined
+     35    1.1%    0.2%  T _chmod
+     32    1.0%    0.2%  t _Builtins_LoadIC_Megamorphic
+     30    0.9%    0.2%  t _Builtins_StoreIC
+     30    0.9%    0.2%  t _Builtins_KeyedLoadIC_Megamorphic
+     28    0.9%    0.2%  t _Builtins_Call_ReceiverIsAny
+     25    0.8%    0.2%  t _Builtins_ToBooleanForBaselineJump
+     19    0.6%    0.1%  t _Builtins_Call_ReceiverIsNullOrUndefined
+     18    0.6%    0.1%  t _Builtins_KeyedLoadIC
+     18    0.6%    0.1%  t _Builtins_FindOrderedHashMapEntry
+     17    0.5%    0.1%  t _Builtins_PromiseConstructor
+     17    0.5%    0.1%  t _Builtins_ArrayMap
+     17    0.5%    0.1%  T _os_unfair_recursive_lock_lock_with_options
+     16    0.5%    0.1%  t _Builtins_Call_ReceiverIsNotNullOrUndefined
+     15    0.5%    0.1%  t _Builtins_StringEqual
+     15    0.5%    0.1%  t _Builtins_LoadICBaseline
+     15    0.5%    0.1%  t _Builtins_Call_ReceiverIsNotNullOrUndefined_Baseline_Compact
+     14    0.4%    0.1%  t _Builtins_StrictEqual_Baseline
+     13    0.4%    0.1%  t _Builtins_ObjectAssign
+     13    0.4%    0.1%  t _Builtins_GetProperty
+     13    0.4%    0.1%  T __kernelrpc_mach_port_move_member_trap
+     12    0.4%    0.1%  t _Builtins_WeakMapLookupHashIndex
+     12    0.4%    0.1%  t _Builtins_BaselineLeaveFrame
+     11    0.3%    0.1%  t _Builtins_CreateTypedArray
+     11    0.3%    0.1%  t _Builtins_CreateShallowObjectLiteral
+     11    0.3%    0.1%  T node::HandleWrap::Close(v8::FunctionCallbackInfo<v8::Value> const&)
+     10    0.3%    0.1%  t _Builtins_TypedArrayPrototypeLength
+     10    0.3%    0.1%  t _Builtins_MapPrototypeGet
+     10    0.3%    0.1%  t _Builtins_KeyedStoreIC
+      9    0.3%    0.1%  t _Builtins_WeakSetPrototypeAdd
+      9    0.3%    0.1%  t _Builtins_StoreFastElementIC_Standard
+      9    0.3%    0.1%  t _Builtins_LoadIC_NoFeedback
+      8    0.3%    0.1%  t _Builtins_LoadICTrampoline_Megamorphic
+      8    0.3%    0.1%  t _Builtins_Call_ReceiverIsNullOrUndefined_Baseline_Compact
+      8    0.3%    0.1%  T _mach_port_insert_member
+      7    0.2%    0.0%  t std::__1::basic_ostream<char, std::__1::char_traits<char> >& std::__1::__put_character_sequence<char, std::__1::char_traits<char> >(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, char const*, unsigned long)
+      7    0.2%    0.0%  t checkDataItem(DataHeader const*, signed char (*)(void*, char const*, char const*, UDataInfo const*), void*, char const*, char const*, UErrorCode*, UErrorCode*)
+      7    0.2%    0.0%  t _Builtins_LoadICTrampoline
+      7    0.2%    0.0%  T __kernelrpc_mach_port_get_refs
+      6    0.2%    0.0%  t _Builtins_WeakMapPrototypeHas
+      6    0.2%    0.0%  t _Builtins_StringToLowerCaseIntl
+      5    0.2%    0.0%  t ___pfz_setup
+      5    0.2%    0.0%  t _Builtins_KeyedLoadICTrampoline_Megamorphic
+      5    0.2%    0.0%  t _Builtins_CEntry_Return1_DontSaveFPRegs_ArgvOnStack_NoBuiltinExit
+      5    0.2%    0.0%  t _Builtins_ArrayPrototypePush
+      5    0.2%    0.0%  t _Builtins_ArrayPrototypeJoin
+      5    0.2%    0.0%  t _Builtins_ArrayForEach
+      5    0.2%    0.0%  t _Builtins_Add_Baseline
+      4    0.1%    0.0%  t __os_nospin_lock_lock_slow
+      4    0.1%    0.0%  t _Builtins_StringAdd_CheckNone
+      4    0.1%    0.0%  t _Builtins_ResolvePromise
+      4    0.1%    0.0%  t _Builtins_RecordWriteEmitRememberedSetSaveFP
+      4    0.1%    0.0%  t _Builtins_LoadGlobalIC
+      4    0.1%    0.0%  t _Builtins_KeyedLoadIC_PolymorphicName
+      4    0.1%    0.0%  t _Builtins_FunctionPrototypeCall
+      4    0.1%    0.0%  t _Builtins_FastNewFunctionContextFunction
+      4    0.1%    0.0%  t _Builtins_ConstructFunction
+      4    0.1%    0.0%  t _Builtins_Construct
+      4    0.1%    0.0%  t _Builtins_CompileLazy
+      4    0.1%    0.0%  T _res_getTableItemByKey_70
+      3    0.1%    0.0%  t std::__1::ostreambuf_iterator<char, std::__1::char_traits<char> > std::__1::__pad_and_output<char, std::__1::char_traits<char> >(std::__1::ostreambuf_iterator<char, std::__1::char_traits<char> >, char const*, char const*, char const*, std::__1::ios_base&, char)
+      3    0.1%    0.0%  t _construct_stub_create_deopt_addr
+      3    0.1%    0.0%  t __os_nospin_lock_unlock_slow
+      3    0.1%    0.0%  t _Builtins_ToString
+      3    0.1%    0.0%  t _Builtins_StringPrototypeMatch
+      3    0.1%    0.0%  t _Builtins_StoreICBaseline
+      3    0.1%    0.0%  t _Builtins_RegExpPrototypeTest
+      3    0.1%    0.0%  t _Builtins_PromiseAll
+      3    0.1%    0.0%  t _Builtins_MapPrototypeDelete
+      3    0.1%    0.0%  t _Builtins_KeyedStoreICBaseline
+      3    0.1%    0.0%  t _Builtins_GreaterThan_Baseline
+      3    0.1%    0.0%  t _Builtins_GreaterThanOrEqual_Baseline
+      3    0.1%    0.0%  t _Builtins_AsyncFunctionEnter
+      3    0.1%    0.0%  t _Builtins_ArraySingleArgumentConstructor_HoleySmi_DisableAllocationSites
+      3    0.1%    0.0%  t _Builtins_ArrayIteratorPrototypeNext
+      3    0.1%    0.0%  t _Builtins_ArrayIsArray
+      3    0.1%    0.0%  T _uv_guess_handle
+      2    0.1%    0.0%  t void std::__1::__tree_balance_after_insert<std::__1::__tree_node_base<void*>*>(std::__1::__tree_node_base<void*>*, std::__1::__tree_node_base<void*>*)
+      2    0.1%    0.0%  t node::ArrayBufferViewContents<unsigned char, 64ul>::Read(v8::Local<v8::ArrayBufferView>)
+      2    0.1%    0.0%  t __os_once_gate_wait
+      2    0.1%    0.0%  t _Builtins_TypedArrayPrototypeSet
+      2    0.1%    0.0%  t _Builtins_TypedArrayConstructor
+      2    0.1%    0.0%  t _Builtins_ToNumeric_Baseline
+      2    0.1%    0.0%  t _Builtins_StringConstructor
+      2    0.1%    0.0%  t _Builtins_StrictEqual_WithFeedback
+      2    0.1%    0.0%  t _Builtins_StoreFastElementIC_GrowNoTransitionHandleCOW
+      2    0.1%    0.0%  t _Builtins_LessThan_Baseline
+      2    0.1%    0.0%  t _Builtins_InterpreterEntryTrampoline
+      2    0.1%    0.0%  t _Builtins_Increment_Baseline
+      2    0.1%    0.0%  t _Builtins_FulfillPromise
+      2    0.1%    0.0%  t _Builtins_FastNewStrictArguments
+      2    0.1%    0.0%  t _Builtins_FastNewObject
+      2    0.1%    0.0%  t _Builtins_DatePrototypeGetMilliseconds
+      2    0.1%    0.0%  t _Builtins_CreateShallowArrayLiteral
+      2    0.1%    0.0%  t _Builtins_CallWithArrayLike
+      2    0.1%    0.0%  t _Builtins_CallVarargs
+      2    0.1%    0.0%  t _Builtins_CEntry_Return1_DontSaveFPRegs_ArgvOnStack_BuiltinExit
+      2    0.1%    0.0%  t _Builtins_BitwiseOr_Baseline
+      2    0.1%    0.0%  t _Builtins_BitwiseAnd_Baseline
+      2    0.1%    0.0%  t _Builtins_AsyncFunctionAwaitUncaught
+      2    0.1%    0.0%  t _Builtins_ArrayPrototypeValues
+      2    0.1%    0.0%  t _Builtins_ArrayPrototypeSlice
+      2    0.1%    0.0%  t _Builtins_ArrayFilter
+      2    0.1%    0.0%  t _Builtins_ArrayEvery
+      2    0.1%    0.0%  T _res_countArrayItems_70
+      2    0.1%    0.0%  T _connect$NOCANCEL
+      1    0.0%    0.0%  t void node::cares_wrap::(anonymous namespace)::Query<node::cares_wrap::QueryWrap<node::cares_wrap::TxtTraits> >(v8::FunctionCallbackInfo<v8::Value> const&)
+      1    0.0%    0.0%  t void node::cares_wrap::(anonymous namespace)::Query<node::cares_wrap::QueryWrap<node::cares_wrap::SrvTraits> >(v8::FunctionCallbackInfo<v8::Value> const&)
+      1    0.0%    0.0%  t ures_appendResPath(UResourceBundle*, char const*, int, UErrorCode*)
+      1    0.0%    0.0%  t std::__1::__shared_ptr_pointer<char*, std::__1::default_delete<char []>, std::__1::allocator<char> >::__on_zero_shared_weak()
+      1    0.0%    0.0%  t _uhash_find(UHashtable const*, UElement, int)
+      1    0.0%    0.0%  t _findIndex(char const* const*, char const*)
+      1    0.0%    0.0%  t _evp_EncryptDecryptUpdate
+      1    0.0%    0.0%  t _ctr_XOR
+      1    0.0%    0.0%  t _ctr_BCC_block
+      1    0.0%    0.0%  t _aes_init_key
+      1    0.0%    0.0%  t _Builtins_WeakMapGet
+      1    0.0%    0.0%  t _Builtins_TypedArrayPrototypeByteLength
+      1    0.0%    0.0%  t _Builtins_ToBoolean
+      1    0.0%    0.0%  t _Builtins_ThrowReferenceErrorIfHoleHandler
+      1    0.0%    0.0%  t _Builtins_TestInstanceOfHandler
+      1    0.0%    0.0%  t _Builtins_TestEqualStrictHandler
+      1    0.0%    0.0%  t _Builtins_SuspendGeneratorBaseline
+      1    0.0%    0.0%  t _Builtins_Subtract_Baseline
+      1    0.0%    0.0%  t _Builtins_SubString
+      1    0.0%    0.0%  t _Builtins_StringSubstring
+      1    0.0%    0.0%  t _Builtins_StringPrototypeToLowerCaseIntl
+      1    0.0%    0.0%  t _Builtins_StringPrototypeIndexOf
+      1    0.0%    0.0%  t _Builtins_StringAddConvertRight
+      1    0.0%    0.0%  t _Builtins_StarHandler
+      1    0.0%    0.0%  t _Builtins_SetPrototypeHas
+      1    0.0%    0.0%  t _Builtins_SetPrototypeClear
+      1    0.0%    0.0%  t _Builtins_SetPrototypeAdd
+      1    0.0%    0.0%  t _Builtins_SetPropertyInLiteral
+      1    0.0%    0.0%  t _Builtins_SetConstructor
+      1    0.0%    0.0%  t _Builtins_RegExpPrototypeTestFast
+      1    0.0%    0.0%  t _Builtins_RegExpPrototypeExec
+      1    0.0%    0.0%  t _Builtins_PromisePrototypeCatch
+      1    0.0%    0.0%  t _Builtins_PromiseCapabilityDefaultResolve
+      1    0.0%    0.0%  t _Builtins_PerformPromiseThen
+      1    0.0%    0.0%  t _Builtins_ObjectPrototypeToString
+      1    0.0%    0.0%  t _Builtins_ObjectPrototypeHasOwnProperty
+      1    0.0%    0.0%  t _Builtins_ObjectKeys
+      1    0.0%    0.0%  t _Builtins_ObjectIs
+      1    0.0%    0.0%  t _Builtins_ObjectEntries
+      1    0.0%    0.0%  t _Builtins_ObjectCreate
+      1    0.0%    0.0%  t _Builtins_NumberPrototypeToString
+      1    0.0%    0.0%  t _Builtins_NumberConstructor
+      1    0.0%    0.0%  t _Builtins_NewRestArgumentsElements
+      1    0.0%    0.0%  t _Builtins_Multiply_Baseline
+      1    0.0%    0.0%  t _Builtins_MathTrunc
+      1    0.0%    0.0%  t _Builtins_MapPrototypeHas
+      1    0.0%    0.0%  t _Builtins_MapIteratorPrototypeNext
+      1    0.0%    0.0%  t _Builtins_LessThanOrEqual_Baseline
+      1    0.0%    0.0%  t _Builtins_LdarHandler
+      1    0.0%    0.0%  t _Builtins_LdaUndefinedHandler
+      1    0.0%    0.0%  t _Builtins_LdaNamedPropertyHandler
+      1    0.0%    0.0%  t _Builtins_KeyedStoreICTrampoline
+      1    0.0%    0.0%  t _Builtins_KeyedLoadICBaseline
+      1    0.0%    0.0%  t _Builtins_JumpIfToBooleanTrueHandler
+      1    0.0%    0.0%  t _Builtins_JumpIfToBooleanFalseHandler
+      1    0.0%    0.0%  t _Builtins_JumpHandler
+      1    0.0%    0.0%  t _Builtins_JsonParse
+      1    0.0%    0.0%  t _Builtins_JSConstructStubGeneric
+      1    0.0%    0.0%  t _Builtins_JSBuiltinsConstructStub
+      1    0.0%    0.0%  t _Builtins_InterpreterPushArgsThenConstruct
+      1    0.0%    0.0%  t _Builtins_HandleApiCall
+      1    0.0%    0.0%  t _Builtins_GlobalIsNaN
+      1    0.0%    0.0%  t _Builtins_GetPropertyWithReceiver
+      1    0.0%    0.0%  t _Builtins_FunctionPrototypeHasInstance
+      1    0.0%    0.0%  t _Builtins_ForInPrepare
+      1    0.0%    0.0%  t _Builtins_FastNewSloppyArguments
+      1    0.0%    0.0%  t _Builtins_FastNewRestArguments
+      1    0.0%    0.0%  t _Builtins_FastNewClosure
+      1    0.0%    0.0%  t _Builtins_FastFunctionPrototypeBind
+      1    0.0%    0.0%  t _Builtins_EnqueueMicrotask
+      1    0.0%    0.0%  t _Builtins_DeleteProperty
+      1    0.0%    0.0%  t _Builtins_Decrement_Baseline
+      1    0.0%    0.0%  t _Builtins_CreateEmptyObjectLiteralHandler
+      1    0.0%    0.0%  t _Builtins_CopyDataProperties
+      1    0.0%    0.0%  t _Builtins_Construct_Baseline
+      1    0.0%    0.0%  t _Builtins_ConstructVarargs
+      1    0.0%    0.0%  t _Builtins_ConstructHandler
+      1    0.0%    0.0%  t _Builtins_CloneObjectIC
+      1    0.0%    0.0%  t _Builtins_CloneFastJSArray
+      1    0.0%    0.0%  t _Builtins_CallBoundFunction
+      1    0.0%    0.0%  t _Builtins_AsyncFunctionResolve
+      1    0.0%    0.0%  t _Builtins_ArrayPrototypeUnshift
+      1    0.0%    0.0%  t _Builtins_ArrayPrototypeFindIndex
+      1    0.0%    0.0%  t _Builtins_AddHandler
+      1    0.0%    0.0%  t (anonymous namespace)::init_resb_result(UResourceDataEntry*, unsigned int, char const*, int, UResourceDataEntry*, char const*, int, UResourceBundle*, UErrorCode*)
+      1    0.0%    0.0%  T icu_70::UnicodeString::doAppend(icu_70::UnicodeString const&, int, int)
+      1    0.0%    0.0%  T icu_70::UnicodeString::UnicodeString(char const*, int, icu_70::UnicodeString::EInvariant)
+      1    0.0%    0.0%  T icu_70::DateTimePatternGenerator::createInstance(icu_70::Locale const&, UErrorCode&)
+      1    0.0%    0.0%  T _ustr_hashUCharsN_70
+      1    0.0%    0.0%  T _ures_hasNext_70
+      1    0.0%    0.0%  T _umtx_unlock_70
+      1    0.0%    0.0%  T _task_get_exception_ports
+      1    0.0%    0.0%  T _res_getTableItemByIndex_70
+      1    0.0%    0.0%  T _os_unfair_lock_lock_with_options
+      1    0.0%    0.0%  T __simple_dprintf
+      1    0.0%    0.0%  T __kernelrpc_mach_port_insert_right_trap
+      1    0.0%    0.0%  T __armv7_tick
+      1    0.0%    0.0%  T ___libplatform_init
+      1    0.0%    0.0%  T _OPENSSL_cleanse
+      1    0.0%    0.0%  T _CRYPTO_THREAD_write_lock
+
+ [Bottom up (heavy) profile]:
+  Note: percentage shows a share of a particular caller in the total
+  amount of its parent calls.
+  Callers occupying less than 1.0% are not shown.
+
+   ticks parent  name
+  10031   67.8%  T _posix_spawnattr_setflags
+
+   2096   14.2%  t std::__1::__hash_table<std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::__unordered_map_hasher<unsigned int, std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::hash<unsigned int>, std::__1::equal_to<unsigned int>, true>, std::__1::__unordered_map_equal<unsigned int, std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::equal_to<unsigned int>, std::__1::hash<unsigned int>, true>, std::__1::allocator<std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*> > >::__rehash(unsigned long)
+    189    9.0%    LazyCompile: *onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+    167   88.4%      LazyCompile: *<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+    166   99.4%        LazyCompile: *onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+    166  100.0%          LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+    131   78.9%            LazyCompile: *emit node:events:475:44
+     35   21.1%            Function: ^emit node:events:475:44
+     22   11.6%      Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+     20   90.9%        LazyCompile: *onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+     12   60.0%          LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+     12  100.0%            LazyCompile: *emit node:events:475:44
+      8   40.0%          LazyCompile: *emit node:events:475:44
+      8  100.0%            Function: ^receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+      2    9.1%        Function: ^onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+      2  100.0%          LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+      2  100.0%            LazyCompile: *emit node:events:475:44
+    109    5.2%    Function: ^compileFunction node:vm:308:25
+    106   97.2%      Function: ^wrapSafe node:internal/modules/cjs/loader:1011:18
+    105   99.1%        Function: ^Module._compile node:internal/modules/cjs/loader:1053:37
+     99   94.3%          Function: ^Module._extensions..js node:internal/modules/cjs/loader:1108:37
+     99  100.0%            Function: ^Module.load node:internal/modules/cjs/loader:963:33
+      6    5.7%          LazyCompile: ~Module._extensions..js node:internal/modules/cjs/loader:1108:37
+      6  100.0%            Function: ^Module.load node:internal/modules/cjs/loader:963:33
+      3    2.8%      LazyCompile: ~wrapSafe node:internal/modules/cjs/loader:1011:18
+      3  100.0%        LazyCompile: ~Module._compile node:internal/modules/cjs/loader:1053:37
+      3  100.0%          LazyCompile: ~Module._extensions..js node:internal/modules/cjs/loader:1108:37
+      2   66.7%            LazyCompile: ~Module.load node:internal/modules/cjs/loader:963:33
+      1   33.3%            Function: ^Module.load node:internal/modules/cjs/loader:963:33
+    109    5.2%    Function: ^CustomError file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Errors.js:20:16
+    107   98.2%      Function: ^ProtocolError file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Errors.js:44:16
+     64   59.8%        LazyCompile: *send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:309:9
+     21   32.8%          Function: ^_ExecutionContext_evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:159:116
+     17   81.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      4   19.0%            Function: ^evaluateHandle file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:155:25
+     13   20.3%          LazyCompile: *_ExecutionContext_evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:159:116
+     12   92.3%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      1    7.7%            Function: ^evaluateHandle file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:155:25
+      5    7.8%          Function: ^releaseObject file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/util.js:76:36
+      5  100.0%            Function: ^dispose file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/JSHandle.js:166:18
+      4    6.3%          Function: ^up file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:447:13
+      4  100.0%            Function: ^click file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:411:16
+      4    6.3%          Function: ^_Page_initialize file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Page.js:2441:923
+      4  100.0%            Function: ^_create file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Page.js:238:25
+      3    4.7%          Function: ^adoptBackendNode file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/IsolatedWorld.js:365:27
+      3  100.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      2    3.1%          Function: ^clickablePoint file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ElementHandle.js:328:25
+      2  100.0%            Function: ^click file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ElementHandle.js:408:16
+      2    3.1%          Function: ^_ElementHandle_scrollIntoViewIfNeeded file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ElementHandle.js:734:96
+      2  100.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      1    1.6%          Function: ^navigate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Frame.js:200:32
+      1  100.0%            Function: ^goto file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Frame.js:175:15
+      1    1.6%          Function: ^move file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:390:15
+      1  100.0%            Function: ^click file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:411:16
+      1    1.6%          Function: ^initialize file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:88:15
+      1  100.0%            Function: ^initialize file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/FrameManager.js:121:21
+      1    1.6%          Function: ^initialize file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/FrameManager.js:121:21
+      1  100.0%            Function: ^_Page_initialize file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Page.js:2441:923
+      1    1.6%          Function: ^getProperties file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/JSHandle.js:119:24
+      1  100.0%            Function: ^internalHandler.queryAll file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/QueryHandler.js:59:36
+      1    1.6%          Function: ^emulateViewport file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/EmulationManager.js:23:26
+      1  100.0%            Function: ^setViewport file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Page.js:1785:22
+      1    1.6%          Function: ^down file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:431:15
+      1  100.0%            Function: ^click file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:411:16
+      1    1.6%          Function: ^adoptHandle file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/IsolatedWorld.js:373:22
+      1  100.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      1    1.6%          Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/FrameManager.js:272:14
+      1  100.0%            t _Builtins_ArrayMap
+      1    1.6%          Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ChromeTargetManager.js:139:59
+      1  100.0%            Function: ^listener file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ChromeTargetManager.js:281:22
+     37   34.6%        Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:320:28
+     37  100.0%          t _Builtins_PromiseConstructor
+     36   97.3%            Function: ^send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:309:9
+      1    2.7%            LazyCompile: ~send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:309:9
+      4    3.7%        LazyCompile: *_ExecutionContext_evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:159:116
+      4  100.0%          t _Builtins_AsyncFunctionAwaitResolveClosure
+      4  100.0%            t _Builtins_CallApiCallback
+      2    1.9%        Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:97:28
+      2  100.0%          t _Builtins_PromiseConstructor
+      2  100.0%            Function: ^send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:88:9
+      2    1.8%      Function: ^TimeoutError file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Errors.js:36:8
+      1   50.0%        Function: ^waitWithTimeout file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/util.js:241:38
+      1  100.0%          Function: ^waitForTarget file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Browser.js:324:24
+      1  100.0%            Function: ^launch file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/ChromeLauncher.js:17:17
+      1   50.0%        Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/WaitTask.js:60:72
+      1  100.0%          Function: ^listOnTimeout node:internal/timers:507:25
+      1  100.0%            Function: ^processTimers node:internal/timers:487:25
+     83    4.0%    Function: ^onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+     67   80.7%      Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+     35   52.2%        LazyCompile: *onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+     23   65.7%          LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+     23  100.0%            LazyCompile: *emit node:events:475:44
+     12   34.3%          LazyCompile: *emit node:events:475:44
+     12  100.0%            Function: ^receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+     32   47.8%        Function: ^onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+     17   53.1%          LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+     17  100.0%            LazyCompile: *emit node:events:475:44
+     13   40.6%          Function: ^emit node:events:475:44
+     13  100.0%            Function: ^receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+      2    6.3%          LazyCompile: *emit node:events:475:44
+      2  100.0%            Function: ^receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+     16   19.3%      LazyCompile: *<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+     16  100.0%        LazyCompile: *onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+     16  100.0%          LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+     16  100.0%            LazyCompile: *emit node:events:475:44
+     78    3.7%    LazyCompile: *debugLevel file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Debug.js:70:16
+     77   98.7%      t _Builtins_AsyncFunctionAwaitResolveClosure
+     75   97.4%        t _Builtins_CallApiCallback
+     75  100.0%          LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+      1    1.3%      LazyCompile: *onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+      1  100.0%        LazyCompile: *<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+      1  100.0%          LazyCompile: *onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+      1  100.0%            LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+     71    3.4%    Function: ^ChildProcess.spawn node:internal/child_process:347:40
+     63   88.7%      Function: ^spawn node:child_process:692:15
+     63  100.0%        Function: ^start file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/BrowserRunner.js:70:10
+     63  100.0%          Function: ^launch file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/ChromeLauncher.js:17:17
+     63  100.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      8   11.3%      LazyCompile: ~spawn node:child_process:692:15
+      7   87.5%        Function: ^start file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/BrowserRunner.js:70:10
+      6   85.7%          Function: ^launch file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/ChromeLauncher.js:17:17
+      6  100.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      1   14.3%          LazyCompile: ~launch file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/ChromeLauncher.js:17:17
+      1  100.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      1   12.5%        LazyCompile: ~start file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/BrowserRunner.js:70:10
+      1  100.0%          LazyCompile: ~launch file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/ChromeLauncher.js:17:17
+      1  100.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+     64    3.1%    Function: ^handleWriteReq node:internal/stream_base_commons:45:24
+     64  100.0%      Function: ^writeGeneric node:internal/stream_base_commons:147:22
+     64  100.0%        Function: ^Socket._writeGeneric node:net:797:42
+     62   96.9%          Function: ^Socket._write node:net:834:35
+     25   40.3%            LazyCompile: *Writable.write node:internal/streams/writable:334:36
+     16   25.8%            Function: ^writeOrBuffer node:internal/streams/writable:366:23
+     14   22.6%            LazyCompile: *_write node:internal/streams/writable:284:16
+      7   11.3%            Function: ^doWrite node:internal/streams/writable:399:17
+      2    3.1%          Function: ^connect node:net:804:42
+      2  100.0%            Function: ^onceWrapper node:events:636:21
+     52    2.5%    Function: ^writevGeneric node:internal/stream_base_commons:122:23
+     52  100.0%      Function: ^Socket._writeGeneric node:net:797:42
+     32   61.5%        Function: ^Socket._writev node:net:829:36
+     32  100.0%          Function: ^doWrite node:internal/streams/writable:399:17
+     28   87.5%            Function: ^clearBuffer node:internal/streams/writable:530:21
+      4   12.5%            LazyCompile: *send /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/sender.js:303:7
+     20   38.5%        LazyCompile: *send /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/sender.js:303:7
+     20  100.0%          LazyCompile: *send /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:439:7
+     20  100.0%            LazyCompile: *send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:309:9
+     36    1.7%    Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+     29   80.6%      Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      4   13.8%        Function: ~<anonymous> node:tls:1:1
+      4  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      4  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      4   13.8%        Function: ~<anonymous> node:crypto:1:1
+      4  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      4  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      3   10.3%        Function: ~<anonymous> node:https:1:1
+      3  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      3  100.0%            LazyCompile: ~compileForPublicLoader node:internal/bootstrap/loaders:246:25
+      2    6.9%        Function: ~<anonymous> node:child_process:1:1
+      2  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      2  100.0%            LazyCompile: ~compileForPublicLoader node:internal/bootstrap/loaders:246:25
+      2    6.9%        Function: ~<anonymous> node:_http_server:1:1
+      2  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      2  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    3.4%        LazyCompile: ~lazyWebCrypto node:crypto:127:23
+      1  100.0%          LazyCompile: ~get node:crypto:296:8
+      1  100.0%            t _Builtins_ReflectGet
+      1    3.4%        LazyCompile: ~lazyLoadStreams node:fs:2859:25
+      1  100.0%          LazyCompile: ~get ReadStream node:fs:3002:17
+      1  100.0%            t _Builtins_ReflectGet
+      1    3.4%        LazyCompile: ~initCJSParse node:internal/modules/esm/translators:58:28
+      1  100.0%          LazyCompile: ~commonjsStrategy node:internal/modules/esm/translators:148:60
+      1  100.0%            LazyCompile: ~moduleProvider node:internal/modules/esm/loader:346:28
+      1    3.4%        LazyCompile: ~get node:dns:387:8
+      1  100.0%          t _Builtins_ReflectGet
+      1  100.0%            Function: ^getOwn node:internal/bootstrap/loaders:180:16
+      1    3.4%        Function: ~<anonymous> node:readline:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            LazyCompile: ~compileForPublicLoader node:internal/bootstrap/loaders:246:25
+      1    3.4%        Function: ~<anonymous> node:readline/promises:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    3.4%        Function: ~<anonymous> node:internal/readline/emitKeypressEvents:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    3.4%        Function: ~<anonymous> node:internal/process/esm_loader:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    3.4%        Function: ~<anonymous> node:internal/modules/esm/loader:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    3.4%        Function: ~<anonymous> node:internal/crypto/hkdf:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    3.4%        Function: ~<anonymous> node:internal/child_process:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    3.4%        Function: ~<anonymous> node:dns:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^compileForPublicLoader node:internal/bootstrap/loaders:246:25
+      1    3.4%        Function: ~<anonymous> node:assert:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^compileForPublicLoader node:internal/bootstrap/loaders:246:25
+      1    3.4%        Function: ~<anonymous> node:_http_common:1:1
+      1  100.0%          Function: ^compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      4   11.1%      Function: ^compileForPublicLoader node:internal/bootstrap/loaders:246:25
+      4  100.0%        Function: ^loadNativeModule node:internal/modules/cjs/helpers:44:26
+      3   75.0%          Function: ^Module._load node:internal/modules/cjs/loader:757:24
+      3  100.0%            Function: ^Module.require node:internal/modules/cjs/loader:991:36
+      1   25.0%          LazyCompile: ~Module._load node:internal/modules/cjs/loader:757:24
+      1  100.0%            LazyCompile: ~Module.require node:internal/modules/cjs/loader:991:36
+      3    8.3%      LazyCompile: ~compileForPublicLoader node:internal/bootstrap/loaders:246:25
+      2   66.7%        LazyCompile: ~loadNativeModule node:internal/modules/cjs/helpers:44:26
+      2  100.0%          LazyCompile: ~builtinStrategy node:internal/modules/esm/translators:254:58
+      1   50.0%            LazyCompile: ~moduleProvider node:internal/modules/esm/loader:346:28
+      1   50.0%            Function: ^moduleProvider node:internal/modules/esm/loader:346:28
+      1   33.3%        Function: ^loadNativeModule node:internal/modules/cjs/helpers:44:26
+      1  100.0%          LazyCompile: ~builtinStrategy node:internal/modules/esm/translators:254:58
+      1  100.0%            Function: ^moduleProvider node:internal/modules/esm/loader:346:28
+     34    1.6%    Function: ^moduleStrategy node:internal/modules/esm/translators:112:56
+     34  100.0%      Function: ^moduleProvider node:internal/modules/esm/loader:346:28
+     34  100.0%        t _Builtins_AsyncFunctionAwaitResolveClosure
+     29    1.4%    LazyCompile: *nextTick node:internal/process/task_queues:104:18
+     11   37.9%      Function: ^onwrite node:internal/streams/writable:426:17
+      4   36.4%        Function: ^startLoop /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:129:12
+      4  100.0%          Function: ^_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:78:9
+      3   75.0%            LazyCompile: *_write node:internal/streams/writable:284:16
+      1   25.0%            Function: ^writeOrBuffer node:internal/streams/writable:366:23
+      2   18.2%        LazyCompile: *startLoop /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:129:12
+      2  100.0%          Function: ^_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:78:9
+      1   50.0%            LazyCompile: *_write node:internal/streams/writable:284:16
+      1   50.0%            Function: ^writeOrBuffer node:internal/streams/writable:366:23
+      2   18.2%        LazyCompile: *_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:78:9
+      2  100.0%          LazyCompile: *socketOnData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1271:22
+      2  100.0%            LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+      2   18.2%        Function: ^afterWriteDispatched node:internal/stream_base_commons:155:30
+      2  100.0%          Function: ^writevGeneric node:internal/stream_base_commons:122:23
+      2  100.0%            Function: ^Socket._writeGeneric node:net:797:42
+      1    9.1%        Function: ^processIncomingData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:84:29
+      1  100.0%          Function: ^_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:31:11
+      1  100.0%            LazyCompile: *Writable.write node:internal/streams/writable:334:36
+      7   24.1%      LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+      6   85.7%        Function: ^Readable.push node:internal/streams/readable:233:35
+      5   83.3%          Function: ^onStreamRead node:internal/stream_base_commons:167:22
+      1   16.7%          Function: ^writeCommand /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:40:17
+      1  100.0%            Function: ^write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:403:15
+      1   14.3%        LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      1  100.0%          Function: ^writeCommand /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:40:17
+      1  100.0%            Function: ^write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:403:15
+      3   10.3%      Function: ^checkOut /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection_pool.js:148:13
+      3  100.0%        Function: ^withConnection /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection_pool.js:276:19
+      3  100.0%          Function: ^command /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server.js:152:12
+      2   66.7%            Function: ^executeCommand /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/command.js:48:19
+      1   33.3%            Function: ^execute /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/find.js:30:12
+      2    6.9%      Function: ^maybeReadMore node:internal/streams/readable:625:23
+      2  100.0%        Function: ^addChunk node:internal/streams/readable:312:18
+      2  100.0%          Function: ^readableAddChunk node:internal/streams/readable:242:26
+      1   50.0%            LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      1   50.0%            Function: ^Readable.push node:internal/streams/readable:233:35
+      2    6.9%      Function: ^checkIn /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection_pool.js:175:12
+      2  100.0%        Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection_pool.js:293:27
+      2  100.0%          Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server.js:210:101
+      2  100.0%            LazyCompile: ~handleOperationResult /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server.js:282:42
+      1    3.4%      Function: ^onDestroy node:internal/streams/destroy:80:21
+      1  100.0%        Function: ^Writable._destroy node:internal/streams/writable:872:39
+      1  100.0%          Function: ^_destroy node:internal/streams/destroy:77:18
+      1  100.0%            Function: ^destroy node:internal/streams/destroy:39:17
+      1    3.4%      Function: ^endReadable node:internal/streams/readable:1328:21
+      1  100.0%        Function: ^Readable.read node:internal/streams/readable:402:35
+      1  100.0%          LazyCompile: *Socket.read node:net:667:33
+      1  100.0%            Function: ^onStreamRead node:internal/stream_base_commons:167:22
+      1    3.4%      Function: ^emitReadable node:internal/streams/readable:586:22
+      1  100.0%        Function: ^onEofChunk node:internal/streams/readable:556:20
+      1  100.0%          LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+      1  100.0%            LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      1    3.4%      Function: ^defaultTriggerAsyncIdScope node:internal/async_hooks:454:36
+      1  100.0%        Function: ^lookupAndConnect node:net:1025:26
+      1  100.0%          Function: ^Socket.connect node:net:967:36
+      1  100.0%            Function: ^connect node:net:199:17
+     28    1.3%    LazyCompile: *onwrite node:internal/streams/writable:426:17
+     24   85.7%      LazyCompile: *_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:78:9
+     19   79.2%        LazyCompile: *socketOnData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1271:22
+     19  100.0%          LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+     10   52.6%            LazyCompile: *onStreamRead node:internal/stream_base_commons:167:22
+      5   26.3%            LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      4   21.1%            Function: ^Readable.push node:internal/streams/readable:233:35
+      3   12.5%        LazyCompile: *_write node:internal/streams/writable:284:16
+      3  100.0%          Function: ^Writable.write node:internal/streams/writable:334:36
+      3  100.0%            Function: ^socketOnData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1271:22
+      1    4.2%        LazyCompile: *writeOrBuffer node:internal/streams/writable:366:23
+      1  100.0%          Function: ^_write node:internal/streams/writable:284:16
+      1  100.0%            Function: ^Writable.write node:internal/streams/writable:334:36
+      1    4.2%        Function: ^writeOrBuffer node:internal/streams/writable:366:23
+      1  100.0%          Function: ^_write node:internal/streams/writable:284:16
+      1  100.0%            Function: ^Writable.write node:internal/streams/writable:334:36
+      3   10.7%      Function: ^afterWriteDispatched node:internal/stream_base_commons:155:30
+      2   66.7%        Function: ^writevGeneric node:internal/stream_base_commons:122:23
+      2  100.0%          Function: ^Socket._writeGeneric node:net:797:42
+      2  100.0%            LazyCompile: *send /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/sender.js:303:7
+      1   33.3%        Function: ^writeGeneric node:internal/stream_base_commons:147:22
+      1  100.0%          Function: ^Socket._writeGeneric node:net:797:42
+      1  100.0%            Function: ^Socket._write node:net:834:35
+      1    3.6%      Function: ^processIncomingData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:84:29
+      1  100.0%        Function: ^_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:31:11
+      1  100.0%          LazyCompile: *Writable.write node:internal/streams/writable:334:36
+      1  100.0%            Function: ^ondata node:internal/streams/readable:775:18
+     27    1.3%    t _Builtins_KeyedStoreIC_Megamorphic
+     19   70.4%      LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+     12   63.2%        LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      8   66.7%          Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      8  100.0%            Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      4   33.3%          LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      2   50.0%            LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      2   50.0%            Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      7   36.8%        Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      7  100.0%          Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      7  100.0%            Function: ^parse /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/commands.js:426:10
+      5   18.5%      Function: ^deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      4   80.0%        Function: ^deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      2   50.0%          Function: ^deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      1   50.0%            LazyCompile: ~deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      1   50.0%            Function: ^deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      1   25.0%          LazyCompile: ~deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      1  100.0%            LazyCompile: ~deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      1   25.0%          Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      1  100.0%            Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      1   20.0%        Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      1  100.0%          Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      1  100.0%            Function: ^parse /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/commands.js:426:10
+      1    3.7%      LazyCompile: *HTTPRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPRequest.js:56:16
+      1  100.0%        Function: ^_NetworkManager_onRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:272:66
+      1  100.0%          Function: ^_NetworkManager_onRequestWillBeSent file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:197:86
+      1  100.0%            LazyCompile: *onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+      1    3.7%      Function: ^setHeader node:_http_outgoing:574:57
+      1  100.0%        Function: ^header /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/response.js:759:29
+      1  100.0%          Function: ^send /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/response.js:107:25
+      1  100.0%            Function: ^json /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/response.js:239:25
+      1    3.7%      Function: ^HTTPRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPRequest.js:56:16
+      1  100.0%        Function: ^_NetworkManager_onRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:272:66
+      1  100.0%          Function: ^_NetworkManager_onRequestWillBeSent file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:197:86
+      1  100.0%            LazyCompile: *emit file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/EventEmitter.js:80:9
+     22    1.0%    LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+     21   95.5%      Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      4   19.0%        Function: ~<anonymous> node:internal/webstreams/adapters:1:1
+      4  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      4  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      2    9.5%        LazyCompile: ~initializeCJSLoader node:internal/bootstrap/pre_execution:523:29
+      2  100.0%          LazyCompile: ~prepareMainThreadExecution node:internal/bootstrap/pre_execution:27:36
+      2  100.0%            Function: ~<anonymous> node:internal/main/run_main_module:1:1
+      2    9.5%        Function: ~<anonymous> node:internal/webstreams/readablestream:1:1
+      2  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      2  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      2    9.5%        Function: ~<anonymous> node:internal/modules/esm/loader:1:1
+      2  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      2  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      2    9.5%        Function: ~<anonymous> node:internal/modules/esm/get_source:1:1
+      2  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      2  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      2    9.5%        Function: ~<anonymous> node:internal/modules/esm/fetch_module:1:1
+      2  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      2  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    4.8%        LazyCompile: ~initializeSourceMapsHandlers node:internal/bootstrap/pre_execution:562:38
+      1  100.0%          LazyCompile: ~prepareMainThreadExecution node:internal/bootstrap/pre_execution:27:36
+      1  100.0%            Function: ~<anonymous> node:internal/main/run_main_module:1:1
+      1    4.8%        Function: ~<anonymous> node:net:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    4.8%        Function: ~<anonymous> node:internal/process/esm_loader:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    4.8%        Function: ~<anonymous> node:internal/modules/esm/module_map:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    4.8%        Function: ~<anonymous> node:internal/modules/esm/get_format:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    4.8%        Function: ~<anonymous> node:internal/fs/promises:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    4.8%        Function: ~<anonymous> node:internal/blocklist:1:1
+      1  100.0%          LazyCompile: ~compileForInternalLoader node:internal/bootstrap/loaders:299:27
+      1  100.0%            Function: ^nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1    4.5%      LazyCompile: ~nativeModuleRequire node:internal/bootstrap/loaders:332:29
+      1  100.0%        Function: ~<anonymous> node:internal/main/run_main_module:1:1
+     22    1.0%    LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+     16   72.7%      LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      8   50.0%        LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      5   62.5%          Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      5  100.0%            Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      3   37.5%          LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      2   66.7%            Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      1   33.3%            LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      8   50.0%        Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      8  100.0%          Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      8  100.0%            Function: ^parse /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/commands.js:426:10
+      6   27.3%      Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      6  100.0%        Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      5   83.3%          Function: ^parse /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/commands.js:426:10
+      5  100.0%            Function: ^onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:156:14
+      1   16.7%          LazyCompile: ~parse /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/commands.js:222:10
+      1  100.0%            Function: ^onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:156:14
+     22    1.0%    Function: ^internalConnect node:net:903:25
+     22  100.0%      Function: ^defaultTriggerAsyncIdScope node:internal/async_hooks:454:36
+     21   95.5%        Function: ^<anonymous> node:net:1050:73
+     21  100.0%          LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+      1    4.5%        LazyCompile: ~<anonymous> node:net:1050:73
+      1  100.0%          LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+     21    1.0%    Function: ^readSync node:fs:685:18
+     21  100.0%      Function: ^tryReadSync node:fs:430:21
+     21  100.0%        Function: ^readFileSync node:fs:451:22
+     16   76.2%          Function: ^Module._extensions..js node:internal/modules/cjs/loader:1108:37
+     16  100.0%            Function: ^Module.load node:internal/modules/cjs/loader:963:33
+      2    9.5%          LazyCompile: ~Module._extensions..json node:internal/modules/cjs/loader:1158:39
+      2  100.0%            Function: ^Module.load node:internal/modules/cjs/loader:963:33
+      2    9.5%          LazyCompile: ~Module._extensions..js node:internal/modules/cjs/loader:1108:37
+      2  100.0%            Function: ^Module.load node:internal/modules/cjs/loader:963:33
+      1    4.8%          Function: ~<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/saslprep/lib/memory-code-points.js:1:1
+      1  100.0%            Function: ^Module._compile node:internal/modules/cjs/loader:1053:37
+
+    217    1.5%  T _mach_timebase_info_trap
+
+    201    1.4%  /usr/lib/system/libsystem_malloc.dylib
+     29   14.4%    Function: ^CustomError file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Errors.js:20:16
+     29  100.0%      Function: ^ProtocolError file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Errors.js:44:16
+     19   65.5%        LazyCompile: *send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:309:9
+      8   42.1%          Function: ^_ExecutionContext_evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:159:116
+      6   75.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      2   25.0%            Function: ^evaluateHandle file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:155:25
+      4   21.1%          LazyCompile: *_ExecutionContext_evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:159:116
+      4  100.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      2   10.5%          Function: ^releaseObject file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/util.js:76:36
+      2  100.0%            Function: ^dispose file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/JSHandle.js:166:18
+      2   10.5%          Function: ^down file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:431:15
+      2  100.0%            Function: ^click file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:411:16
+      1    5.3%          Function: ^move file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:390:15
+      1  100.0%            Function: ^click file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:411:16
+      1    5.3%          Function: ^adoptBackendNode file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/IsolatedWorld.js:365:27
+      1  100.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      1    5.3%          Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ChromeTargetManager.js:139:59
+      1  100.0%            Function: ^listener file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ChromeTargetManager.js:281:22
+      7   24.1%        Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:320:28
+      7  100.0%          t _Builtins_PromiseConstructor
+      7  100.0%            Function: ^send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:309:9
+      2    6.9%        LazyCompile: *_ExecutionContext_evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:159:116
+      2  100.0%          t _Builtins_AsyncFunctionAwaitResolveClosure
+      2  100.0%            t _Builtins_CallApiCallback
+      1    3.4%        Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:97:28
+      1  100.0%          t _Builtins_PromiseConstructor
+      1  100.0%            Function: ^send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:88:9
+     25   12.4%    t _Builtins_EphemeronKeyBarrierSaveFP
+     25  100.0%      t _Builtins_WeakMapPrototypeSet
+      7   28.0%        LazyCompile: *HTTPResponse file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPResponse.js:25:16
+      7  100.0%          Function: ^_NetworkManager_emitResponseEvent file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:324:82
+      7  100.0%            Function: ^_NetworkManager_onResponseReceived file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:338:84
+      7   28.0%        LazyCompile: *HTTPRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPRequest.js:56:16
+      6   85.7%          Function: ^_NetworkManager_onRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:272:66
+      6  100.0%            Function: ^_NetworkManager_onRequestWillBeSent file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:197:86
+      1   14.3%          LazyCompile: *_NetworkManager_onRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:272:66
+      1  100.0%            Function: ^_NetworkManager_onRequestWillBeSent file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:197:86
+      5   20.0%        Function: ^HTTPRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPRequest.js:56:16
+      5  100.0%          Function: ^_NetworkManager_onRequest file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:272:66
+      5  100.0%            Function: ^_NetworkManager_onRequestWillBeSent file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:197:86
+      3   12.0%        Function: ^HTTPResponse file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPResponse.js:25:16
+      3  100.0%          Function: ^_NetworkManager_emitResponseEvent file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:324:82
+      3  100.0%            Function: ^_NetworkManager_onResponseReceived file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:338:84
+      1    4.0%        Function: ^WaitTask file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/WaitTask.js:34:16
+      1  100.0%          Function: ^waitForFunction file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/IsolatedWorld.js:347:20
+      1  100.0%            Function: ^_waitForSelectorInPage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/IsolatedWorld.js:309:33
+      1    4.0%        Function: ^SecurityDetails file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/SecurityDetails.js:38:16
+      1  100.0%          LazyCompile: *HTTPResponse file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPResponse.js:25:16
+      1  100.0%            Function: ^_NetworkManager_emitResponseEvent file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:324:82
+      1    4.0%        Function: ^Mouse file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Input.js:374:16
+      1  100.0%          Function: ^Page file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Page.js:101:16
+      1  100.0%            Function: ^_create file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Page.js:238:25
+      6    3.0%    LazyCompile: *onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+      5   83.3%      LazyCompile: *<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+      5  100.0%        LazyCompile: *onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+      5  100.0%          LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+      5  100.0%            LazyCompile: *emit node:events:475:44
+      1   16.7%      Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+      1  100.0%        LazyCompile: *onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+      1  100.0%          LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+      1  100.0%            LazyCompile: *emit node:events:475:44
+      3    1.5%    Function: ^onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+      3  100.0%      Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+      3  100.0%        LazyCompile: *onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+      2   66.7%          LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+      2  100.0%            LazyCompile: *emit node:events:475:44
+      1   33.3%          LazyCompile: *emit node:events:475:44
+      1  100.0%            Function: ^receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+
+    185    1.3%  t _Builtins_LoadIC
+     13    7.0%    LazyCompile: *_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:78:9
+     11   84.6%      LazyCompile: *socketOnData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1271:22
+     11  100.0%        LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+      5   45.5%          LazyCompile: *onStreamRead node:internal/stream_base_commons:167:22
+      4   36.4%          Function: ^Readable.push node:internal/streams/readable:233:35
+      4  100.0%            Function: ^onStreamRead node:internal/stream_base_commons:167:22
+      2   18.2%          LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      2  100.0%            Function: ^onStreamRead node:internal/stream_base_commons:167:22
+      2   15.4%      LazyCompile: *_write node:internal/streams/writable:284:16
+      2  100.0%        Function: ^Writable.write node:internal/streams/writable:334:36
+      2  100.0%          Function: ^socketOnData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1271:22
+      2  100.0%            LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+      9    4.9%    LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      5   55.6%      LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      3   60.0%        Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      3  100.0%          Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      3  100.0%            Function: ^parse /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/commands.js:426:10
+      2   40.0%        LazyCompile: *deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      2  100.0%          Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      2  100.0%            Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      4   44.4%      Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      4  100.0%        Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      4  100.0%          Function: ^parse /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/commands.js:426:10
+      4  100.0%            Function: ^onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:156:14
+      8    4.3%    Function: ^onStreamRead node:internal/stream_base_commons:167:22
+      7    3.8%    t _Builtins_AsyncFunctionAwaitResolveClosure
+      7  100.0%      t _Builtins_CallApiCallback
+      7  100.0%        LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+      6    3.2%    LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+      5    2.7%    LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+      4   80.0%      LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      2   50.0%        Function: ^parserOnBody node:_http_common:131:22
+      2  100.0%          t std::__1::__hash_table<std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::__unordered_map_hasher<unsigned int, std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::hash<unsigned int>, std::__1::equal_to<unsigned int>, true>, std::__1::__unordered_map_equal<unsigned int, std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::equal_to<unsigned int>, std::__1::hash<unsigned int>, true>, std::__1::allocator<std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*> > >::__rehash(unsigned long)
+      2  100.0%            Function: ^socketOnData node:_http_client:487:22
+      2   50.0%        Function: ^onStreamRead node:internal/stream_base_commons:167:22
+      1   20.0%      Function: ^Readable.push node:internal/streams/readable:233:35
+      1  100.0%        Function: ^onStreamRead node:internal/stream_base_commons:167:22
+      3    1.6%    Function: ^onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:156:14
+      3  100.0%      Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:60:44
+      2   66.7%        LazyCompile: *emit node:events:475:44
+      2  100.0%          Function: ^processIncomingData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:84:29
+      2  100.0%            Function: ^_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:31:11
+      1   33.3%        Function: ^emit node:events:475:44
+      1  100.0%          Function: ^processIncomingData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:84:29
+      1  100.0%            Function: ^_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:31:11
+      3    1.6%    Function: ^createDebug /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/debug/src/common.js:60:22
+      3  100.0%      Function: ^debugLevel file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Debug.js:70:16
+      3  100.0%        t _Builtins_AsyncFunctionAwaitResolveClosure
+      3  100.0%          t std::__1::__hash_table<std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::__unordered_map_hasher<unsigned int, std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::hash<unsigned int>, std::__1::equal_to<unsigned int>, true>, std::__1::__unordered_map_equal<unsigned int, std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*>, std::__1::equal_to<unsigned int>, std::__1::hash<unsigned int>, true>, std::__1::allocator<std::__1::__hash_value_type<unsigned int, node::loader::ModuleWrap*> > >::__rehash(unsigned long)
+      3  100.0%            Function: ^processTicksAndRejections node:internal/process/task_queues:68:35
+      3    1.6%    Function: ^completeEndSession /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sessions.js:138:40
+      3  100.0%      Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sessions.js:133:52
+      3  100.0%        Function: ^maybePromise /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/utils.js:345:22
+      3  100.0%          Function: ^endSession /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sessions.js:129:15
+      2   66.7%            Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/execute_operation.js:69:70
+      1   33.3%            Function: ^cleanupCursor /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cursor/abstract_cursor.js:536:23
+      3    1.6%    Function: ^addListener node:events:618:58
+      3  100.0%      Function: ^Readable.on node:internal/streams/readable:897:33
+      1   33.3%        Function: ^parserOnIncoming node:_http_server:857:26
+      1  100.0%          Function: ^parserOnHeadersComplete node:_http_common:77:33
+      1   33.3%        Function: ^once node:events:660:44
+      1  100.0%          Function: ^Socket.destroySoon node:net:684:40
+      1  100.0%            Function: ^responseOnEnd node:_http_client:677:23
+      1   33.3%        Function: ^clearIncoming node:_http_server:752:23
+      1  100.0%          Function: ^resOnFinish node:_http_server:791:21
+      1  100.0%            Function: ^emit node:events:475:44
+      2    1.1%    t _Builtins_ArrayMap
+      1   50.0%      Function: ^_ExecutionContext_evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:159:116
+      1  100.0%        Function: ^evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/ExecutionContext.js:103:19
+      1  100.0%          Function: ^evaluate file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/IsolatedWorld.js:164:19
+      1  100.0%            t _Builtins_AsyncFunctionAwaitResolveClosure
+      1   50.0%      Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/minimatch/minimatch.js:196:26
+      1  100.0%        t _Builtins_ArrayMap
+      1  100.0%          Function: ^make /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/minimatch/minimatch.js:160:15
+      1  100.0%            Function: ^Minimatch /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/minimatch/minimatch.js:128:20
+      2    1.1%    LazyCompile: *getData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:410:10
+      2  100.0%      LazyCompile: *_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:78:9
+      2  100.0%        LazyCompile: *socketOnData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1271:22
+      2  100.0%          LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+      2  100.0%            LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      2    1.1%    LazyCompile: *_write node:internal/streams/writable:284:16
+      2  100.0%      Function: ^Writable.write node:internal/streams/writable:334:36
+      2  100.0%        Function: ^socketOnData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1271:22
+      2  100.0%          LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+      2  100.0%            Function: ^Readable.push node:internal/streams/readable:233:35
+      2    1.1%    LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      2  100.0%      Function: ^onStreamRead node:internal/stream_base_commons:167:22
+      2    1.1%    LazyCompile: *HTTPResponse file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/HTTPResponse.js:25:16
+      2  100.0%      Function: ^_NetworkManager_emitResponseEvent file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:324:82
+      2  100.0%        Function: ^_NetworkManager_onResponseReceived file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:338:84
+      2  100.0%          LazyCompile: *onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+      1   50.0%            LazyCompile: *<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+      1   50.0%            Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+      2    1.1%    Function: ^write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:403:15
+      2  100.0%      Function: ^command /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:251:12
+      1   50.0%        Function: ^measureRoundTripTime /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/monitor.js:288:30
+      1  100.0%          Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/monitor.js:304:58
+      1  100.0%            Function: ^listOnTimeout node:internal/timers:507:25
+      1   50.0%        Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server.js:204:42
+      1  100.0%          Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection_pool.js:291:23
+      1  100.0%            Function: ^processWaitQueue /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection_pool.js:406:21
+      2    1.1%    Function: ^startSession /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/mongo_client.js:249:17
+      2  100.0%      Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/execute_operation.js:16:48
+      2  100.0%        Function: ^maybePromise /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/utils.js:345:22
+      2  100.0%          Function: ^executeOperation /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/execute_operation.js:11:26
+      1   50.0%            Function: ^deleteOne /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/collection.js:182:14
+      1   50.0%            Function: ^command /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/admin.js:48:12
+      2    1.1%    Function: ^serializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/serializer.js:260:25
+      2  100.0%      Function: ^serializeInto /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/serializer.js:553:23
+      2  100.0%        Function: ^serializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/serializer.js:260:25
+      2  100.0%          Function: ^serializeInto /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/serializer.js:553:23
+      1   50.0%            Function: ^serializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/serializer.js:260:25
+      1   50.0%            Function: ^serialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:110:19
+      2    1.1%    Function: ^readStart node:_http_incoming:40:19
+      2  100.0%      Function: ^_read node:_http_incoming:160:49
+      1   50.0%        LazyCompile: *Readable.read node:internal/streams/readable:402:35
+      1  100.0%          Function: ^maybeReadMore_ node:internal/streams/readable:632:24
+      1  100.0%            LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+      1   50.0%        Function: ^Readable.read node:internal/streams/readable:402:35
+      1  100.0%          Function: ^maybeReadMore_ node:internal/streams/readable:632:24
+      1  100.0%            LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+      2    1.1%    Function: ^processWaitQueue /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/topology.js:535:26
+      2  100.0%      Function: ^selectServer /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/topology.js:254:17
+      2  100.0%        Function: ^executeWithServerSelection /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/execute_operation.js:85:36
+      2  100.0%          Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/execute_operation.js:16:48
+      2  100.0%            Function: ^maybePromise /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/utils.js:345:22
+      2    1.1%    Function: ^onwrite node:internal/streams/writable:426:17
+      1   50.0%      LazyCompile: *_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:78:9
+      1  100.0%        LazyCompile: *socketOnData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1271:22
+      1  100.0%          LazyCompile: *readableAddChunk node:internal/streams/readable:242:26
+      1  100.0%            LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      1   50.0%      Function: ^startLoop /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:129:12
+      1  100.0%        Function: ^_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/receiver.js:78:9
+      1  100.0%          LazyCompile: *_write node:internal/streams/writable:284:16
+      1  100.0%            Function: ^Writable.write node:internal/streams/writable:334:36
+      2    1.1%    Function: ^onconnection node:net:1595:22
+      2    1.1%    Function: ^next /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/router/index.js:176:16
+      1   50.0%      Function: ^expressInit /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/middleware/init.js:29:30
+      1  100.0%        Function: ^handle /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/router/layer.js:86:49
+      1  100.0%          Function: ^trim_prefix /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/router/index.js:288:23
+      1  100.0%            Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/router/index.js:275:64
+      1   50.0%      Function: ^cors /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/cors/lib/index.js:159:16
+      1  100.0%        Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/cors/lib/index.js:219:57
+      1  100.0%          Function: ^originCallback /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/cors/lib/index.js:213:39
+      1  100.0%            Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/cors/lib/index.js:204:37
+      2    1.1%    Function: ^json /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/response.js:239:25
+      1   50.0%      Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/index.js:56:20
+      1  100.0%        t _Builtins_AsyncFunctionAwaitResolveClosure
+      1  100.0%          t _Builtins_CallApiCallback
+      1  100.0%            LazyCompile: *processTicksAndRejections node:internal/process/task_queues:68:35
+      1   50.0%      Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/index.js:47:22
+      1  100.0%        Function: ^handle /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/router/layer.js:86:49
+      1  100.0%          Function: ^next /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/router/route.js:114:16
+      1  100.0%            Function: ^dispatch /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/express/lib/router/route.js:98:45
+      2    1.1%    Function: ^from node:buffer:298:28
+      1   50.0%      Function: ^frame /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/sender.js:68:15
+      1  100.0%        LazyCompile: *send /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/sender.js:303:7
+      1  100.0%          LazyCompile: *send /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:439:7
+      1  100.0%            LazyCompile: *send file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:309:9
+      1   50.0%      Function: ^ensureBuffer /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/ensure_buffer.js:15:22
+      1  100.0%        Function: ^Binary /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/binary.js:42:20
+      1  100.0%          Function: ^deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      1  100.0%            Function: ^deserializeObject /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:65:27
+      2    1.1%    Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/parser/deserializer.js:36:21
+      2  100.0%      Function: ^deserialize /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/bson/lib/bson.js:161:21
+      2  100.0%        Function: ^parse /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/commands.js:426:10
+      2  100.0%          Function: ^onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:156:14
+      2  100.0%            Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:60:44
+      2    1.1%    Function: ^checkIn /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection_pool.js:175:12
+      2  100.0%      Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection_pool.js:293:27
+      2  100.0%        Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server.js:210:101
+      2  100.0%          LazyCompile: ~handleOperationResult /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server.js:282:42
+      2  100.0%            Function: ^onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:156:14
+      2    1.1%    Function: ^addChunk node:internal/streams/readable:312:18
+      2  100.0%      Function: ^readableAddChunk node:internal/streams/readable:242:26
+      2  100.0%        LazyCompile: *Readable.push node:internal/streams/readable:233:35
+      2  100.0%          Function: ^onStreamRead node:internal/stream_base_commons:167:22
+      2    1.1%    Function: ^_NetworkManager_onResponseReceivedExtraInfo file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:354:102
+      1   50.0%      LazyCompile: *onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+      1  100.0%        LazyCompile: *<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+      1  100.0%          LazyCompile: *onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/event-target.js:193:35
+      1  100.0%            LazyCompile: *receiverOnMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/ws/lib/websocket.js:1177:27
+      1   50.0%      LazyCompile: *emit file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/EventEmitter.js:80:9
+      1  100.0%        Function: ^_onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:332:15
+      1  100.0%          Function: ^onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+      1  100.0%            Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+      2    1.1%    Function: ^_NetworkManager_onResponseReceived file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/NetworkManager.js:338:84
+      1   50.0%      LazyCompile: *emit file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/EventEmitter.js:80:9
+      1  100.0%        Function: ^_onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:332:15
+      1  100.0%          Function: ^onMessage file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/Connection.js:120:20
+      1  100.0%            Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/node/NodeWebSocketTransport.js:37:99
+      1   50.0%      Function: ^<anonymous> file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/vendor/mitt/src/index.js:49:56
+      1  100.0%        t _Builtins_ArrayMap
+      1  100.0%          Function: ^emit file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/vendor/mitt/src/index.js:48:24
+      1  100.0%            Function: ^emit file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/puppeteer/lib/esm/puppeteer/common/EventEmitter.js:80:9
+      2    1.1%    Function: ^CommandOperation /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/command.js:14:16
+      1   50.0%      Function: ^RunCommandOperation /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/run_command.js:8:16
+      1  100.0%        Function: ^command /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/admin.js:48:12
+      1  100.0%          Function: ^serverStatus /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/admin.js:66:17
+      1  100.0%            Function: ^ping file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/utils/ping.js:1:21
+      1   50.0%      Function: ^DeleteOperation /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/delete.js:10:16
+      1  100.0%        Function: ^DeleteOneOperation /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/operations/delete.js:61:16
+      1  100.0%          Function: ^deleteOne /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/collection.js:182:14
+      1  100.0%            LazyCompile: ~scrapeFromQueuedb file:///Users/boris/Desktop/projects/github-scraper-puppeteer/server/puppeteer/queue/scrapeFromQueue.js:7:34
+      2    1.1%    Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/server.js:63:55
+      1   50.0%      LazyCompile: *emit node:events:475:44
+      1  100.0%        Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/monitor.js:177:73
+      1  100.0%          Function: ^onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:156:14
+      1  100.0%            Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:60:44
+      1   50.0%      Function: ^emit node:events:475:44
+      1  100.0%        Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/sdam/monitor.js:177:73
+      1  100.0%          Function: ^onMessage /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:156:14
+      1  100.0%            Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:60:44
+      2    1.1%    Function: ^<anonymous> /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/connection.js:60:44
+      2  100.0%      LazyCompile: *emit node:events:475:44
+      2  100.0%        Function: ^processIncomingData /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:84:29
+      2  100.0%          Function: ^_write /Users/boris/Desktop/projects/github-scraper-puppeteer/server/node_modules/mongodb/lib/cmap/message_stream.js:31:11
+      2  100.0%            LazyCompile: *_write node:internal/streams/writable:284:16
+
