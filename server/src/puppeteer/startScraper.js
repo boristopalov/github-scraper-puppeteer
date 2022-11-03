@@ -4,6 +4,7 @@ import { scrapeUserProfile } from "./users/scrapeUser.js";
 import { TASKLIMIT } from "./taskCounter.js";
 import { scrapeFromQueuedb } from "./queue/scrapeFromQueue.js";
 import { SCRAPER_ACTIVE_FLAG, stopScraperFlag } from "./scraperStatus.js";
+import { writeToClient } from "../index.js";
 
 export const scrape = async (db, type, url, res) => {
   url = url.toLowerCase();
@@ -11,6 +12,7 @@ export const scrape = async (db, type, url, res) => {
     console.error(
       `error- please enter a valid GitHub url, you entered: ${url}`
     );
+    writeToClient(res, `please enter a valid GitHub url, you entered: ${url}`);
     return;
   }
   if (type === "org") {
