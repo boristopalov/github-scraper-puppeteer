@@ -116,6 +116,14 @@ function App() {
       document.getElementById("scrapelog").innerText += res.data + "\n";
       return;
     }
+    if (!url.includes("github.com")) {
+      console.log(url);
+      document.getElementById(
+        "errormsg"
+      ).innerText = `please enter a valid GitHub url, you entered: ${url}`;
+      return;
+    }
+    document.getElementById("errormsg").innerText = "";
     setScraperRunning(true);
     const _sse = new EventSource(`${URI}/scrape?url=${url}&type=${type}`);
     setSse(_sse);
@@ -461,6 +469,7 @@ function App() {
               </div>
             </div>
           )}
+          <div id="errormsg"> </div>
           {scraperRunning && (
             <div className={styles.containerGrey}>
               <code
