@@ -37,12 +37,6 @@ export const startServer = async () => {
     })
   );
 
-  const errorHandler = (error, _0, response, _1) => {
-    console.log(`error ${error.message}`);
-    const status = error.status || 400;
-    response.status(status).send(error.message);
-  };
-
   const client = await mongoClient();
   const db = client.db(DB_ENV);
 
@@ -120,9 +114,17 @@ export const startServer = async () => {
       if (url === "") {
         await scrapeFromQueueLoop(db, res);
       } else {
+        if (!url.includes("github.com")) {
+          console.error(
+            `error- please enter a valid GitHub url, you entered: ${url}`
+          );
+          stopScraperFlag();
+          return;
+        }
         await scrape(db, type, url, res);
       }
     } catch (error) {
+      console.log(error.stack);
       next(error);
     }
   });
@@ -210,18 +212,23 @@ export const startServer = async () => {
     } catch (error) {
       next(error);
     }
-
-    app.get("/download", async (req, res, next) => {
-      try {
-        const downloadPath = req.query.path;
-        res.download(downloadPath);
-      } catch (error) {
-        next(error);
-      }
-    });
   });
 
-  app.use(errorHandler);
+  app.get("/download", async (req, res, next) => {
+    try {
+      const downloadPath = req.query.path;
+      res.download(downloadPath);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // eslint-disable-next-line no-unused-vars
+  app.use((error, _0, response, _1) => {
+    console.log(`error ${error.message}`);
+    const status = error.status || 400;
+    response.status(status).send(error.message);
+  });
 
   app.listen(8080, () => {
     console.log("listening on port", 8080);
