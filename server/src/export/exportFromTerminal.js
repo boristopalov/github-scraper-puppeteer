@@ -1,7 +1,7 @@
 import { exportAllScrapedUsers } from "./exportAllScrapedUsers";
 import { exportRepo, exportOrg, exportUser } from "./export.js";
 import { MongoClient, ServerApiVersion } from "mongodb";
-import { URI, DB_ENV } from "../../constants/constants.js";
+import { URI, DB_ENV } from "../constants/envVars.js";
 
 const exportFromTerminal = async () => {
   const uri = URI;

@@ -1,4 +1,4 @@
-import arrayOfObjectsToCSV from "../arrayOfObjectsToCSV.js";
+import arrayOfObjectsToCSV from "../utils/arrayOfObjectsToCSV.js";
 import fs from "fs";
 
 export const exportRepo = async (db, url) => {

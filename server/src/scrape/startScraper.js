@@ -1,9 +1,12 @@
 import { scrapeOrganization } from "./orgs/scrapeOrganization.js";
 import { scrapeRepo } from "./repos/scrapeRepo.js";
 import { scrapeUserProfile } from "./users/scrapeUser.js";
-import { TASKLIMIT } from "./taskCounter.js";
+import { TASKLIMIT } from "../utils/taskCounter.js";
 import { scrapeFromQueuedb } from "./queue/scrapeFromQueue.js";
-import { SCRAPER_ACTIVE_FLAG, stopScraperFlag } from "./scraperStatus.js";
+import {
+  SCRAPER_ACTIVE_FLAG,
+  stopScraperFlag,
+} from "../utils/scraperStatus.js";
 import { writeToClient } from "../index.js";
 
 export const scrape = async (db, type, url, res) => {

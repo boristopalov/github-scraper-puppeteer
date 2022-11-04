@@ -3,21 +3,21 @@ import {
   checkIfOrgScraped,
   checkIfRepoScraped,
   checkIfUserScraped,
-} from "./utils/scrapeCheck/checkIfScraped.js";
-import { exportUser, exportOrg, exportRepo } from "./utils/export/export.js";
-import { exportAllScrapedUsers } from "./utils/export/exportAllScrapedUsers.js";
-import { scrape, scrapeFromQueueLoop } from "./puppeteer/startScraper.js";
+} from "./scrapeCheck/checkIfScraped.js";
+import { exportUser, exportOrg, exportRepo } from "./export/export.js";
+import { exportAllScrapedUsers } from "./export/exportAllScrapedUsers.js";
+import { scrape, scrapeFromQueueLoop } from "./scrape/startScraper.js";
 import cors from "cors";
-import { mongoClient } from "./utils/mongoClient.js";
+import { mongoClient } from "./db/mongoClient.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import {
   SCRAPER_ACTIVE_FLAG,
   stopScraperFlag,
   startScraperFlag,
-} from "./puppeteer/scraperStatus.js";
+} from "./utils/scraperStatus.js";
 import { ping } from "./utils/ping.js";
-import { queueTaskdb } from "./utils/queueTask.js";
+import { queueTaskdb } from "./scrape/queue/queueTask.js";
 import { DB_ENV } from "./constants/envVars.js";
 
 export const startServer = async () => {
@@ -228,6 +228,13 @@ export const startServer = async () => {
     console.log(`error ${error.message}`);
     const status = error.status || 400;
     response.status(status).send(error.message);
+  });
+
+  // fallback
+  // eslint-disable-next-line no-unused-vars
+  app.use((_0, response, _1) => {
+    response.status(404);
+    response.send("invalid path");
   });
 
   app.listen(8080, () => {

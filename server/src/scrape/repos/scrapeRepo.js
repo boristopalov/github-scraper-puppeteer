@@ -2,9 +2,9 @@ import puppeteer from "puppeteer";
 import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
 import { readmeKeywords } from "../../constants/keywords.js";
 import sleep from "../../utils/sleep.js";
-import checkForBotDetection from "../../utils/checkForBotDetection.js";
+import checkForBotDetection from "../checkForBotDetection.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
-import { queueTaskdb } from "../../utils/queueTask.js";
+import { queueTaskdb } from "../queue/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { writeToClient } from "../../index.js";
 

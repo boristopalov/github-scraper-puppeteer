@@ -1,7 +1,10 @@
-import { queueTaskdb } from "../../utils/queueTask.js";
+import { queueTaskdb } from "./queueTask.js";
 import { scrapeOrganization } from "../orgs/scrapeOrganization.js";
 import { scrapeRepo } from "../repos/scrapeRepo.js";
-import { incrementTaskCounter, decrementTaskCounter } from "../taskCounter.js";
+import {
+  incrementTaskCounter,
+  decrementTaskCounter,
+} from "../../utils/taskCounter.js";
 import { scrapeUserProfile } from "../users/scrapeUser.js";
 
 export const scrapeFromQueuedb = async (db, n, res) => {
@@ -49,9 +52,6 @@ export const scrapeFromQueuedb = async (db, n, res) => {
   if (type === "repo" && parentType === "user") {
     await updateUserRepo(data, db, parentId);
   }
-  if (type === "org" && parentType === "user") {
-    await updateUserOrg(data, db, parentId);
-  }
   if (type === "user" && parentType === "repo") {
     await updateRepo(data, db, parentId);
   }
@@ -98,7 +98,7 @@ const updateOrgRepo = async (data, db, parentId) => {
       },
     });
   if (orgData.queuedTasks.length > 0) {
-    // only update user if this org has no queued tasks left (i.e. all the repos have been scraped. otherwise we count more than once)
+    // only update user if this org has no queued tasks left (i.e. all the repos have been scraped. otherwise we increment org-related user data more than once)
     return;
   }
   const scrapedMembers = await db

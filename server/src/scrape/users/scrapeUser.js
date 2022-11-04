@@ -4,20 +4,20 @@ import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
 import { generalKeywords } from "../../constants/keywords.js";
 import convertNumStringToDigits from "../../utils/convertNumStringToDigits.js";
 import { scrapeUserProfileRepos } from "./scrapeUserProfileRepos.js";
-import checkForBotDetection from "../../utils/checkForBotDetection.js";
-import searchEventsForEmail from "../../utils/searchEventsForEmail.js";
-import searchEventsForContributions from "../../utils/searchEventsForContributions.js";
-import { getEvents } from "../../utils/getEvents.js";
-import { queueTaskdb } from "../../utils/queueTask.js";
+import checkForBotDetection from "../checkForBotDetection.js";
+import searchEventsForEmail from "../../api/searchEventsForEmail.js";
+import searchEventsForContributions from "../../api/searchEventsForContributions.js";
+import { getEvents } from "../../api//getEvents.js";
+import { queueTaskdb } from "../queue/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { writeToClient } from "../../index.js";
 
 export const scrapeUserProfile = async (
-  db,
-  url,
+  /** @type {{ collection: (arg0: string) => { (): any; new (): any; findOne: { (arg0: { url: any; }): any; new (): any; }; insertOne: { (arg0: any): any; new (): any; }; }; }} */ db,
+  /** @type {string} */ url,
   data = null,
   { sendToFront = false, depth = 0 } = {},
-  res
+  /** @type {undefined} */ res
 ) => {
   url = url.toLowerCase();
   if (await db.collection("users").findOne({ url })) {

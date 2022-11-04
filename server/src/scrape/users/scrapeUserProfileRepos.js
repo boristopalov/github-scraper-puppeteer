@@ -1,6 +1,6 @@
 import sleep from "../../utils/sleep.js";
 import puppeteer from "puppeteer";
-import checkForBotDetection from "../../utils/checkForBotDetection.js";
+import checkForBotDetection from "../checkForBotDetection.js";
 
 export const scrapeUserProfileRepos = async (url) => {
   const browser = await puppeteer.launch({
