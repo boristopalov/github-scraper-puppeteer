@@ -42,7 +42,7 @@ export const scrapeFromQueuedb = async (db, n, res) => {
 
   await db.collection("queue").deleteOne({ _id: id });
   if (!data) {
-    await queueTaskdb(db, context, task, { sendToFront: true, depth: 0 }); //re-queue if scraping fails, which would result in data being null
+    await queueTaskdb(db, context, task, { sendToFront: false, depth: 0 }); //re-queue if scraping fails, which would result in data being null
     return;
   }
 
