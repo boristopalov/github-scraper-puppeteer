@@ -17,7 +17,7 @@ export const scrapeFromQueuedb = async (db, n, res) => {
   const recordPromise = await db
     .collection("queue")
     .find()
-    .sort({ "inFront.sendToFront": -1, "inFront.depth": -1, _id: 1 }) // tasks manually queued by the user will be in front
+    .sort({ "inFront.sendToFront": -1, "inFront.priority": -1, _id: 1 }) // tasks manually queued by the user will be in front
     .limit(1)
     .skip(n)
     .toArray(); // grabs the nth record
