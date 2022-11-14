@@ -28,8 +28,8 @@ export const scrapeOrganization = async (
     try {
       const pages = await browser.pages();
       const page = pages[0];
-      await page.goto(url);
-      const data = await tryScrapeOrg(page, db, { sendToFront, depth });
+      await page.goto(`${url}?q=&type=source&language=&sort=stargazers`);
+      const data = await tryScrapeOrg(page, db, { sendToFront, priority });
       await db.collection("orgs").insertOne(data);
       writeToClient(res, `successfully scraped ${url}`);
       return data;
@@ -45,10 +45,10 @@ export const scrapeOrganization = async (
   return null;
 };
 
-const tryScrapeOrg = async (page, db, { sendToFront, depth }) => {
+const tryScrapeOrg = async (page, db, { sendToFront, priority }) => {
   const data = {
     name: "n/a",
-    url: page.url().toLowerCase(),
+    url: page.url().split("?")[0].toLowerCase(),
     bioKeywordMatch: false,
     numReposWithHundredStars: 0,
     numRepoReadmeKeywordMatch: 0,
