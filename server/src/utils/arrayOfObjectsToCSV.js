@@ -19,7 +19,6 @@ export default function arrayOfObjectsToCSV(arr) {
       "Github Followers",
       "Num. User Orgs w/ Bio Match",
       "Num. User Org Repos w/ >100 stars",
-      "Num. User Org Repos w/ README match",
     ],
     ...arr.map((e) => [
       e.name.replaceAll(",", ""),
@@ -40,7 +39,6 @@ export default function arrayOfObjectsToCSV(arr) {
       e.githubFollowers,
       e.numOrgBioKeywordMatch,
       e.numOrgReposWithHundredStars,
-      e.numOrgReposReadmeKeywordMatch,
     ]),
   ]
     .map((item) => item.join(","))
