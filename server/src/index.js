@@ -114,7 +114,7 @@ export const startServer = async () => {
       if (url === "") {
         await scrapeFromQueueLoop(db, res);
       } else {
-        if (!url.includes("github.com")) {
+        if (!url.includes("https://github.com")) {
           console.error(
             `error- please enter a valid GitHub url, you entered: ${url}`
           );
@@ -142,6 +142,12 @@ export const startServer = async () => {
       url = url.toLowerCase();
       if (url === "") {
         res.send(`[${new Date().toLocaleTimeString()}]url cannot be empty`);
+        return;
+      }
+      if (!url.includes("https://github.com")) {
+        res.send(
+          `[${new Date().toLocaleTimeString()}] please enter a valid GitHub URL.`
+        );
         return;
       }
       if (await db.collection(`${type}s`).findOne({ url })) {
@@ -241,6 +247,7 @@ export const startServer = async () => {
 };
 
 export const writeToClient = (res, data) => {
+  console.log(`[${new Date().toLocaleTimeString()}]${data}`);
   res.write("data: " + `[${new Date().toLocaleTimeString()}]${data}\n\n`);
 };
 
