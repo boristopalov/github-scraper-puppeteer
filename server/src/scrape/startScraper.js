@@ -5,9 +5,13 @@ import { TASKLIMIT } from "../utils/taskCounter.js";
 import { scrapeFromQueuedb } from "./queue/scrapeFromQueue.js";
 import {
   SCRAPER_ACTIVE_FLAG,
+  startTasksProcessingFlag,
   stopScraperFlag,
+  stopTasksProcessingFlag,
 } from "../utils/scraperStatus.js";
 import { writeToClient } from "../index.js";
+import { EventEmitter } from "node:events";
+export const emitter = new EventEmitter();
 
 export const scrape = async (db, type, url, res) => {
   url = url.toLowerCase();
@@ -31,7 +35,7 @@ export const scrape = async (db, type, url, res) => {
       },
       res,
       url,
-      null
+      {}
     );
   } else {
     console.error(`error- possible types - 'repo', 'user', 'org'`);
@@ -42,6 +46,7 @@ export const scrape = async (db, type, url, res) => {
 };
 
 export const scrapeFromQueueLoop = async (db, res) => {
+  startTasksProcessingFlag();
   let queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
   let batchSize = Math.min(queueSize, TASKLIMIT);
   let qCounter = 0;
@@ -56,6 +61,8 @@ export const scrapeFromQueueLoop = async (db, res) => {
     queueSize = await db.collection("queue").countDocuments();
     batchSize = Math.min(queueSize, TASKLIMIT);
   }
+  emitter.emit("TASKS_DONE");
+  stopTasksProcessingFlag();
   stopScraperFlag();
   return;
 };
