@@ -1,5 +1,7 @@
 import arrayOfObjectsToCSV from "../utils/arrayOfObjectsToCSV.js";
-import fs from "fs";
+import * as fs from "node:fs/promises";
+import { fileURLToPath } from "url";
+import path from "path";
 
 export const exportRepo = async (db, url) => {
   const repo = await db.collection("repos").findOne({ url });
@@ -7,7 +9,8 @@ export const exportRepo = async (db, url) => {
     console.error("No repo with that URL found");
     return null;
   }
-  const contributors = repo.contributors;
+
+  const contributors = Object.keys(repo.contributors);
   const toExport = await db
     .collection("users")
     .find(
@@ -15,7 +18,7 @@ export const exportRepo = async (db, url) => {
         $and: [
           { queuedTasks: { $size: 0 } },
           { exported: false },
-          { url: { $in: contributors } },
+          { username: { $in: contributors } },
         ],
       },
       {
@@ -29,35 +32,41 @@ export const exportRepo = async (db, url) => {
       }
     )
     .toArray();
+  console.log("toExport", toExport);
   const csvString = arrayOfObjectsToCSV(toExport);
   const date = Date.now();
-  const writePath = `../data/scraped_users_${date}.csv`;
 
-  fs.writeFile(writePath, csvString, async (e) => {
-    if (e) {
-      console.error(e);
-      return null;
-    }
-  });
-  const updatedDoc = {
-    $set: {
-      exported: true,
-      updatedAt: date,
-    },
-  };
-
-  await db.collection("users").updateMany(
-    {
-      $and: [
-        { queuedTasks: { $size: 0 } },
-        { exported: false },
-        { url: { $in: contributors } },
-      ],
-    },
-    updatedDoc
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const writePath = path.resolve(
+    __dirname + `../../../data/scraped_users_${date}.csv`
   );
-  console.log(`Wrote to ${writePath}`);
-  return writePath;
+
+  try {
+    await fs.writeFile(writePath, csvString);
+    const updatedDoc = {
+      $set: {
+        exported: true,
+        updatedAt: date,
+      },
+    };
+
+    await db.collection("users").updateMany(
+      {
+        $and: [
+          { queuedTasks: { $size: 0 } },
+          { exported: false },
+          { username: { $in: contributors } },
+        ],
+      },
+      updatedDoc
+    );
+    console.log(`Wrote to ${writePath}`);
+    return writePath;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 };
 
 export const exportOrg = async (db, url) => {
@@ -69,13 +78,16 @@ export const exportOrg = async (db, url) => {
   }
   const reposInOrg = org.reposInOrg;
   let fullCsvString = "";
+  const contributorsToUpdate = [];
   for (const url of reposInOrg) {
     const repo = await db.collection("repos").findOne({ url });
     if (!repo) {
       console.log(`no repo with ${url} found`);
       continue;
     }
-    const contributors = repo.contributors;
+    console.log(`repo found with ${url}`);
+    const contributors = Object.keys(repo.contributors);
+    contributorsToUpdate.push(contributors);
     const toExport = await db
       .collection("users")
       .find(
@@ -83,7 +95,7 @@ export const exportOrg = async (db, url) => {
           $and: [
             { queuedTasks: { $size: 0 } },
             { exported: false },
-            { url: { $in: contributors } },
+            { username: { $in: contributors } },
           ],
         },
         {
@@ -99,6 +111,16 @@ export const exportOrg = async (db, url) => {
       .toArray();
     const repoCsvString = arrayOfObjectsToCSV(toExport);
     fullCsvString += repoCsvString;
+  }
+  console.log(fullCsvString);
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const writePath = path.resolve(
+    __dirname + `../../../data/scraped_users_${date}.csv`
+  );
+  try {
+    await fs.writeFile(writePath, fullCsvString);
+    console.log(`Wrote to ${writePath}`);
     const updatedDoc = {
       $set: {
         exported: true,
@@ -110,20 +132,16 @@ export const exportOrg = async (db, url) => {
         $and: [
           { queuedTasks: { $size: 0 } },
           { exported: false },
-          { url: { $in: contributors } },
+
+          { username: { $in: contributorsToUpdate } },
         ],
       },
       updatedDoc
     );
+    return writePath;
+  } catch (e) {
+    console.error(e);
   }
-  const writePath = `../data/scraped_users_${date}.csv`;
-  fs.writeFile(writePath, fullCsvString, async (e) => {
-    if (e) {
-      console.error(e);
-    }
-  });
-  console.log(`Wrote to ${writePath}`);
-  return writePath;
 };
 
 export const exportUser = async (db, url) => {
@@ -134,28 +152,39 @@ export const exportUser = async (db, url) => {
   }
   const toExport = [user];
   const csvString = arrayOfObjectsToCSV(toExport);
+
   const date = Date.now();
 
-  const writePath = `../data/scraped_users_${date}.csv`;
-  fs.writeFile(writePath, csvString, async (e) => {
-    if (e) {
-      console.error(e);
-    }
-  });
-
-  const updatedDoc = {
-    $set: {
-      exported: true,
-      updatedAt: date,
-    },
-  };
-  await db.collection("users").updateOne(
-    {
-      $and: [{ queuedTasks: { $size: 0 } }, { exported: false }, { url: url }],
-    },
-    updatedDoc
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const writePath = path.resolve(
+    __dirname + `../../../data/scraped_users_${date}.csv`
   );
 
-  console.log(`Wrote to ${writePath}`);
-  return writePath;
+  try {
+    await fs.writeFile(writePath, csvString);
+
+    const updatedDoc = {
+      $set: {
+        exported: true,
+        updatedAt: date,
+      },
+    };
+    await db.collection("users").updateOne(
+      {
+        $and: [
+          { queuedTasks: { $size: 0 } },
+          { exported: false },
+          { url: url },
+        ],
+      },
+      updatedDoc
+    );
+
+    console.log(`Wrote to ${writePath}`);
+    return writePath;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 };
