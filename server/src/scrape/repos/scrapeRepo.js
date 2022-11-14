@@ -57,7 +57,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, priority }) => {
     repoStarCount: 0,
     isRepoReadmeKeywordMatch: false,
     topLanguage: "n/a",
-    contributors: [],
+    contributors: {},
     queuedTasks: [],
     createdAt: Date.now(),
     updatedAt: Date.now(),
@@ -232,26 +232,29 @@ const tryScrapeContributor = async (
     return userData;
   }
 
-  if (!sendToFront || depth > 3) {
+  if (priority < 1) {
     sendToFront = false;
-    depth = 0;
   } else {
-    depth++;
+    priority--;
   }
 
-  await queueTaskdb(
-    db,
-    {
-      type: "user",
-      parentType: "repo",
-      parentId: repoData.url,
-    },
-    {
-      fn: "scrapeUserProfile",
-      args: [url, userData],
-    },
-    { sendToFront, depth } // if this repo was queued by the user, sendToFront will be true. Otherwise false
+  const tasksToQueue = [];
+  tasksToQueue.push(
+    queueTaskdb(
+      db,
+      {
+        type: "user",
+        parentType: "repo",
+        parentId: repoData.url,
+      },
+      {
+        fn: "scrapeUserProfile",
+        args: [url, userData],
+      },
+      { sendToFront, priority } // if this repo was queued by the user, sendToFront will be true. Otherwise false
+    )
   );
   repoData.queuedTasks.push(url);
+  await Promise.all(tasksToQueue);
   return userData;
 };
