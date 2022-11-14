@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import styles from "./styles.module.css";
 import Spinner from "./components/Spinner";
+import React from "react";
 
 function App() {
   const URI = "http://localhost:8080";
@@ -49,8 +50,24 @@ function App() {
     if (!scraped) {
       textEl.innerText = `${url} has ${tasks.length} queued tasks left.`;
       const tasksHtml = document.getElementById("tasksList");
+      tasksHtml.innerHTML = "";
       tasks.forEach((el) => {
-        tasksHtml.innerHTML += <li>{el}</li>;
+        console.log(el);
+        const url = el.url.bold();
+        const newListItem = document.createElement("li");
+        newListItem.innerHTML = url;
+
+        const tasksForUrlHtml = document.createElement("ol");
+
+        const tasksForUrl = el.tasks;
+        tasksForUrl.forEach((task) => {
+          const t = document.createElement("li");
+          t.textContent = task;
+          tasksForUrlHtml.appendChild(t);
+        });
+
+        tasksHtml.appendChild(newListItem);
+        tasksHtml.appendChild(tasksForUrlHtml);
       });
       return false;
     }
@@ -116,13 +133,6 @@ function App() {
       document.getElementById("scrapelog").innerText += res.data + "\n";
       return;
     }
-    if (!url.includes("github.com")) {
-      console.log(url);
-      document.getElementById(
-        "errormsg"
-      ).innerText = `please enter a valid GitHub url, you entered: ${url}`;
-      return;
-    }
     document.getElementById("errormsg").innerText = "";
     setScraperRunning(true);
     const _sse = new EventSource(`${URI}/scrape?url=${url}&type=${type}`);
@@ -149,7 +159,10 @@ function App() {
   const handleStopScraper = async (event) => {
     event.preventDefault();
     setLoading(true);
-    await axios.post(`${URI}/kill`);
+    document.getElementById("scrapelog").innerText +=
+      "finishing up existing tasks... this might take a few minutes\n";
+    const res = await axios.post(`${URI}/kill`);
+    document.getElementById("scrapelog").innerText += res.data;
     if (sseRef.current) {
       sseRef.current.close();
     }
@@ -204,6 +217,8 @@ function App() {
           <ul className={styles.navList}>
             <li
               onClick={() => {
+                document.getElementById("scrapelogContainer").style.display =
+                  "block";
                 setActiveSection("scrape");
                 setType("user");
                 setUrl("");
@@ -218,6 +233,8 @@ function App() {
             </li>
             <li
               onClick={() => {
+                document.getElementById("scrapelogContainer").style.display =
+                  "none";
                 setActiveSection("export");
                 setType("user");
                 setUrl("");
@@ -232,6 +249,8 @@ function App() {
             </li>
             <li
               onClick={() => {
+                document.getElementById("scrapelogContainer").style.display =
+                  "none";
                 setActiveSection("check");
                 setType("user");
                 setUrl("");
@@ -383,9 +402,9 @@ function App() {
                     <option value="org">Org</option>
                   </select>
                 </div>
-                {serverRunning && (
+                {serverRunning && !loading && (
                   <button onClick={handleScrape} className={styles.btnPrimary}>
-                    {loading ? <Spinner /> : "Scrape"}
+                    Scrape
                   </button>
                 )}
               </form>
@@ -421,13 +440,12 @@ function App() {
                 </div>
                 {serverRunning && (
                   <button onClick={handleExport} className={styles.btnPrimary}>
-                    {loading ? <Spinner /> : "Export"}
+                    Export
                   </button>
                 )}
               </form>
-              <div id="checkUrlText">
-                <ol id="tasksList"></ol>
-              </div>
+              <div id="checkUrlText"></div>
+              <ol id="tasksList"></ol>
             </div>
           )}
           {activeSection === "check" && (
@@ -460,24 +478,18 @@ function App() {
                 </div>
                 {serverRunning && (
                   <button onClick={handleCheck} className={styles.btnPrimary}>
-                    {loading ? <Spinner /> : "Check if Scraped"}
+                    Check If Scraped
                   </button>
                 )}
               </form>
-              <div id="checkUrlText">
-                <ol id="tasksList"></ol>
-              </div>
+              <div id="checkUrlText"></div>
+              <ol id="tasksList"></ol>
             </div>
           )}
           <div id="errormsg"> </div>
-          {scraperRunning && (
-            <div className={styles.containerGrey}>
-              <code
-                id="scrapelog"
-                className={styles.scrollContainerGrey}
-              ></code>
-            </div>
-          )}
+          <div className={styles.containerGrey} id="scrapelogContainer">
+            <code id="scrapelog" className={styles.scrollContainerGrey}></code>
+          </div>
         </div>
       </div>
     </div>
