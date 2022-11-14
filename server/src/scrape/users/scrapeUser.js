@@ -277,35 +277,35 @@ const tryScrapeUser = async (page, db, { sendToFront, priority }) => {
   // we only care about scraping a user's organzations and repos if they are in new york
   // or if the queue size is too low
   const queueSize = await db.collection("queue").countDocuments(); // use estimatedDocumentCount() instead?
-  if (data.isInNewYork || queueSize < 50) {
-    if (!sendToFront || depth > 3) {
-      sendToFront = false;
-      depth = 0;
-    } else {
-      depth++;
+  if (!data.isInNewYork && queueSize > 50) {
+    return data;
+  }
+  const tasksToQueue = [];
+  if (priority < 1) {
+    sendToFront = false;
+  } else {
+    priority--;
+  }
+  const enqueueOrgsPromise = (async () => {
+    const urls = await orgUrlsPromise;
+    if (!urls) {
+      return;
     }
-    const enqueueOrgsPromise = (async () => {
-      const urls = await orgUrlsPromise;
-      if (!urls) {
-        return;
-      }
-      await Promise.all(
-        urls.map(async (url) => {
-          const orgData = await db.collection("orgs").findOne({ url });
-          if (orgData && orgData.queuedTasks.length == 0) {
-            if (orgData.bioKeywordMatch) {
-              data.numOrgBioKeywordMatch++;
-            }
-            data.numOrgReposWithHundredStars +=
-              orgData.numReposWithHundredStars;
-            data.numOrgReposReadmeKeywordMatch +=
-              orgData.numRepoReadmeKeywordMatch;
-            return;
+    await Promise.all(
+      urls.map(async (url) => {
+        const orgData = await db.collection("orgs").findOne({ url });
+        if (orgData && orgData.queuedTasks.length == 0) {
+          if (orgData.bioKeywordMatch) {
+            data.numOrgBioKeywordMatch++;
           }
-          if (await db.collection("queue").findOne({ "task.args.0": url })) {
-            return;
-          }
-          await queueTaskdb(
+          data.numOrgReposWithHundredStars += orgData.numReposWithHundredStars;
+          return;
+        }
+        if (await db.collection("queue").findOne({ "task.args.0": url })) {
+          return;
+        }
+        tasksToQueue.push(
+          queueTaskdb(
             db,
             {
               type: "org",
@@ -316,36 +316,37 @@ const tryScrapeUser = async (page, db, { sendToFront, priority }) => {
               fn: "scrapeOrganization",
               args: [url],
             },
-            { sendToFront, depth }
-          );
-          data.queuedTasks.push(url);
-        })
-      );
-    })();
+            { sendToFront, priority }
+          )
+        );
+        data.queuedTasks.push(url);
+      })
+    );
+  })();
 
-    const enqueueReposPromise = (async () => {
-      const events = await getEvents(data.username);
-      const pullRequestRepoUrls = searchEventsForContributions(
-        events,
-        data.username
-      );
-      await Promise.all(
-        pullRequestRepoUrls.map(async (url) => {
-          url = url.toLowerCase();
-          const repoData = await db.collection("repos").findOne({ url });
-          if (repoData) {
-            if (repoData.repoStarCount >= 100) {
-              data.numContributedReposWithHundredStars++;
-            }
-            if (repoData.isRepoReadmeKeywordMatch) {
-              data.numContributedReposWithReadmeKeywordMatch++;
-            }
-            return;
+  const enqueueReposPromise = (async () => {
+    const events = await getEvents(data.username);
+    const contributions = searchEventsForContributions(events, data.username);
+    await Promise.all(
+      contributions.map(async (url) => {
+        url = url.toLowerCase();
+        const splitUrl = url.split("/");
+        const repoName = splitUrl[3] + "/" + splitUrl[4];
+        const repoData = await db.collection("repos").findOne({ url });
+        if (repoData && !data.repoCommits[repoName]) {
+          if (repoData.repoStarCount >= 100) {
+            data.numContributedReposWithHundredStars++;
           }
-          if (await db.collection("queue").findOne({ "task.args.0": url })) {
-            return;
+          if (repoData.isRepoReadmeKeywordMatch) {
+            data.numContributedReposWithReadmeKeywordMatch++;
           }
-          await queueTaskdb(
+          return;
+        }
+        if (await db.collection("queue").findOne({ "task.args.0": url })) {
+          return;
+        }
+        tasksToQueue.push(
+          queueTaskdb(
             db,
             {
               type: "repo",
@@ -356,13 +357,15 @@ const tryScrapeUser = async (page, db, { sendToFront, priority }) => {
               fn: "scrapeRepo",
               args: [url],
             },
-            { sendToFront, depth }
-          );
-          data.queuedTasks.push(url);
-        })
-      );
-    })();
-    await Promise.all([enqueueOrgsPromise, enqueueReposPromise]);
-  }
+            { sendToFront, priority }
+          )
+        );
+        data.queuedTasks.push(url);
+      })
+    );
+  })();
+  await Promise.all([enqueueOrgsPromise, enqueueReposPromise]);
+  await Promise.all(tasksToQueue);
+
   return data;
 };
