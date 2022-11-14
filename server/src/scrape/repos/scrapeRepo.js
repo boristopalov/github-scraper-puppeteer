@@ -46,11 +46,13 @@ export const scrapeRepo = async (
   return null;
 };
 
-const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
+const tryScrapeRepo = async (page, db, { sendToFront, priority }) => {
   const url = page.url().toLowerCase();
+  const splitUrl = url.split("/");
+  const repoName = splitUrl[3] + "/" + splitUrl[4];
 
   const data = {
-    name: "n/a",
+    name: repoName,
     url: url,
     repoStarCount: 0,
     isRepoReadmeKeywordMatch: false,
@@ -60,13 +62,10 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
+
   await checkForBotDetection(page);
   await sleep(1000);
   await page.setViewport({ width: 1440, height: 796 });
-
-  const splitUrl = url.split("/");
-  const repoName = splitUrl[splitUrl.length - 1];
-  data.name = repoName;
 
   const starsPromise = (async () => {
     const starsElement = await waitForAndSelect(
@@ -121,7 +120,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
         { sendToFront, priority }
       );
       if (userData) {
-        data.contributors.push(userData.url);
+        data.contributors[userData.username] = userData.repoCommits[data.name];
       }
     }
   }
@@ -187,7 +186,7 @@ const tryScrapeContributor = async (
     );
     const commitsNum = convertNumStringToDigits(commits);
     const obj = {};
-    obj[repoData.url] = commitsNum;
+    obj[repoData.name] = commitsNum;
     return obj;
   })();
 
@@ -197,23 +196,26 @@ const tryScrapeContributor = async (
     return null;
   }
   const repoCommits = await commitsPromise;
-  const commitsArray = [repoCommits];
   const url = `https://github.com/${username}`.toLowerCase();
-
   const userData = {
     username,
     url,
-    repoCommits: commitsArray,
+    repoCommits,
+    numContributedReposWithHundredStars: repoData.repoStarCount >= 100 ? 1 : 0,
+    numContributedReposWithReadmeKeywordMatch: repoData.isRepoReadmeKeywordMatch
+      ? 1
+      : 0,
   };
 
   const user = await db.collection("users").findOne({ url });
   if (user) {
+    const repoName = repoData.name;
+    const commitsPath = "repoCommits." + repoName;
+    const commitsNum = repoCommits[repoName];
     const updatedDoc = {
       $set: {
         updatedAt: Date.now(),
-      },
-      $addToSet: {
-        repoCommits: repoCommits,
+        [commitsPath]: commitsNum,
       },
       $inc: {
         numContributedReposWithHundredStars:
