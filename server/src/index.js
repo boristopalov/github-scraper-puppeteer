@@ -9,17 +9,16 @@ import { exportAllScrapedUsers } from "./export/exportAllScrapedUsers.js";
 import { scrape, scrapeFromQueueLoop } from "./scrape/startScraper.js";
 import cors from "cors";
 import { mongoClient } from "./db/mongoClient.js";
-import { fileURLToPath } from "url";
-import path from "path";
 import {
   SCRAPER_ACTIVE_FLAG,
   stopScraperFlag,
   startScraperFlag,
+  TASKS_PROCESSING_FLAG,
 } from "./utils/scraperStatus.js";
 import { ping } from "./utils/ping.js";
 import { queueTaskdb } from "./scrape/queue/queueTask.js";
 import { DB_ENV } from "./constants/envVars.js";
-
+import { emitter } from "./scrape/startScraper.js";
 export const startServer = async () => {
   const app = express();
   app.use(express.json());
