@@ -87,14 +87,15 @@ const tryScrapeOrg = async (page, db, { sendToFront, priority }) => {
     data.bioKeywordMatch = bioContainsKeywords;
   })();
 
-  const repoUrls = await getOrgRepoUrls(page);
-  if (!repoUrls || repoUrls.length === 0) {
-    return data;
-  }
-  data.reposInOrg = repoUrls;
+  const tasksToQueue = [];
+  const enqueueRepoPromises = (async () => {
+    let repoBlocks = await page.$$(".mb-1.flex-auto");
+    repoBlocks = repoBlocks.slice(1);
+    repoBlocks.map(async (block) => {
+      let url = await block.$eval("a", (e) => e.href);
+      url = url.toLowerCase();
+      data.reposInOrg.push(url);
 
-  const enqueueRepoPromises = await Promise.all(
-    repoUrls.map(async (url) => {
       const repoData = await db.collection("repos").findOne({ url });
       if (repoData) {
         if (repoData.repoStarCount >= 100) {
@@ -105,95 +106,82 @@ const tryScrapeOrg = async (page, db, { sendToFront, priority }) => {
         }
         return data;
       }
+
       if (await db.collection("queue").findOne({ "task.args.0": url })) {
         console.log(`${url} is already in the queue!`);
         return data;
       }
-      if (!sendToFront || depth > 3) {
+
+      if (priority < 1) {
         sendToFront = false;
-        depth = 0;
       } else {
-        depth++;
+        priority--;
       }
-      await queueTaskdb(
-        db,
-        {
-          type: "repo",
-          parentType: "org",
-          parentId: data.url,
-        },
-        {
-          fn: "scrapeRepo",
-          args: [url],
-        },
-        { sendToFront, depth }
+
+      tasksToQueue.push(
+        queueTaskdb(
+          db,
+          {
+            type: "repo",
+            parentType: "org",
+            parentId: data.url,
+          },
+          {
+            fn: "scrapeRepo",
+            args: [url],
+          },
+          { sendToFront, priority }
+        )
       );
       data.queuedTasks.push(url);
-    })
-  );
-  await Promise.all([bioContainsKeywordsPromise, enqueueRepoPromises]);
+    });
+  })();
+
+  const repoStarsPromise = (async () => {
+    const repoStarsBlock = await page.$$(
+      ".public.source.d-block > .color-fg-muted.f6"
+    );
+    for (const block of repoStarsBlock) {
+      const stars = await block.$eval("a", (e) => e.innerText);
+      const parsedStars = parseInt(stars.replace(",", ""));
+      if (parsedStars >= 100) {
+        data.numReposWithHundredStars++;
+      }
+    }
+  })();
+
+  await Promise.all([
+    bioContainsKeywordsPromise,
+    enqueueRepoPromises,
+    repoStarsPromise,
+  ]);
 
   const membersPromise = async () => {
+    let pageNum = 1;
     const arr = stripBackslash(data.url).split("/");
     const orgUrlName = arr[arr.length - 1];
-    const membersUrl = `https://github.com/orgs/${orgUrlName}/people`;
+    let membersUrl = `https://github.com/orgs/${orgUrlName}/people?page=${pageNum}`;
     await page.goto(membersUrl);
-    await page.waitForSelector(".py-3.css-truncate.pl-3.flex-auto > span");
-    const members = await page.$$(".py-3.css-truncate.pl-3.flex-auto > span");
-    for (const user of members) {
-      const username = await user.evaluate((el) => el.textContent);
-      const userUrl = `https://github.com/${username.toLowerCase()}`;
-      data.members.push(userUrl);
+    try {
+      while (await page.waitForSelector("a.next_page")) {
+        await page.waitForSelector(".py-3.css-truncate.pl-3.flex-auto > span");
+        const members = await page.$$(
+          ".py-3.css-truncate.pl-3.flex-auto > span"
+        );
+        for (const user of members) {
+          const username = await user.evaluate((el) => el.textContent);
+          const userUrl = `https://github.com/${username.toLowerCase()}`;
+          data.members.push(userUrl);
+        }
+        pageNum++;
+        membersUrl = `https://github.com/orgs/${orgUrlName}/people?page=${pageNum}`;
+        await page.goto(membersUrl);
+      }
+    } catch (e) {
+      return;
     }
   };
   await membersPromise();
+  await Promise.all(tasksToQueue);
   return data;
-};
-
-const getOrgRepoUrls = async (page) => {
-  const tab = await page.$(
-    ".col-12 > .d-flex > .d-flex > #type-options > .btn"
-  );
-  if (!tab) {
-    console.log("No repos for", page.url());
-    return null;
-  }
-  await page.click(".col-12 > .d-flex > .d-flex > #type-options > .btn");
-
-  await page.waitForSelector(
-    "#type-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
-  );
-  await page.click(
-    "#type-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
-  );
-  await sleep(1000);
-
-  await page.waitForSelector(
-    ".col-12 > .d-flex > .d-flex > #sort-options > .btn"
-  );
-  await page.click(".col-12 > .d-flex > .d-flex > #sort-options > .btn");
-
-  await page.waitForSelector(
-    "#sort-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
-  );
-  await page.click(
-    "#sort-options > .SelectMenu > .SelectMenu-modal > .SelectMenu-list > .SelectMenu-item:nth-child(3)"
-  );
-
-  const repos = await page.$$(".org-repos.repo-list > div > ul > li");
-  if (!repos) {
-    console.log("No repos for", page.url());
-    return null;
-  }
-  // only look at the top 5 repos
-  const reposToEval = repos.slice(0, 5);
-  const repoUrls = [];
-  for (const repo of reposToEval) {
-    const repoUrl = await getHrefFromAnchor(
-      repo,
-      ".d-flex.flex-justify-between > div > a"
-    );
-    repoUrls.push(repoUrl.toLowerCase());
-  }
-  return repoUrls;
 };
