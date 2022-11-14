@@ -209,19 +209,8 @@ export const startServer = async () => {
         res.send(null);
         return;
       }
-      const __filename = fileURLToPath(import.meta.url);
-      const __dirname = path.dirname(__filename);
-      const exportPath = path.resolve(__dirname + `/../data/${fileName}`);
-      res.download(exportPath);
-    } catch (error) {
-      next(error);
-    }
-  });
 
-  app.get("/download", async (req, res, next) => {
-    try {
-      const downloadPath = req.query.path;
-      res.download(downloadPath);
+      res.download(fileName);
     } catch (error) {
       next(error);
     }
