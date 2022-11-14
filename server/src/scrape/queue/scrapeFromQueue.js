@@ -6,6 +6,7 @@ import {
   decrementTaskCounter,
 } from "../../utils/taskCounter.js";
 import { scrapeUserProfile } from "../users/scrapeUser.js";
+import { writeToClient } from "../../index.js";
 
 export const scrapeFromQueuedb = async (db, n, res) => {
   if (!db) {
@@ -30,36 +31,41 @@ export const scrapeFromQueuedb = async (db, n, res) => {
   let data;
   incrementTaskCounter();
   if (fn === "scrapeOrganization") {
-    data = await scrapeOrganization(db, ...args, inFront, res);
+    data = await scrapeOrganization(db, inFront, res, ...args);
   }
   if (fn === "scrapeRepo") {
-    data = await scrapeRepo(db, ...args, inFront, res);
+    data = await scrapeRepo(db, inFront, res, ...args);
   }
   if (fn === "scrapeUserProfile") {
-    data = await scrapeUserProfile(db, ...args, inFront, res);
+    data = await scrapeUserProfile(db, inFront, res, ...args);
   }
   decrementTaskCounter();
+  try {
+    await db.collection("queue").deleteOne({ _id: id });
+    if (!data) {
+      await queueTaskdb(db, context, task, inFront); //re-queue if scraping fails, which would result in data being null
+      return;
+    }
 
-  await db.collection("queue").deleteOne({ _id: id });
-  if (!data) {
-    await queueTaskdb(db, context, task, { sendToFront: false, depth: 0 }); //re-queue if scraping fails, which would result in data being null
+    if (type === "repo" && parentType === "org") {
+      await updateOrgWithRepoData(data, db, parentId);
+    }
+    if (type === "repo" && parentType === "user") {
+      await updateUserWithRepoData(data, db, parentId);
+    }
+    if (type === "user" && parentType === "repo") {
+      await updateRepoWithUserData(data, db, parentId);
+    }
+    if (type === "org") {
+      await updateOrgMembers(data, db);
+    }
     return;
+  } catch (e) {
+    writeToClient(res, e.message);
   }
-
-  if (type === "repo" && parentType === "org") {
-    await updateOrgRepo(data, db, parentId);
-  }
-  if (type === "repo" && parentType === "user") {
-    await updateUserRepo(data, db, parentId);
-  }
-  if (type === "user" && parentType === "repo") {
-    await updateRepo(data, db, parentId);
-  }
-
-  return;
 };
 
-const updateRepo = async (data, db, parentId) => {
+const updateRepoWithUserData = async (data, db, parentId) => {
   const updatedDoc = {
     $set: {
       updatedAt: Date.now(),
@@ -71,7 +77,7 @@ const updateRepo = async (data, db, parentId) => {
   await db.collection("repos").updateOne({ url: parentId }, updatedDoc);
 };
 
-const updateOrgRepo = async (data, db, parentId) => {
+const updateOrgWithRepoData = async (data, db, parentId) => {
   const updatedDoc = {
     $set: {
       updatedAt: Date.now(),
@@ -80,37 +86,13 @@ const updateOrgRepo = async (data, db, parentId) => {
       queuedTasks: data.url,
     },
     $inc: {
-      numReposWithHundredStars: data.repoStarCount >= 100 ? 1 : 0,
       numRepoReadmeKeywordMatch: data.isRepoReadmeKeywordMatch ? 1 : 0,
     },
   };
-  const { value: orgData } = await db
-    .collection("orgs")
-    .findOneAndUpdate({ url: parentId }, updatedDoc, {
-      returnDocument: "after",
-      projection: {
-        url: 1,
-        numReposWithHundredStars: 1,
-        numRepoReadmeKeywordMatch: 1,
-        bioKeywordMatch: 1,
-        members: 1,
-        queuedTasks: 1,
-      },
-    });
-  if (orgData.queuedTasks.length > 0) {
-    // only update user if this org has no queued tasks left (i.e. all the repos have been scraped. otherwise we increment org-related user data more than once)
-    return;
-  }
-  const scrapedMembers = await db
-    .collection("users")
-    .find({ url: { $in: orgData.members } })
-    .toArray();
-  for (const { url } of scrapedMembers) {
-    await updateUserOrg(orgData, db, url);
-  }
+  await db.collection("orgs").findOneAndUpdate({ url: parentId }, updatedDoc);
 };
 
-const updateUserRepo = async (data, db, parentId) => {
+const updateUserWithRepoData = async (data, db, parentId) => {
   const updatedDoc = {
     $set: {
       updatedAt: Date.now(),
@@ -118,14 +100,17 @@ const updateUserRepo = async (data, db, parentId) => {
     $pull: {
       queuedTasks: data.url,
     },
+    $inc: {
+      numContributedReposWithHundredStars: data.repoStarCount >= 100 ? 1 : 0,
+      numContributedReposWithReadmeKeywordMatch: data.isRepoReadmeKeywordMatch
+        ? 1
+        : 0,
+    },
   };
   await db.collection("users").updateOne({ url: parentId }, updatedDoc);
 };
 
-const updateUserOrg = async (data, db, parentId) => {
-  if (data.queuedTasks.length > 0) {
-    return;
-  }
+const updateOrgMembers = async (data, db) => {
   const updatedDoc = {
     $set: {
       updatedAt: Date.now(),
@@ -135,9 +120,10 @@ const updateUserOrg = async (data, db, parentId) => {
     },
     $inc: {
       numOrgBioKeywordMatch: data.bioKeywordMatch ? 1 : 0,
-      numOrgReposReadmeKeywordMatch: data.numRepoReadmeKeywordMatch,
       numOrgReposWithHundredStars: data.numReposWithHundredStars,
     },
   };
-  await db.collection("users").updateOne({ url: parentId }, updatedDoc);
+  await db
+    .collection("users")
+    .updateMany({ url: { $in: data.members } }, updatedDoc);
 };
