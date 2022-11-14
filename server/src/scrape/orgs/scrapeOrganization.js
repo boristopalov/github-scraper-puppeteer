@@ -1,8 +1,6 @@
 import puppeteer from "puppeteer";
 import searchTextForKeywords from "../../utils/searchTextForKeywords.js";
 import { generalKeywords } from "../../constants/keywords.js";
-import getHrefFromAnchor from "../../utils/getHrefFromAnchor.js";
-import sleep from "../../utils/sleep.js";
 import checkForBotDetection from "../checkForBotDetection.js";
 import { queueTaskdb } from "../queue/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
@@ -21,10 +19,10 @@ export const scrapeOrganization = async (
     writeToClient(res, `already scraped ${url}`);
     return null;
   }
-  let tries = 2;
+  let tries = 3;
   while (tries > 0) {
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: tries === 1 ? false : true,
       args: ["--incognito", "--disable-breakpad"],
     });
     try {

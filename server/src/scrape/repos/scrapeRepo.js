@@ -20,17 +20,17 @@ export const scrapeRepo = async (
     writeToClient(res, `already scraped ${url}`);
     return null;
   }
-  let tries = 2;
+  let tries = 3;
   while (tries > 0) {
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: tries === 1 ? false : true,
       args: ["--incognito", "--disable-breakpad"],
     });
     try {
       const pages = await browser.pages();
       const page = pages[0];
       await page.goto(url);
-      const data = await tryScrapeRepo(page, db, { sendToFront, depth });
+      const data = await tryScrapeRepo(page, db, { sendToFront, priority });
       await db.collection("repos").insertOne(data);
       writeToClient(res, `successfully scraped ${url}`);
       return data;

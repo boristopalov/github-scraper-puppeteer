@@ -26,10 +26,10 @@ export const scrapeUserProfile = async (
     return null;
   }
 
-  let tries = 2;
+  let tries = 3;
   while (tries > 0) {
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: tries === 1 ? false : true,
       args: ["--incognito", "--disable-breakpad"],
     });
     try {
@@ -48,9 +48,9 @@ export const scrapeUserProfile = async (
       writeToClient(res, `successfully scraped ${url}`);
       return fullData;
     } catch (e) {
-      writeToClient(res, `failed to scrape ${url}`);
       console.error(e.stack);
       console.error("Error occured for:", url);
+      writeToClient(res, `failed to scrape ${url}`);
       tries--;
     } finally {
       await browser.close();
