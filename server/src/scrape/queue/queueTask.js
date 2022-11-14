@@ -2,14 +2,14 @@ export const queueTaskdb = async (
   db,
   { type, parentType, parentId },
   { fn, args },
-  { sendToFront = false, depth = 0 }
+  { sendToFront = false, priority = 0 }
 ) => {
   const context = {
     type,
     parentType,
     parentId,
   };
-  const inFront = { sendToFront, depth };
+  const inFront = { sendToFront, priority };
   const task = {
     fn,
     args,

@@ -157,24 +157,24 @@ export const startServer = async () => {
         return;
       }
       let fn;
-      let depth;
+      let priority;
       if (type === "org") {
         fn = "scrapeOrganization";
-        depth = 1;
+        priority = 3;
       }
       if (type === "repo") {
         fn = "scrapeRepo";
-        depth = 2;
+        priority = 2;
       }
       if (type === "user") {
         fn = "scrapeUserProfile";
-        depth = 3;
+        priority = 1;
       }
       await queueTaskdb(
         db,
         { type, parentId: null, parentType: null },
         { fn, args: [url] },
-        { sendToFront: true, depth }
+        { sendToFront: true, priority }
       );
 
       res.send(

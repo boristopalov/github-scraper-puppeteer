@@ -19,19 +19,19 @@ export const scrape = async (db, type, url, res) => {
     return;
   }
   if (type === "org") {
-    await scrapeOrganization(db, url, { sendToFront: true, depth: 1 }, res);
+    await scrapeOrganization(db, { sendToFront: true, priority: 3 }, res, url);
   } else if (type === "repo") {
-    await scrapeRepo(db, url, { sendToFront: true, depth: 2 }, res);
+    await scrapeRepo(db, { sendToFront: true, priority: 2 }, res, url);
   } else if (type === "user") {
     await scrapeUserProfile(
       db,
-      url,
-      null,
       {
         sendToFront: true,
-        depth: 3,
+        priority: 1,
       },
-      res
+      res,
+      url,
+      null
     );
   } else {
     console.error(`error- possible types - 'repo', 'user', 'org'`);

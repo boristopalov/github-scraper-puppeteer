@@ -13,11 +13,11 @@ import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { writeToClient } from "../../index.js";
 
 export const scrapeUserProfile = async (
-  /** @type {{ collection: (arg0: string) => { (): any; new (): any; findOne: { (arg0: { url: any; }): any; new (): any; }; insertOne: { (arg0: any): any; new (): any; }; }; }} */ db,
-  /** @type {string} */ url,
-  data = null,
-  { sendToFront = false, depth = 0 } = {},
-  /** @type {undefined} */ res
+  db,
+  { sendToFront = false, priority = 0 } = {},
+  res,
+  url,
+  data = {}
 ) => {
   url = url.toLowerCase();
   if (await db.collection("users").findOne({ url })) {
@@ -36,7 +36,10 @@ export const scrapeUserProfile = async (
       const pages = await browser.pages();
       const page = pages[0];
       await page.goto(url);
-      const scrapedData = await tryScrapeUser(page, db, { sendToFront, depth });
+      const scrapedData = await tryScrapeUser(page, db, {
+        sendToFront,
+        priority,
+      });
       const fullData = {
         ...scrapedData,
         ...data,
@@ -56,7 +59,7 @@ export const scrapeUserProfile = async (
   return null;
 };
 
-const tryScrapeUser = async (page, db, { sendToFront, depth }) => {
+const tryScrapeUser = async (page, db, { sendToFront, priority }) => {
   const data = {
     name: "n/a",
     url: page.url().toLowerCase(),

@@ -11,9 +11,9 @@ import { stripBackslash } from "../../utils/stripBackslash.js";
 
 export const scrapeOrganization = async (
   db,
-  url,
-  { sendToFront = false, depth = 0 } = {},
-  res
+  { sendToFront = false, priority = 0 } = {},
+  res,
+  url
 ) => {
   url = url.toLowerCase();
   if (await db.collection("orgs").findOne({ url })) {

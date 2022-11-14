@@ -10,9 +10,9 @@ import { writeToClient } from "../../index.js";
 
 export const scrapeRepo = async (
   db,
-  url,
-  { sendToFront = false, depth = 0 } = {},
-  res
+  { sendToFront = false, priority = 0 } = {},
+  res,
+  url
 ) => {
   url = url.toLowerCase();
   if (await db.collection("repos").findOne({ url })) {
@@ -118,7 +118,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, depth }) => {
         c,
         contributorCard,
         db,
-        { sendToFront, depth }
+        { sendToFront, priority }
       );
       if (userData) {
         data.contributors.push(userData.url);
@@ -166,7 +166,7 @@ const tryScrapeContributor = async (
   contributorEl,
   contributorCard,
   db,
-  { sendToFront, depth }
+  { sendToFront, priority }
 ) => {
   const usernamePromise = (async () => {
     await sleep(2000);
