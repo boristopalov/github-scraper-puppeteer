@@ -52,7 +52,6 @@ function App() {
       const tasksHtml = document.getElementById("tasksList");
       tasksHtml.innerHTML = "";
       tasks.forEach((el) => {
-        console.log(el);
         const url = el.url.bold();
         const newListItem = document.createElement("li");
         newListItem.innerHTML = url;
@@ -152,7 +151,9 @@ function App() {
 
   const handleExport = async (event) => {
     event.preventDefault();
-    await checkIfUrlScraped(url, type);
+    if (url !== "") {
+      await checkIfUrlScraped(url, type);
+    }
     window.open(`${URI}/export?url=${url}&type=${type}`);
   };
 
