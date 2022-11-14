@@ -45,10 +45,11 @@ export const startServer = async () => {
 
   app.get("/status", async (_, res) => {
     const msg = {
-      active: SCRAPER_ACTIVE_FLAG,
-      message: SCRAPER_ACTIVE_FLAG
-        ? "Scraper is running."
-        : "Scraper is not running.",
+      active: SCRAPER_ACTIVE_FLAG || TASKS_PROCESSING_FLAG,
+      message:
+        SCRAPER_ACTIVE_FLAG || TASKS_PROCESSING_FLAG
+          ? "Scraper is running."
+          : "Scraper is not running.",
     };
     res.json(msg);
   });
@@ -80,7 +81,7 @@ export const startServer = async () => {
         res.send("only possible types are 'org', 'repo', and 'user'");
         return null;
       }
-      res.send(isScraped);
+      res.json(isScraped);
     } catch (error) {
       next(error);
     }
@@ -128,13 +129,11 @@ export const startServer = async () => {
     }
   });
 
-  app.post("/kill", async (_, res, next) => {
-    try {
-      stopScraperFlag();
-      res.send("stopping scraper...");
-    } catch (error) {
-      next(error);
-    }
+  app.post("/kill", (_, res) => {
+    stopScraperFlag();
+    emitter.once("TASKS_DONE", () => {
+      res.send("scraper should be stopped now\n");
+    });
   });
 
   app.post("/enqueue", async (req, res, next) => {
