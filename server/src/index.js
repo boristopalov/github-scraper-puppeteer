@@ -14,6 +14,7 @@ import {
   stopScraperFlag,
   startScraperFlag,
   TASKS_PROCESSING_FLAG,
+  INITIAL_TASK_PROCESSING,
 } from "./utils/scraperStatus.js";
 import { ping } from "./utils/ping.js";
 import { queueTaskdb } from "./scrape/queue/queueTask.js";
@@ -45,9 +46,9 @@ export const startServer = async () => {
 
   app.get("/status", async (_, res) => {
     const msg = {
-      active: SCRAPER_ACTIVE_FLAG || TASKS_PROCESSING_FLAG,
+      active: INITIAL_TASK_PROCESSING || TASKS_PROCESSING_FLAG,
       message:
-        SCRAPER_ACTIVE_FLAG || TASKS_PROCESSING_FLAG
+        INITIAL_TASK_PROCESSING || TASKS_PROCESSING_FLAG
           ? "Scraper is running."
           : "Scraper is not running.",
     };
@@ -101,7 +102,7 @@ export const startServer = async () => {
       res.flushHeaders();
       res.on("close", res.end);
 
-      if (SCRAPER_ACTIVE_FLAG) {
+      if (INITIAL_TASK_PROCESSING || TASKS_PROCESSING_FLAG) {
         res.write(
           "Scraper is already running and should be scraping from the queue.\n\n"
         );
@@ -131,9 +132,15 @@ export const startServer = async () => {
 
   app.post("/kill", (_, res) => {
     stopScraperFlag();
-    emitter.once("TASKS_DONE", () => {
-      res.send("scraper should be stopped now\n");
-    });
+    if (!TASKS_PROCESSING_FLAG) {
+      emitter.once("INITIAL_TASK_DONE", () => {
+        res.send("scraped stopped\n");
+      });
+    } else {
+      emitter.once("TASKS_DONE", () => {
+        res.send("scraped stopped\n");
+      });
+    }
   });
 
   app.post("/enqueue", async (req, res, next) => {

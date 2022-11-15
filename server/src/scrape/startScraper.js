@@ -5,7 +5,9 @@ import { TASKLIMIT } from "../utils/taskCounter.js";
 import { scrapeFromQueuedb } from "./queue/scrapeFromQueue.js";
 import {
   SCRAPER_ACTIVE_FLAG,
+  startInitialTaskFlag,
   startTasksProcessingFlag,
+  stopInitialTaskFlag,
   stopScraperFlag,
   stopTasksProcessingFlag,
 } from "../utils/scraperStatus.js";
@@ -22,6 +24,7 @@ export const scrape = async (db, type, url, res) => {
     writeToClient(res, `please enter a valid GitHub url, you entered: ${url}`);
     return;
   }
+  startInitialTaskFlag();
   if (type === "org") {
     await scrapeOrganization(db, { sendToFront: true, priority: 3 }, res, url);
   } else if (type === "repo") {
@@ -41,6 +44,8 @@ export const scrape = async (db, type, url, res) => {
     console.error(`error- possible types - 'repo', 'user', 'org'`);
     return;
   }
+  stopInitialTaskFlag();
+  emitter.emit("INITIAL_TASK_DONE");
   console.log("scraping from da queue now ");
   await scrapeFromQueueLoop(db, res);
 };
