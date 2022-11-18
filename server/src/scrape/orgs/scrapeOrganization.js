@@ -22,7 +22,7 @@ export const scrapeOrganization = async (
   let tries = 3;
   while (tries > 0) {
     const browser = await puppeteer.launch({
-      headless: tries === 1 ? false : true,
+      headless: true,
       args: ["--incognito", "--disable-breakpad"],
     });
     try {
