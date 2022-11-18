@@ -23,13 +23,15 @@ export const scrapeUserProfile = async (
   if (await db.collection("users").findOne({ url })) {
     console.log("Already scraped", url);
     writeToClient(res, `already scraped ${url}`);
-    return null;
+    return {
+      alreadyScraped: true,
+    };
   }
 
   let tries = 3;
   while (tries > 0) {
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: !(tries === 1),
       args: ["--incognito", "--disable-breakpad"],
     });
     try {
