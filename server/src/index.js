@@ -227,7 +227,11 @@ export const startServer = async () => {
   app.use((error, _0, response, _1) => {
     console.log(`error ${error.message}`);
     const status = error.status || 400;
-    response.status(status).send(error.message);
+    try {
+      response.write(error.message);
+    } catch (e) {
+      response.status(status).send(error.message);
+    }
   });
 
   // fallback
