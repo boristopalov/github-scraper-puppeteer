@@ -25,7 +25,7 @@ export const scrapeRepo = async (
   let tries = 3;
   while (tries > 0) {
     const browser = await puppeteer.launch({
-      headless: tries === 1,
+      headless: !(tries === 1),
       args: ["--incognito", "--disable-breakpad"],
     });
     try {
