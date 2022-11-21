@@ -11,7 +11,7 @@ export const scrapeUserProfileRepos = async (url) => {
     const page = pages[0];
     await checkForBotDetection(page);
     const reposSortedUrl = `${url}?tab=repositories&q=&type=source&language=&sort=stargazers`;
-    await page.goto(reposSortedUrl);
+    await page.goto(reposSortedUrl, { timeout: 60000 });
     const repos = await page.$$(".col-10.col-lg-9.d-inline-block");
 
     let tenStarRepoCount = 0;

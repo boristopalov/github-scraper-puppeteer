@@ -31,7 +31,7 @@ export const scrapeRepo = async (
     try {
       const pages = await browser.pages();
       const page = pages[0];
-      await page.goto(url);
+      await page.goto(url, { timeout: 60000 });
       const data = await tryScrapeRepo(page, db, { sendToFront, priority });
       await db.collection("repos").insertOne(data);
       writeToClient(res, `successfully scraped ${url}`);

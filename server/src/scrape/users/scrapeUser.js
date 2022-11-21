@@ -37,7 +37,7 @@ export const scrapeUserProfile = async (
     try {
       const pages = await browser.pages();
       const page = pages[0];
-      await page.goto(url);
+      await page.goto(url, { timeout: 60000 });
       const scrapedData = await tryScrapeUser(page, db, {
         sendToFront,
         priority,
