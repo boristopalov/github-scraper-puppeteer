@@ -101,13 +101,10 @@ export const startServer = async () => {
       res.on("close", res.end);
 
       if (INITIAL_TASK_PROCESSING || TASKS_PROCESSING_FLAG) {
-        res.write(
-          "Scraper is already running and should be scraping from the queue.\n\n"
-        );
+        writeToClient(res, "Scraper is already running.");
         return;
       }
-
-      res.write("data: scraper started...\n\n");
+      writeToClient(res, "Starting scraper...");
       startScraperFlag();
 
       if (url === "") {
@@ -115,6 +112,10 @@ export const startServer = async () => {
       } else {
         if (!url.includes("https://github.com")) {
           console.error(
+            `error- please enter a valid GitHub url, you entered: ${url}`
+          );
+          writeToClient(
+            res,
             `error- please enter a valid GitHub url, you entered: ${url}`
           );
           stopScraperFlag();
