@@ -32,7 +32,12 @@ export const scrapeRepo = async (
       const pages = await browser.pages();
       const page = pages[0];
       await page.goto(url, { timeout: 60000 });
-      const data = await tryScrapeRepo(page, db, { sendToFront, priority });
+      const data = await tryScrapeRepo(
+        page,
+        db,
+        { sendToFront, priority },
+        res
+      );
       await db.collection("repos").insertOne(data);
       writeToClient(res, `successfully scraped ${url}`);
       return data;
@@ -48,7 +53,7 @@ export const scrapeRepo = async (
   return null;
 };
 
-const tryScrapeRepo = async (page, db, { sendToFront, priority }) => {
+const tryScrapeRepo = async (page, db, { sendToFront, priority }, res) => {
   const url = page.url().toLowerCase();
   const splitUrl = url.split("/");
   const repoName = splitUrl[3] + "/" + splitUrl[4];
@@ -150,6 +155,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, priority }) => {
         )
       );
       data.queuedTasks.push(userData.url);
+      writeToClient(res, `successfully queued ${userData.url}`);
     }
   }
 
