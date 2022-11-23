@@ -275,6 +275,13 @@ function App() {
             <div id="exportDocs" className={styles.docsText}>
               <p>
                 Exports the contributors associated with the given URL to a CSV.
+                An option to export only unexported users is available. If this
+                option is not checked, all users associated with the URL will be
+                exported, even if they have already been exported. If this
+                option is checked, only users who have not been exported will be
+                exported. Essentially this can avoid duplicate records being
+                downloaded to avoid issues with importing into recruiting
+                management sites like Gem.
               </p>
               <p>
                 When exporting a user, just that one single user will get
