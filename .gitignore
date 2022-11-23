@@ -1,5 +1,6 @@
 node_modules/
-data/
+server/data/*
+!server/data/.gitkeep
 .DS_STORE
 .env
 exportConfig.yaml
