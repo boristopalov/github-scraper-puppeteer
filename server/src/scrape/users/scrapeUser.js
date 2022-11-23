@@ -38,10 +38,15 @@ export const scrapeUserProfile = async (
       const pages = await browser.pages();
       const page = pages[0];
       await page.goto(url, { timeout: 60000 });
-      const scrapedData = await tryScrapeUser(page, db, {
-        sendToFront,
-        priority,
-      });
+      const scrapedData = await tryScrapeUser(
+        page,
+        db,
+        {
+          sendToFront,
+          priority,
+        },
+        res
+      );
       const fullData = {
         ...scrapedData,
         ...data,
@@ -61,7 +66,7 @@ export const scrapeUserProfile = async (
   return null;
 };
 
-const tryScrapeUser = async (page, db, { sendToFront, priority }) => {
+const tryScrapeUser = async (page, db, { sendToFront, priority }, res) => {
   const data = {
     name: "n/a",
     url: page.url().toLowerCase(),
@@ -90,9 +95,9 @@ const tryScrapeUser = async (page, db, { sendToFront, priority }) => {
     updatedAt: Date.now(),
   };
 
-  await checkForBotDetection(page);
+  await checkForBotDetection(page, res);
 
-  data.tenStarRepoCount = await scrapeUserProfileRepos(data.url);
+  data.tenStarRepoCount = await scrapeUserProfileRepos(data.url, res);
 
   const namePromise = (async () => {
     const nameElement = await waitForAndSelect(page, "span[itemprop='name']");

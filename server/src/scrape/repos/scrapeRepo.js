@@ -70,7 +70,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, priority }, res) => {
     updatedAt: Date.now(),
   };
 
-  await checkForBotDetection(page);
+  await checkForBotDetection(page, res);
   await sleep(1000);
   await page.setViewport({ width: 1440, height: 796 });
 

@@ -12,11 +12,6 @@ const checkForBotDetection = async (page, res) => {
         }
       )) !== null
     ) {
-      console.log(
-        "Abuse detection mechanism detected- waiting ",
-        sleepMultiplier,
-        " minutes before trying again."
-      );
       writeToClient(
         res,
         `Abuse detection mechanism detected- waiting ${sleepMultiplier} minutes before trying again.`

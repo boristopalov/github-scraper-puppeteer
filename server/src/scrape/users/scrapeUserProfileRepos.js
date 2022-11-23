@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import checkForBotDetection from "../checkForBotDetection.js";
 
-export const scrapeUserProfileRepos = async (url) => {
+export const scrapeUserProfileRepos = async (url, res) => {
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--incognito", "--disable-breakpad"],
@@ -9,7 +9,7 @@ export const scrapeUserProfileRepos = async (url) => {
   try {
     const pages = await browser.pages();
     const page = pages[0];
-    await checkForBotDetection(page);
+    await checkForBotDetection(page, res);
     const reposSortedUrl = `${url}?tab=repositories&q=&type=source&language=&sort=stargazers`;
     await page.goto(reposSortedUrl, { timeout: 60000 });
     const repos = await page.$$(".col-10.col-lg-9.d-inline-block");

@@ -33,7 +33,7 @@ export const scrapeOrganization = async (
       await page.goto(`${url}?q=&type=source&language=&sort=stargazers`, {
         timeout: 60000,
       });
-      const data = await tryScrapeOrg(page, db, { sendToFront, priority });
+      const data = await tryScrapeOrg(page, db, { sendToFront, priority }, res);
       await db.collection("orgs").insertOne(data);
       writeToClient(res, `successfully scraped ${url}`);
       return data;
@@ -49,7 +49,7 @@ export const scrapeOrganization = async (
   return null;
 };
 
-const tryScrapeOrg = async (page, db, { sendToFront, priority }) => {
+const tryScrapeOrg = async (page, db, { sendToFront, priority }, res) => {
   const data = {
     name: "n/a",
     url: page.url().split("?")[0].toLowerCase(),
@@ -63,7 +63,7 @@ const tryScrapeOrg = async (page, db, { sendToFront, priority }) => {
     updatedAt: Date.now(),
   };
 
-  await checkForBotDetection(page);
+  await checkForBotDetection(page, res);
 
   const header = await waitForAndSelect(
     page,
@@ -94,7 +94,7 @@ const tryScrapeOrg = async (page, db, { sendToFront, priority }) => {
   const tasksToQueue = [];
   const enqueueRepoPromises = (async () => {
     let repoBlocks = await page.$$(".mb-1.flex-auto");
-    repoBlocks = repoBlocks.slice(1);
+    repoBlocks = repoBlocks.slice(1, 5);
     repoBlocks.map(async (block) => {
       let url = await block.$eval("a", (e) => e.href);
       url = url.toLowerCase();
