@@ -111,21 +111,49 @@ const tryScrapeRepo = async (page, db, { sendToFront, priority }) => {
   await Promise.all([starsPromise, readmePromise, topLanguagePromise]);
 
   const contributors = await getContributors(page);
+  const tasksToQueue = [];
+  if (priority < 1) {
+    sendToFront = false;
+  } else {
+    priority--;
+  }
+
   for (const c of contributors) {
     const contributorCard = await openUserCard(c, page);
     if (contributorCard) {
-      const userData = await tryScrapeContributor(
+      const { userData, userExists } = await tryScrapeContributor(
         data,
         c,
         contributorCard,
-        db,
-        { sendToFront, priority }
+        db
       );
-      if (userData) {
-        data.contributors[userData.username] = userData.repoCommits[data.name];
+      if (!userData) {
+        continue;
       }
+      data.contributors[userData.username] = userData.repoCommits[data.name];
+      if (userExists) {
+        continue;
+      }
+      tasksToQueue.push(
+        queueTaskdb(
+          db,
+          {
+            type: "user",
+            parentType: "repo",
+            parentId: data.url,
+          },
+          {
+            fn: "scrapeUserProfile",
+            args: [userData.url, userData],
+          },
+          { sendToFront, priority } // if this repo was queued by the user, sendToFront will be true. Otherwise false
+        )
+      );
+      data.queuedTasks.push(userData.url);
     }
   }
+
+  await Promise.all(tasksToQueue);
   return data;
 };
 
@@ -166,8 +194,7 @@ const tryScrapeContributor = async (
   repoData,
   contributorEl,
   contributorCard,
-  db,
-  { sendToFront, priority }
+  db
 ) => {
   const usernamePromise = (async () => {
     await sleep(2000);
@@ -195,7 +222,10 @@ const tryScrapeContributor = async (
   const username = await usernamePromise;
   // contributor is a bot
   if (username === "n/a") {
-    return null;
+    return {
+      userData: null,
+      userExists: false,
+    };
   }
   const repoCommits = await commitsPromise;
   const url = `https://github.com/${username}`.toLowerCase();
@@ -209,54 +239,39 @@ const tryScrapeContributor = async (
       : 0,
   };
 
-  const user = await db.collection("users").findOne({ url });
-  if (user) {
-    const repoName = repoData.name;
-    const commitsPath = "repoCommits." + repoName;
-    const commitsNum = repoCommits[repoName];
-    const updatedDoc = {
-      $set: {
-        updatedAt: Date.now(),
-        [commitsPath]: commitsNum,
-      },
-      $inc: {
-        numContributedReposWithHundredStars:
-          repoData.repoStarCount >= 100 ? 1 : 0,
-        numContributedReposWithReadmeKeywordMatch:
-          repoData.isRepoReadmeKeywordMatch ? 1 : 0,
-      },
-    };
-    await db.collection("users").updateOne({ url }, updatedDoc);
-    return userData;
-  }
-
   if (await db.collection("queue").findOne({ "task.args.0": url })) {
-    return userData;
+    return {
+      userData: null,
+      userExists: true,
+    };
   }
 
-  if (priority < 1) {
-    sendToFront = false;
-  } else {
-    priority--;
+  if (!(await db.collection("users").findOne({ url }))) {
+    return {
+      userData,
+      userExists: false,
+    };
   }
 
-  const tasksToQueue = [];
-  tasksToQueue.push(
-    queueTaskdb(
-      db,
-      {
-        type: "user",
-        parentType: "repo",
-        parentId: repoData.url,
-      },
-      {
-        fn: "scrapeUserProfile",
-        args: [url, userData],
-      },
-      { sendToFront, priority } // if this repo was queued by the user, sendToFront will be true. Otherwise false
-    )
-  );
-  repoData.queuedTasks.push(url);
-  await Promise.all(tasksToQueue);
-  return userData;
+  const repoName = repoData.name;
+  const commitsPath = "repoCommits." + repoName;
+  const commitsNum = repoCommits[repoName];
+  const updatedDoc = {
+    $set: {
+      updatedAt: Date.now(),
+      [commitsPath]: commitsNum,
+    },
+    $inc: {
+      numContributedReposWithHundredStars:
+        repoData.repoStarCount >= 100 ? 1 : 0,
+      numContributedReposWithReadmeKeywordMatch:
+        repoData.isRepoReadmeKeywordMatch ? 1 : 0,
+    },
+  };
+
+  await db.collection("users").updateOne({ url }, updatedDoc);
+  return {
+    userData,
+    userExists: true,
+  };
 };
