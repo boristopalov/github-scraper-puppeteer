@@ -129,14 +129,18 @@ export const startServer = async () => {
   });
 
   app.post("/kill", (_, res) => {
+    if (!INITIAL_TASK_PROCESSING && !TASKS_PROCESSING_FLAG) {
+      res.send("Scraper is not running.\n");
+      return;
+    }
     stopScraperFlag();
     if (!TASKS_PROCESSING_FLAG) {
       emitter.once("INITIAL_TASK_DONE", () => {
-        res.send("scraped stopped\n");
+        res.send("Scraper stopped.\n");
       });
     } else {
       emitter.once("TASKS_DONE", () => {
-        res.send("scraped stopped\n");
+        res.send("Scraper stopped.\n");
       });
     }
   });
