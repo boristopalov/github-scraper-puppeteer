@@ -1,6 +1,7 @@
+import { writeToClient } from "../index.js";
 import sleep from "../utils/sleep.js";
 
-const checkForBotDetection = async (page) => {
+const checkForBotDetection = async (page, res) => {
   let sleepMultiplier = 2;
   try {
     while (
@@ -15,6 +16,10 @@ const checkForBotDetection = async (page) => {
         "Abuse detection mechanism detected- waiting ",
         sleepMultiplier,
         " minutes before trying again."
+      );
+      writeToClient(
+        res,
+        `Abuse detection mechanism detected- waiting ${sleepMultiplier} minutes before trying again.`
       );
       // 1 minute * sleepMultiplier
       await sleep(60000 * sleepMultiplier);
