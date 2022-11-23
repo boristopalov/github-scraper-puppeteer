@@ -66,6 +66,7 @@ export const scrapeFromQueueLoop = async (db, res) => {
     queueSize = await db.collection("queue").countDocuments();
     batchSize = Math.min(queueSize, TASKLIMIT);
   }
+  writeToClient(res, "Done scraping from queue");
   emitter.emit("TASKS_DONE");
   stopTasksProcessingFlag();
   stopScraperFlag();
