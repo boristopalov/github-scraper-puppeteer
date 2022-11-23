@@ -4,13 +4,11 @@ import {
   checkIfRepoScraped,
   checkIfUserScraped,
 } from "./scrapeCheck/checkIfScraped.js";
-import { exportUser, exportOrg, exportRepo } from "./export/export.js";
-import { exportAllScrapedUsers } from "./export/exportAllScrapedUsers.js";
+import { exportCSV } from "./export/export.js";
 import { scrape, scrapeFromQueueLoop } from "./scrape/startScraper.js";
 import cors from "cors";
 import { mongoClient } from "./db/mongoClient.js";
 import {
-  SCRAPER_ACTIVE_FLAG,
   stopScraperFlag,
   startScraperFlag,
   TASKS_PROCESSING_FLAG,
@@ -198,25 +196,13 @@ export const startServer = async () => {
 
   app.get("/export", async (req, res, next) => {
     try {
-      const { type, url } = req.query;
-      let fileName;
-      if (url === "") {
-        fileName = await exportAllScrapedUsers(db);
-      } else if (type === "org") {
-        fileName = await exportOrg(db, url);
-      } else if (type === "repo") {
-        fileName = await exportRepo(db, url);
-      } else if (type === "user") {
-        fileName = await exportUser(db, url);
-      } else {
-        res.send("only possible types are 'org', 'repo', and 'user'");
-        return;
-      }
+      const { type, url, unexportedOnly } = req.query;
+      const unexportedOnlyBool = unexportedOnly === "true";
+      const fileName = await exportCSV(db, type, url, unexportedOnlyBool);
       if (!fileName) {
         res.send(null);
         return;
       }
-
       res.download(fileName);
     } catch (error) {
       next(error);
