@@ -14,6 +14,7 @@ function App() {
   const [sse, _setSse] = useState();
   const [serverLoading, setServerLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [unexportedOnly, setUnexportedOnly] = useState(false);
 
   const sseRef = useRef(sse);
   const setSse = (sse) => {
@@ -151,7 +152,9 @@ function App() {
 
   const handleExport = async (event) => {
     event.preventDefault();
-    window.open(`${URI}/export?url=${url}&type=${type}`);
+    window.open(
+      `${URI}/export?url=${url}&type=${type}&unexportedOnly=${unexportedOnly}`
+    );
     if (url !== "") {
       await checkIfUrlScraped(url, type);
     }
@@ -440,9 +443,24 @@ function App() {
                   </select>
                 </div>
                 {serverRunning && (
-                  <button onClick={handleExport} className={styles.btnPrimary}>
-                    Export
-                  </button>
+                  <>
+                    <div>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={unexportedOnly}
+                          onChange={() => setUnexportedOnly(!unexportedOnly)}
+                        />
+                        Only export previously unexported users
+                      </label>
+                    </div>
+                    <button
+                      onClick={handleExport}
+                      className={styles.btnPrimary}
+                    >
+                      Export
+                    </button>
+                  </>
                 )}
               </form>
               <div id="checkUrlText"></div>
