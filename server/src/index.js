@@ -111,9 +111,6 @@ export const startServer = async () => {
         await scrapeFromQueueLoop(db, res);
       } else {
         if (!url.includes("https://github.com")) {
-          console.error(
-            `error- please enter a valid GitHub url, you entered: ${url}`
-          );
           writeToClient(
             res,
             `error- please enter a valid GitHub url, you entered: ${url}`
@@ -130,16 +127,19 @@ export const startServer = async () => {
   });
 
   app.post("/kill", (_, res) => {
+    console.log("INITIAL_TASK_PROCESSING", INITIAL_TASK_PROCESSING);
+    console.log("TASKS_PROCESSING_FLAG", TASKS_PROCESSING_FLAG);
     if (!INITIAL_TASK_PROCESSING && !TASKS_PROCESSING_FLAG) {
       res.send("Scraper is not running.\n");
       return;
     }
     stopScraperFlag();
-    if (!TASKS_PROCESSING_FLAG) {
+    if (INITIAL_TASK_PROCESSING) {
       emitter.once("INITIAL_TASK_DONE", () => {
         res.send("Scraper stopped.\n");
       });
-    } else {
+    }
+    if (TASKS_PROCESSING_FLAG) {
       emitter.once("TASKS_DONE", () => {
         res.send("Scraper stopped.\n");
       });
