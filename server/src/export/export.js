@@ -13,6 +13,7 @@ const projection = Object.freeze({
 
 export const exportCSV = async (db, type, url, unexportedOnly) => {
   try {
+    url = url.toLowerCase();
     const unexportedOnlyQuery = unexportedOnly ? { exported: false } : {};
     if (url === "") {
       return exportAllUsers(db, unexportedOnlyQuery);

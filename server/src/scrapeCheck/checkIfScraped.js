@@ -1,4 +1,5 @@
 export const checkIfOrgScraped = async (db, url) => {
+  url = url.toLowerCase();
   const org = await db.collection("orgs").findOne({ url });
   if (!org) {
     return { url, scraped: false, tasks: null };
@@ -19,6 +20,7 @@ export const checkIfOrgScraped = async (db, url) => {
 };
 
 export const checkIfRepoScraped = async (db, url) => {
+  url = url.toLowerCase();
   const repo = await db.collection("repos").findOne({ url });
   if (!repo) {
     return { url, scraped: false, tasks: null };
@@ -44,6 +46,7 @@ export const checkIfRepoScraped = async (db, url) => {
 };
 
 export const checkIfUserScraped = async (db, url) => {
+  url = url.toLowerCase();
   const user = await db.collection("users").findOne({ url });
   if (!user) {
     return { url, scraped: false, tasks: null };
