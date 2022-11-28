@@ -31,7 +31,7 @@ export const scrapeRepo = async (
     try {
       const pages = await browser.pages();
       const page = pages[0];
-      await page.goto(url, { timeout: 60000 });
+      await page.goto(url);
       const data = await tryScrapeRepo(
         page,
         db,

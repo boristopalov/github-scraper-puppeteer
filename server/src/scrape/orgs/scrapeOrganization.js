@@ -30,9 +30,7 @@ export const scrapeOrganization = async (
     try {
       const pages = await browser.pages();
       const page = pages[0];
-      await page.goto(`${url}?q=&type=source&language=&sort=stargazers`, {
-        timeout: 60000,
-      });
+      await page.goto(`${url}?q=&type=source&language=&sort=stargazers`);
       const data = await tryScrapeOrg(page, db, { sendToFront, priority }, res);
       await db.collection("orgs").insertOne(data);
       writeToClient(res, `successfully scraped ${url}`);
@@ -165,7 +163,7 @@ const tryScrapeOrg = async (page, db, { sendToFront, priority }, res) => {
     const arr = stripBackslash(data.url).split("/");
     const orgUrlName = arr[arr.length - 1];
     let membersUrl = `https://github.com/orgs/${orgUrlName}/people?page=${pageNum}`;
-    await page.goto(membersUrl, { timeout: 60000 });
+    await page.goto(membersUrl);
     try {
       while (await page.waitForSelector("a.next_page")) {
         await page.waitForSelector(".py-3.css-truncate.pl-3.flex-auto > span");
@@ -179,7 +177,7 @@ const tryScrapeOrg = async (page, db, { sendToFront, priority }, res) => {
         }
         pageNum++;
         membersUrl = `https://github.com/orgs/${orgUrlName}/people?page=${pageNum}`;
-        await page.goto(membersUrl, { timeout: 60000 });
+        await page.goto(membersUrl);
       }
     } catch (e) {
       return;
