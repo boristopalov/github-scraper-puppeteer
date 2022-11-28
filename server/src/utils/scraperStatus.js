@@ -3,12 +3,10 @@ export let TASKS_PROCESSING_FLAG = false;
 export let INITIAL_TASK_PROCESSING = false;
 
 export function stopScraperFlag() {
-  console.log("stopping the scraper...");
   SCRAPER_ACTIVE_FLAG = false;
 }
 
 export function startScraperFlag() {
-  console.log("starting the scraper...");
   SCRAPER_ACTIVE_FLAG = true;
 }
 
