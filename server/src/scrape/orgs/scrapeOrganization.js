@@ -14,8 +14,8 @@ export const scrapeOrganization = async (
   url
 ) => {
   url = url.toLowerCase();
+  writeToClient(res, `scraping ${url}`);
   if (await db.collection("orgs").findOne({ url })) {
-    console.log("Already scraped", url);
     writeToClient(res, `already scraped ${url}`);
     return {
       alreadyScraped: true,

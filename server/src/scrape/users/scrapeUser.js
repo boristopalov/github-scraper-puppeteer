@@ -20,8 +20,8 @@ export const scrapeUserProfile = async (
   data = {}
 ) => {
   url = url.toLowerCase();
+  writeToClient(res, `scraping ${url}`);
   if (await db.collection("users").findOne({ url })) {
-    console.log("Already scraped", url);
     writeToClient(res, `already scraped ${url}`);
     return {
       alreadyScraped: true,
