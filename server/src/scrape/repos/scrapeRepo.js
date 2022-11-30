@@ -175,16 +175,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, priority }, res) => {
 };
 
 const getContributors = async (page) => {
-  await page.waitForSelector("#insights-tab");
-  await page.click("#insights-tab");
-
-  await page.waitForSelector(
-    ".clearfix > .Layout > .Layout-sidebar > .menu > .js-selected-navigation-item:nth-child(2)"
-  );
-  await page.click(
-    ".clearfix > .Layout > .Layout-sidebar > .menu > .js-selected-navigation-item:nth-child(2)"
-  );
-
+  await page.goto(page.url() + "/graphs/contributors");
   await page.waitForSelector("ol.contrib-data.list-style-none");
   return await page.$$("ol.contrib-data.list-style-none > li");
 };
