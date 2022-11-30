@@ -13,7 +13,7 @@ import {
   startScraperFlag,
   TASKS_PROCESSING_FLAG,
   INITIAL_TASK_PROCESSING,
-} from "./utils/scraperStatus.js";
+} from "./scrape/scraperState.js";
 import { ping } from "./utils/ping.js";
 import { queueTaskdb } from "./scrape/queue/queueTask.js";
 import { DB_ENV } from "./constants/envVars.js";
@@ -127,8 +127,6 @@ export const startServer = async () => {
   });
 
   app.post("/kill", (_, res) => {
-    console.log("INITIAL_TASK_PROCESSING", INITIAL_TASK_PROCESSING);
-    console.log("TASKS_PROCESSING_FLAG", TASKS_PROCESSING_FLAG);
     if (!INITIAL_TASK_PROCESSING && !TASKS_PROCESSING_FLAG) {
       res.send("Scraper is not running.\n");
       return;
