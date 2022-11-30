@@ -64,7 +64,7 @@ export const scrapeUserProfile = async (
       console.error(e.stack);
       console.error("Error occured for:", url);
       writeToClient(res, `failed to scrape ${url}`);
-      maybePauseScraperAndResetTasksFailed(res);
+      await maybePauseScraperAndResetTasksFailed(res);
       tries--;
     } finally {
       await browser.close();

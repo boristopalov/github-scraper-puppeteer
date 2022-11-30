@@ -14,11 +14,11 @@ export function resetNumConsecutiveTasksFailed() {
   NUM_CONSECUTIVE_TASKS_FAILED = 0;
 }
 
-export function maybePauseScraperAndResetTasksFailed(res) {
+export async function maybePauseScraperAndResetTasksFailed(res) {
   incrementNumConsecutiveTasksFailed();
   if (NUM_CONSECUTIVE_TASKS_FAILED > 5) {
     writeToClient(res, "pausing scraper for 5 minutes.");
-    sleep(60000 * 5); // 5 minutes
+    await sleep(60000 * 5); // 5 minutes
     resetNumConsecutiveTasksFailed();
   }
 }

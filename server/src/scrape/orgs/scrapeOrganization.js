@@ -50,7 +50,7 @@ export const scrapeOrganization = async (
       writeToClient(res, `failed to scrape ${url}`);
       console.error(e.stack);
       console.error("Error occured for:", url);
-      maybePauseScraperAndResetTasksFailed(res);
+      await maybePauseScraperAndResetTasksFailed(res);
       tries--;
     } finally {
       await browser.close();
