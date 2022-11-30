@@ -461,6 +461,12 @@ function App() {
                         Only export previously unexported users
                       </label>
                     </div>
+                    <div>
+                      <i>
+                        This is useful when you have exported something before
+                        and don't want to get duplicate data in your CSVs.
+                      </i>
+                    </div>
                     <button
                       onClick={handleExport}
                       className={styles.btnPrimary}
