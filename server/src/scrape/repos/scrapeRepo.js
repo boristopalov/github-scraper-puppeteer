@@ -185,9 +185,7 @@ const getContributors = async (page) => {
     ".clearfix > .Layout > .Layout-sidebar > .menu > .js-selected-navigation-item:nth-child(2)"
   );
 
-  await page.waitForSelector("ol.contrib-data.list-style-none", {
-    timeout: 60000,
-  });
+  await page.waitForSelector("ol.contrib-data.list-style-none");
   return await page.$$("ol.contrib-data.list-style-none > li");
 };
 
