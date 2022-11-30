@@ -4,7 +4,12 @@ import checkForBotDetection from "../checkForBotDetection.js";
 export const scrapeUserProfileRepos = async (url, res) => {
   const browser = await puppeteer.launch({
     headless: true,
-    args: ["--incognito", "--disable-breakpad"],
+    args: [
+      "--incognito",
+      "--disable-breakpad",
+      "--disable-gpu",
+      "--disable-dev-shm-usage",
+    ],
   });
   try {
     const pages = await browser.pages();

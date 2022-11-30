@@ -31,8 +31,13 @@ export const scrapeUserProfile = async (
   let tries = 3;
   while (tries > 0) {
     const browser = await puppeteer.launch({
-      headless: !(tries === 1),
-      args: ["--incognito", "--disable-breakpad"],
+      headless: true,
+      args: [
+        "--incognito",
+        "--disable-breakpad",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+      ],
     });
     try {
       const pages = await browser.pages();
