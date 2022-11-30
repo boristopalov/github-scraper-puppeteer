@@ -10,7 +10,7 @@ import {
   stopInitialTaskFlag,
   stopScraperFlag,
   stopTasksProcessingFlag,
-} from "../utils/scraperStatus.js";
+} from "./scraperState.js";
 import { writeToClient } from "../index.js";
 import { EventEmitter } from "node:events";
 export const emitter = new EventEmitter();
