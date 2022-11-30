@@ -26,7 +26,6 @@ export const scrapeFromQueuedb = async (db, n, res) => {
   const { context, task, inFront } = record;
   const { type, parentType, parentId } = context;
   const { fn, args } = task;
-  console.log(`scraping ${args[0]}`);
 
   let data;
   incrementTaskCounter();
