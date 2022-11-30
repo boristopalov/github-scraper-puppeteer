@@ -5,4 +5,4 @@ export function incrementTaskCounter() {
 export function decrementTaskCounter() {
   taskCounter--;
 }
-export const TASKLIMIT = 3;
+export const TASKLIMIT = 2;
