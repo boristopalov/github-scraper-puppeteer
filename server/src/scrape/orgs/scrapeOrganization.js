@@ -6,6 +6,10 @@ import { queueTaskdb } from "../queue/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { writeToClient } from "../../index.js";
 import { stripBackslash } from "../../utils/stripBackslash.js";
+import {
+  maybePauseScraperAndResetTasksFailed,
+  resetNumConsecutiveTasksFailed,
+} from "../scraperState.js";
 
 export const scrapeOrganization = async (
   db,
@@ -40,11 +44,13 @@ export const scrapeOrganization = async (
       const data = await tryScrapeOrg(page, db, { sendToFront, priority }, res);
       await db.collection("orgs").insertOne(data);
       writeToClient(res, `successfully scraped ${url}`);
+      resetNumConsecutiveTasksFailed();
       return data;
     } catch (e) {
       writeToClient(res, `failed to scrape ${url}`);
       console.error(e.stack);
       console.error("Error occured for:", url);
+      maybePauseScraperAndResetTasksFailed(res);
       tries--;
     } finally {
       await browser.close();

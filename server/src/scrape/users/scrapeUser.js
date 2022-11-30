@@ -11,6 +11,7 @@ import { getEvents } from "../../api//getEvents.js";
 import { queueTaskdb } from "../queue/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { writeToClient } from "../../index.js";
+import { maybePauseScraperAndResetTasksFailed } from "../scraperState.js";
 
 export const scrapeUserProfile = async (
   db,
@@ -63,6 +64,7 @@ export const scrapeUserProfile = async (
       console.error(e.stack);
       console.error("Error occured for:", url);
       writeToClient(res, `failed to scrape ${url}`);
+      maybePauseScraperAndResetTasksFailed(res);
       tries--;
     } finally {
       await browser.close();
