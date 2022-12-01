@@ -148,6 +148,10 @@ const tryScrapeRepo = async (page, db, { sendToFront, priority }, res) => {
       }
       data.contributors[userData.username] = userData.repoCommits[data.name];
       if (userExists) {
+        writeToClient(
+          res,
+          `user ${userData.username} is in the queue or has been scraped`
+        );
         continue;
       }
       tasksToQueue.push(
