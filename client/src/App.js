@@ -8,13 +8,17 @@ function App() {
   const URI = "http://localhost:8080";
   const [url, setUrl] = useState("");
   const [type, setType] = useState("user");
-  const [scraperRunning, setScraperRunning] = useState();
-  const [serverRunning, setServerRunning] = useState();
+  const [scraperRunning, setScraperRunning] = useState(false);
+  const [serverRunning, setServerRunning] = useState(false);
   const [activeSection, setActiveSection] = useState("scrape");
   const [sse, _setSse] = useState();
   const [serverLoading, setServerLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [unexportedOnly, setUnexportedOnly] = useState(false);
+  const [checkUrlText, setCheckUrlText] = useState("");
+  const [tasksLeftForUrl, setTasksLeftForUrl] = useState([]);
+  const [error, setError] = useState("");
+  const scrapeLogRef = useRef(null);
 
   const sseRef = useRef(sse);
   const setSse = (sse) => {
@@ -43,35 +47,18 @@ function App() {
     const { scraped, tasks, url } = res.data;
     setLoading(false);
 
-    const textEl = document.getElementById("checkUrlText");
     if (!tasks) {
-      textEl.innerText = `${url} was not found in the database.`;
+      setCheckUrlText(`${url} has not been scraped yet`);
       return false;
     }
+
     if (!scraped) {
-      textEl.innerText = `${url} has ${tasks.length} queued tasks left.`;
-      const tasksHtml = document.getElementById("tasksList");
-      tasksHtml.innerHTML = "";
-      tasks.forEach((el) => {
-        const url = el.url.bold();
-        const newListItem = document.createElement("li");
-        newListItem.innerHTML = url;
-
-        const tasksForUrlHtml = document.createElement("ol");
-
-        const tasksForUrl = el.tasks;
-        tasksForUrl.forEach((task) => {
-          const t = document.createElement("li");
-          t.textContent = task;
-          tasksForUrlHtml.appendChild(t);
-        });
-
-        tasksHtml.appendChild(newListItem);
-        tasksHtml.appendChild(tasksForUrlHtml);
-      });
+      setCheckUrlText(`${url} has ${tasks.length} queued tasks left.`);
+      setTasksLeftForUrl(tasks);
       return false;
     }
-    textEl.innerText = `${url} has been fully scraped.`;
+
+    setCheckUrlText(`${url} has been scraped`);
     return true;
   };
 
@@ -104,8 +91,8 @@ function App() {
   const statusPoll = async (interval, triesLeft, maxTries) => {
     if (triesLeft === 0) {
       console.error("Server is not responding!");
-      if (sse) {
-        sse.close();
+      if (sseRef.current) {
+        sseRef.current.close();
       }
       return;
     }
@@ -130,15 +117,15 @@ function App() {
 
     if (scraperRunning) {
       const res = await enqueueTask(url, type);
-      document.getElementById("scrapelog").innerText += res.data + "\n";
+      scrapeLogRef.current.innerText += res.data + "\n";
       return;
     }
-    document.getElementById("errormsg").innerText = "";
+    setError("");
     setScraperRunning(true);
     const _sse = new EventSource(`${URI}/scrape?url=${url}&type=${type}`);
     setSse(_sse);
     sseRef.current.addEventListener("message", (msg) => {
-      document.getElementById("scrapelog").innerText += msg.data + "\n";
+      scrapeLogRef.current.innerText += msg.data + "\n";
     });
     sseRef.current.addEventListener("error", () => {
       setScraperRunning(false);
@@ -163,10 +150,10 @@ function App() {
   const handleStopScraper = async (event) => {
     event.preventDefault();
     setLoading(true);
-    document.getElementById("scrapelog").innerText +=
+    scrapeLogRef.current.innerText +=
       "finishing up existing tasks... this might take a few minutes\n";
     const res = await axios.post(`${URI}/kill`);
-    document.getElementById("scrapelog").innerText += res.data;
+    scrapeLogRef.current.innerText += res.data + "\n";
     if (sseRef.current) {
       sseRef.current.close();
     }
@@ -221,8 +208,6 @@ function App() {
           <ul className={styles.navList}>
             <li
               onClick={() => {
-                document.getElementById("scrapelogContainer").style.display =
-                  "block";
                 setActiveSection("scrape");
                 setType("user");
                 setUrl("");
@@ -237,8 +222,6 @@ function App() {
             </li>
             <li
               onClick={() => {
-                document.getElementById("scrapelogContainer").style.display =
-                  "none";
                 setActiveSection("export");
                 setType("user");
                 setUrl("");
@@ -253,8 +236,6 @@ function App() {
             </li>
             <li
               onClick={() => {
-                document.getElementById("scrapelogContainer").style.display =
-                  "none";
                 setActiveSection("check");
                 setType("user");
                 setUrl("");
@@ -390,7 +371,7 @@ function App() {
               <h2>Scrape</h2>
               <form>
                 <div className={styles.formRow}>
-                  <label for="scrapeUrl">URL</label>
+                  <label htmlFor="scrapeUrl">URL</label>
                   <input
                     className={styles.textContainer}
                     type="text"
@@ -401,7 +382,7 @@ function App() {
                   />
                 </div>
                 <div className={styles.formRow}>
-                  <label for="scrapeType">Type</label>
+                  <label htmlFor="scrapeType">Type</label>
                   <select
                     className={styles.textContainer}
                     name="scrapeType"
@@ -426,7 +407,7 @@ function App() {
               <h2>Export</h2>
               <form>
                 <div className={styles.formRow}>
-                  <label for="exportUrl">URL</label>
+                  <label htmlFor="exportUrl">URL</label>
                   <input
                     className={styles.textContainer}
                     type="text"
@@ -437,7 +418,7 @@ function App() {
                   />
                 </div>
                 <div className={styles.formRow}>
-                  <label for="exportType">Type</label>
+                  <label htmlFor="exportType">Type</label>
                   <select
                     className={styles.textContainer}
                     name="exportType"
@@ -476,8 +457,6 @@ function App() {
                   </>
                 )}
               </form>
-              <div id="checkUrlText"></div>
-              <ol id="tasksList"></ol>
             </div>
           )}
           {activeSection === "check" && (
@@ -485,7 +464,7 @@ function App() {
               <h2>Check</h2>
               <form>
                 <div className={styles.formRow}>
-                  <label for="checkUrl">URL</label>
+                  <label htmlFor="checkUrl">URL</label>
                   <input
                     className={styles.textContainer}
                     type="text"
@@ -496,7 +475,7 @@ function App() {
                   />
                 </div>
                 <div className={styles.formRow}>
-                  <label for="checkType">Type</label>
+                  <label htmlFor="checkType">Type</label>
                   <select
                     className={styles.textContainer}
                     name="checkType"
@@ -514,13 +493,32 @@ function App() {
                   </button>
                 )}
               </form>
-              <div id="checkUrlText"></div>
-              <ol id="tasksList"></ol>
+              <div id="checkUrlText">{checkUrlText}</div>
+              <ol>
+                {tasksLeftForUrl.map((task) => (
+                  <li>
+                    {task.url}
+                    <ol>
+                      {task.tasks.map((nestedTask) => (
+                        <li>{nestedTask}</li>
+                      ))}
+                    </ol>
+                  </li>
+                ))}
+              </ol>
             </div>
           )}
-          <div id="errormsg"> </div>
-          <div className={styles.containerGrey} id="scrapelogContainer">
-            <code id="scrapelog" className={styles.scrollContainerGrey}></code>
+          <div id="errormsg">{error}</div>
+          <div
+            className={styles.containerGrey}
+            id="scrapelogContainer"
+            style={{ opacity: activeSection === "scrape" ? 1 : 0 }}
+          >
+            <code
+              id="scrapelog"
+              className={styles.scrollContainerGrey}
+              ref={scrapeLogRef}
+            ></code>
           </div>
         </div>
       </div>
