@@ -11,7 +11,10 @@ import { getEvents } from "../../api//getEvents.js";
 import { queueTaskdb } from "../queue/queueTask.js";
 import waitForAndSelect from "../../utils/waitForAndSelect.js";
 import { writeToClient } from "../../index.js";
-import { maybePauseScraperAndResetTasksFailed } from "../scraperState.js";
+import {
+  maybePauseScraperAndResetTasksFailed,
+  resetNumConsecutiveTasksFailed,
+} from "../scraperState.js";
 
 export const scrapeUserProfile = async (
   db,
@@ -59,6 +62,7 @@ export const scrapeUserProfile = async (
       };
       await db.collection("users").insertOne(fullData);
       writeToClient(res, `successfully scraped ${url}`);
+      resetNumConsecutiveTasksFailed();
       return fullData;
     } catch (e) {
       console.error(e.stack);
