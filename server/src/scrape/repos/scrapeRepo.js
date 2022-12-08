@@ -154,7 +154,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, priority }, res) => {
         );
         continue;
       }
-      tasksToQueue.push(
+      tasksToQueue.push(() =>
         queueTaskdb(
           db,
           {
@@ -174,7 +174,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, priority }, res) => {
     }
   }
 
-  await Promise.all(tasksToQueue);
+  await Promise.all(tasksToQueue.map((promise) => promise()));
   return data;
 };
 

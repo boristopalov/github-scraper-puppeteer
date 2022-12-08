@@ -132,7 +132,7 @@ const tryScrapeOrg = async (page, db, { sendToFront, priority }, res) => {
         priority--;
       }
 
-      tasksToQueue.push(
+      tasksToQueue.push(() =>
         queueTaskdb(
           db,
           {
@@ -196,6 +196,6 @@ const tryScrapeOrg = async (page, db, { sendToFront, priority }, res) => {
     }
   };
   await membersPromise();
-  await Promise.all(tasksToQueue);
+  await Promise.all(tasksToQueue.map((promise) => promise()));
   return data;
 };

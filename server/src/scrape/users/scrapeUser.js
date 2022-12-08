@@ -321,7 +321,7 @@ const tryScrapeUser = async (page, db, { sendToFront, priority }, res) => {
         if (await db.collection("queue").findOne({ "task.args.0": url })) {
           return;
         }
-        tasksToQueue.push(
+        tasksToQueue.push(() =>
           queueTaskdb(
             db,
             {
@@ -362,7 +362,7 @@ const tryScrapeUser = async (page, db, { sendToFront, priority }, res) => {
         if (await db.collection("queue").findOne({ "task.args.0": url })) {
           return;
         }
-        tasksToQueue.push(
+        tasksToQueue.push(() =>
           queueTaskdb(
             db,
             {
@@ -382,7 +382,7 @@ const tryScrapeUser = async (page, db, { sendToFront, priority }, res) => {
     );
   })();
   await Promise.all([enqueueOrgsPromise, enqueueReposPromise]);
-  await Promise.all(tasksToQueue);
+  await Promise.all(tasksToQueue.map((promise) => promise()));
 
   return data;
 };
