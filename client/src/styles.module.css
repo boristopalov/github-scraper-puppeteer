@@ -64,7 +64,7 @@
   border-radius: 5px;
   height: 500px;
   overflow-y: scroll;
-  width: 600px;
+  max-width: 600px;
   padding-left: 1em;
   margin-top: 10px;
 }
@@ -142,4 +142,38 @@
   font-size: medium;
 }
 
-/* border: 1px solid #404040 */
+@media screen and (max-width: 1000px) {
+  .containerBody {
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+    border-top: 1px solid #404040;
+  }
+
+  .navSection {
+    padding-left: 1em;
+    border: none;
+  }
+
+  .scrollContainer {
+    height: 100%;
+    border: none;
+  }
+
+  .main {
+    padding-left: 1em;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .containerGrey {
+    background-color: #404040;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    height: 500px;
+    overflow-y: scroll;
+    padding-left: 1em;
+    margin-top: 10px;
+  }
+}
