@@ -139,12 +139,35 @@ function App() {
 
   const handleExport = async (event) => {
     event.preventDefault();
+    if (url === "") {
+      window.open(
+        `${URI}/export?url=${url}&type=${type}&unexportedOnly=${unexportedOnly}`
+      );
+      return;
+    }
+    setLoading(true);
+    const res = await axios.get(`${URI}/check?url=${url}&type=${type}`, {
+      headers,
+    });
+    setLoading(false);
+    if (!res) {
+      return;
+    }
+    const { scraped, tasks } = res.data;
+
+    if (!tasks) {
+      setCheckUrlText(`${url} has not been scraped yet`);
+      return;
+    }
+
+    if (!scraped) {
+      setCheckUrlText(`${url} has ${tasks.length} queued tasks left.`);
+      setTasksLeftForUrl(tasks);
+    }
+
     window.open(
       `${URI}/export?url=${url}&type=${type}&unexportedOnly=${unexportedOnly}`
     );
-    if (url !== "") {
-      await checkIfUrlScraped(url, type);
-    }
   };
 
   const handleStopScraper = async (event) => {
@@ -454,6 +477,7 @@ function App() {
                     >
                       Export
                     </button>
+                    <div id="checkUrlText">{checkUrlText}</div>
                   </>
                 )}
               </form>
