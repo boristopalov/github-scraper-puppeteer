@@ -201,7 +201,8 @@ export const startServer = async () => {
     try {
       const { type, url, unexportedOnly } = req.query;
       const unexportedOnlyBool = unexportedOnly === "true";
-      const fileName = await exportCSV(db, type, url, unexportedOnlyBool);
+      const urlLower = url.toLowerCase();
+      const fileName = await exportCSV(db, type, urlLower, unexportedOnlyBool);
       if (!fileName) {
         res.send(null);
         return;
