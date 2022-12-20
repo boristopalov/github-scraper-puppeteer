@@ -1,5 +1,6 @@
 import { writeToClient } from "../index.js";
 import sleep from "../utils/sleep.js";
+import { io } from "../ws/socket.js";
 
 export let SCRAPER_ACTIVE_FLAG = false;
 export let TASKS_PROCESSING_FLAG = false;
@@ -14,10 +15,10 @@ export function resetNumConsecutiveTasksFailed() {
   NUM_CONSECUTIVE_TASKS_FAILED = 0;
 }
 
-export async function maybePauseScraperAndResetTasksFailed(res) {
+export async function maybePauseScraperAndResetTasksFailed() {
   incrementNumConsecutiveTasksFailed();
   if (NUM_CONSECUTIVE_TASKS_FAILED > 5) {
-    writeToClient(res, "pausing scraper for 5 minutes.");
+    writeToClient("pausing scraper for 5 minutes.", io);
     await sleep(60000 * 5); // 5 minutes
     resetNumConsecutiveTasksFailed();
   }

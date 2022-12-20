@@ -7,6 +7,7 @@ import {
 } from "../../utils/taskCounter.js";
 import { scrapeUserProfile } from "../users/scrapeUser.js";
 import { writeToClient } from "../../index.js";
+import { io } from "../../ws/socket.js";
 
 export const scrapeFromQueuedb = async (db, n, res) => {
   if (!db) {
@@ -60,7 +61,7 @@ export const scrapeFromQueuedb = async (db, n, res) => {
     }
     return;
   } catch (e) {
-    writeToClient(res, e.message);
+    writeToClient(e.message, io);
   }
 };
 

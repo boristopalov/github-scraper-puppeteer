@@ -14,6 +14,7 @@ import {
 import { writeToClient } from "../index.js";
 import { EventEmitter } from "node:events";
 export const emitter = new EventEmitter();
+import { io } from "../ws/socket.js";
 
 export const scrape = async (db, type, url, res) => {
   url = url.toLowerCase();
@@ -21,7 +22,7 @@ export const scrape = async (db, type, url, res) => {
     console.error(
       `error- please enter a valid GitHub url, you entered: ${url}`
     );
-    writeToClient(res, `please enter a valid GitHub url, you entered: ${url}`);
+    writeToClient(`please enter a valid GitHub url, you entered: ${url}`, io);
     return;
   }
   startInitialTaskFlag();
@@ -66,7 +67,7 @@ export const scrapeFromQueueLoop = async (db, res) => {
     queueSize = await db.collection("queue").countDocuments();
     batchSize = Math.min(queueSize, TASKLIMIT);
   }
-  writeToClient(res, "Done scraping from queue");
+  writeToClient("Done scraping from queue", io);
   emitter.emit("TASKS_DONE");
   stopTasksProcessingFlag();
   stopScraperFlag();

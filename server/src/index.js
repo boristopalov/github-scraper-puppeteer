@@ -18,6 +18,10 @@ import { ping } from "./utils/ping.js";
 import { queueTaskdb } from "./scrape/queue/queueTask.js";
 import { DB_ENV } from "./constants/envVars.js";
 import { emitter } from "./scrape/startScraper.js";
+import http from "http";
+import { Server } from "socket.io";
+import { setIo } from "./ws/socket.js";
+
 export const startServer = async () => {
   const app = express();
   app.use(express.json());
@@ -34,6 +38,21 @@ export const startServer = async () => {
       ],
     })
   );
+  const server = http.createServer(app);
+  const io = new Server(server, {
+    cors: {
+      origin: [
+        "http://localhost:3000",
+        "http://54.197.13.104:3000",
+        "http://54.197.13.104",
+        "http://scraper.comm.tools",
+        "http://scraper.comm.tools:3000",
+        "http://scraper.comm.tools/",
+      ],
+    },
+  });
+
+  setIo(io);
 
   const client = await mongoClient();
   const db = client.db(DB_ENV);
@@ -91,20 +110,11 @@ export const startServer = async () => {
       let { type, url } = req.query;
       url = url.toLowerCase();
 
-      // set headers and send them to the client
-      // this establishes an SSE connection with the client
-      res.setHeader("Cache-Control", "no-cache");
-      res.setHeader("Content-Type", "text/event-stream");
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Connection", "keep-alive");
-      res.flushHeaders();
-      res.on("close", res.end);
-
       if (INITIAL_TASK_PROCESSING || TASKS_PROCESSING_FLAG) {
-        writeToClient(res, "Scraper is already running.");
+        writeToClient("Scraper is already running.", io);
         return;
       }
-      writeToClient(res, "Starting scraper...");
+      writeToClient("Starting scraper...", io);
       startScraperFlag();
 
       if (url === "") {
@@ -112,8 +122,8 @@ export const startServer = async () => {
       } else {
         if (!url.includes("https://github.com")) {
           writeToClient(
-            res,
-            `error- please enter a valid GitHub url, you entered: ${url}`
+            `error- please enter a valid GitHub url, you entered: ${url}`,
+            io
           );
           stopScraperFlag();
           return;
@@ -231,14 +241,14 @@ export const startServer = async () => {
     response.send("invalid path");
   });
 
-  app.listen(8080, () => {
+  server.listen(8080, () => {
     console.log("listening on port", 8080);
   });
 };
 
-export const writeToClient = (res, data) => {
+export const writeToClient = (data, io) => {
   console.log(`[${new Date().toLocaleTimeString()}]${data}`);
-  res.write("data: " + `[${new Date().toLocaleTimeString()}]${data}\n\n`);
+  io.emit("SCRAPE_MESSAGE", `[${new Date().toLocaleTimeString()}]${data}`);
 };
 
 startServer();

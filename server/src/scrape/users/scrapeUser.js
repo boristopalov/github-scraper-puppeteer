@@ -15,6 +15,7 @@ import {
   maybePauseScraperAndResetTasksFailed,
   resetNumConsecutiveTasksFailed,
 } from "../scraperState.js";
+import { io } from "../../ws/socket.js";
 
 export const scrapeUserProfile = async (
   db,
@@ -24,9 +25,9 @@ export const scrapeUserProfile = async (
   data = {}
 ) => {
   url = url.toLowerCase();
-  writeToClient(res, `scraping ${url}`);
+  writeToClient(`scraping ${url}`, io);
   if (await db.collection("users").findOne({ url })) {
-    writeToClient(res, `already scraped ${url}`);
+    writeToClient(`already scraped ${url}`, io);
     return {
       alreadyScraped: true,
     };
@@ -61,13 +62,13 @@ export const scrapeUserProfile = async (
         ...data,
       };
       await db.collection("users").insertOne(fullData);
-      writeToClient(res, `successfully scraped ${url}`);
+      writeToClient(`successfully scraped ${url}`, io);
       resetNumConsecutiveTasksFailed();
       return fullData;
     } catch (e) {
       console.error(e.stack);
       console.error("Error occured for:", url);
-      writeToClient(res, `failed to scrape ${url}`);
+      writeToClient(`failed to scrape ${url}`, io);
       await maybePauseScraperAndResetTasksFailed(res);
       tries--;
     } finally {

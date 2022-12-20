@@ -11,6 +11,7 @@ import {
   maybePauseScraperAndResetTasksFailed,
   resetNumConsecutiveTasksFailed,
 } from "../scraperState.js";
+import { io } from "../../ws/socket.js";
 
 export const scrapeRepo = async (
   db,
@@ -19,9 +20,9 @@ export const scrapeRepo = async (
   url
 ) => {
   url = url.toLowerCase();
-  writeToClient(res, `scraping ${url}`);
+  writeToClient(`scraping ${url}`, io);
   if (await db.collection("repos").findOne({ url })) {
-    writeToClient(res, `already scraped ${url}`);
+    writeToClient(`already scraped ${url}`, io);
     return {
       alreadyScraped: true,
     };
@@ -48,11 +49,11 @@ export const scrapeRepo = async (
         res
       );
       await db.collection("repos").insertOne(data);
-      writeToClient(res, `successfully scraped ${url}`);
+      writeToClient(`successfully scraped ${url}`, io);
       resetNumConsecutiveTasksFailed();
       return data;
     } catch (e) {
-      writeToClient(res, `failed to scrape ${url}`);
+      writeToClient(`failed to scrape ${url}`, io);
       console.error(e.stack);
       console.error("Error occured for:", url);
       await maybePauseScraperAndResetTasksFailed(res);
@@ -149,8 +150,8 @@ const tryScrapeRepo = async (page, db, { sendToFront, priority }, res) => {
       data.contributors[userData.username] = userData.repoCommits[data.name];
       if (userExists) {
         writeToClient(
-          res,
-          `user ${userData.username} is in the queue or has been scraped`
+          `user ${userData.username} is in the queue or has been scraped`,
+          io
         );
         continue;
       }
@@ -170,7 +171,7 @@ const tryScrapeRepo = async (page, db, { sendToFront, priority }, res) => {
         )
       );
       data.queuedTasks.push(userData.url);
-      writeToClient(res, `successfully queued ${userData.url}`);
+      writeToClient(`successfully queued ${userData.url}`, io);
     }
   }
 
