@@ -23,7 +23,8 @@
     "express": "^4.17.2",
     "mongodb": "^4.3.1",
     "nodemon": "^2.0.15",
-    "puppeteer": "^18.0.3"
+    "puppeteer": "^18.0.3",
+    "socket.io": "^4.5.4"
   },
   "devDependencies": {
     "eslint": "^8.23.1"

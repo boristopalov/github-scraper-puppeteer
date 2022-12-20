@@ -10,6 +10,7 @@ import {
   maybePauseScraperAndResetTasksFailed,
   resetNumConsecutiveTasksFailed,
 } from "../scraperState.js";
+import { io } from "../../ws/socket.js";
 
 export const scrapeOrganization = async (
   db,
@@ -18,9 +19,9 @@ export const scrapeOrganization = async (
   url
 ) => {
   url = url.toLowerCase();
-  writeToClient(res, `scraping ${url}`);
+  writeToClient(`scraping ${url}`, io);
   if (await db.collection("orgs").findOne({ url })) {
-    writeToClient(res, `already scraped ${url}`);
+    writeToClient(`already scraped ${url}`, io);
     return {
       alreadyScraped: true,
     };
@@ -43,11 +44,11 @@ export const scrapeOrganization = async (
       await page.goto(`${url}?q=&type=source&language=&sort=stargazers`);
       const data = await tryScrapeOrg(page, db, { sendToFront, priority }, res);
       await db.collection("orgs").insertOne(data);
-      writeToClient(res, `successfully scraped ${url}`);
+      writeToClient(`successfully scraped ${url}`, io);
       resetNumConsecutiveTasksFailed();
       return data;
     } catch (e) {
-      writeToClient(res, `failed to scrape ${url}`);
+      writeToClient(`failed to scrape ${url}`, io);
       console.error(e.stack);
       console.error("Error occured for:", url);
       await maybePauseScraperAndResetTasksFailed(res);

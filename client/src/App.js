@@ -3,9 +3,12 @@ import axios from "axios";
 import styles from "./styles.module.css";
 import Spinner from "./components/Spinner";
 import React from "react";
+import { io } from "socket.io-client";
+
+const URI = "http://localhost:8080";
+const socket = io(URI);
 
 function App() {
-  const URI = "http://localhost:8080";
   const [url, setUrl] = useState("");
   const [type, setType] = useState("user");
   const [scraperRunning, setScraperRunning] = useState(false);
@@ -25,7 +28,6 @@ function App() {
     sseRef.current = sse;
     _setSse(sse);
   };
-
   const headers = {
     "Access-Control-Allow-Origin": "*",
   };
@@ -185,6 +187,15 @@ function App() {
 
   useEffect(() => {
     (async () => await statusPoll(5000, 5, 5))();
+  }, []);
+
+  useEffect(() => {
+    socket.on("SCRAPE_MESSAGE", (msg) => {
+      scrapeLogRef.current.innerText += msg + "\n";
+    });
+    return () => {
+      socket.close();
+    };
   }, []);
 
   return (
