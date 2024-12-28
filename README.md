@@ -1,6 +1,6 @@
 ## Github Scraper/Crawler
 
-This is a GitHub scraper/scrawler; its purpose is to evaluate potential engineering candidates for recruiting.
+Fully autonomous GitHub scraper and crawler-- can collect data on GitHub repos, orgs, and users. Given a starting point (a URL for a public repo, org, or user), this program will collect data from that URL and begin to branch out to related repos, organizations, and users.
 
 ### How it runs
 
